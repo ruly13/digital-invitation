@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, MapPin, Clock, Heart, Music, Check, X } from 'lucide-react';
+import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -23,6 +23,13 @@ export default function InvitationView() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [rsvpData, setRsvpData] = useState({ name: '', attendance: 'yes', count: '1', message: '' });
+  const [copiedBank, setCopiedBank] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedBank(id);
+    setTimeout(() => setCopiedBank(null), 2000);
+  };
 
   // Mock data for the invitation
   const inviteData = {
@@ -46,6 +53,24 @@ export default function InvitationView() {
       'https://picsum.photos/seed/gallery4/800/1200',
       'https://picsum.photos/seed/gallery5/800/1200',
     ],
+    enableRSVP: true,
+    bankAccounts: [
+      { bank: 'BCA', accountName: 'Budi Santoso', accountNumber: '1234567890' }
+    ],
+    digitalWallets: [
+      { ewallet: 'GoPay', accountName: 'Rina Wijaya', accountNumber: '08123456789' }
+    ],
+    shippingAddress: 'Jl. Pintu Satu Senayan, Jakarta Pusat 10000 (Penerima: Budi / 08123456789)',
+    loveStories: [
+      { year: 'Januari 2020', title: 'Awal Bertemu', story: 'Kami pertama kali bertemu di sebuah kedai kopi kecil saat turun hujan. Obrolan singkat berubah menjadi pertemuan-pertemuan panjang berikutnya.' },
+      { year: 'Maret 2022', title: 'Menjalin Kasih', story: 'Setelah saling mengenal cukup lama, akhirnya kami memutuskan untuk memulai sebuah babak baru sebagai pasangan kekasih.' },
+      { year: 'Desember 2025', title: 'Lamaran', story: 'Momen berharga yang dikelilingi oleh keluarga dan sahabat terdekat, di mana kami menautkan janji untuk masa depan bersama.' }
+    ],
+    enableGuestbook: true,
+    guestbookEntries: [
+      { id: 1, name: 'Andi Pratama', attendance: 'yes', message: 'Selamat menempuh hidup baru sahabatku! Semoga perjalanan kisah kalian dipenuhi dengan kebahagiaan selalu.', timestamp: '2 Jam yang lalu' },
+      { id: 2, name: 'Siti Aisyah', attendance: 'yes', message: 'Lancar terus sampai hari H ya Rina & Budi.', timestamp: '5 Jam yang lalu' }
+    ]
   };
 
   const handleOpen = () => {
@@ -254,6 +279,49 @@ export default function InvitationView() {
         </div>
       </section>
 
+      {/* Love Story Section */}
+      {inviteData.loveStories && inviteData.loveStories.length > 0 && (
+      <section className="py-24 bg-[#FDFBF7] px-6">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <HeartHandshake className="w-8 h-8 text-rose-300 mx-auto mb-4" />
+            <h2 className="text-4xl font-serif text-stone-900 mb-4">Kisah Cinta</h2>
+            <p className="text-stone-500 italic font-serif">Awal mula perjalanan kami</p>
+          </motion.div>
+
+          <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
+            {inviteData.loveStories.map((story, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-rose-200 text-rose-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  <Heart className="w-4 h-4" />
+                </div>
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                  <span className="inline-block px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
+                    {story.year}
+                  </span>
+                  <h3 className="text-xl font-serif text-stone-900 mb-2">{story.title}</h3>
+                  <p className="text-stone-600 leading-relaxed text-sm">{story.story}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
       {/* Gallery Section */}
       <section className="py-24 bg-white overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
@@ -297,6 +365,79 @@ export default function InvitationView() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Amplop Digital Section */}
+      <section className="py-24 bg-rose-50 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Gift className="w-8 h-8 text-rose-400 mx-auto mb-4" />
+            <h2 className="text-4xl font-serif text-stone-900 mb-4">Amplop Digital</h2>
+            <p className="text-stone-600 max-w-2xl mx-auto mb-12">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {inviteData.bankAccounts?.map((bank, index) => (
+                <div key={`bank-${index}`} className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 text-left relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Gift className="w-24 h-24" />
+                  </div>
+                  <p className="text-sm font-bold text-rose-500 uppercase tracking-widest mb-1">{bank.bank}</p>
+                  <p className="text-2xl font-mono text-stone-800 tracking-wider mb-2">{bank.accountNumber}</p>
+                  <p className="text-sm text-stone-500 mb-6 font-medium">a.n. {bank.accountName}</p>
+                  
+                  <button 
+                    onClick={() => copyToClipboard(bank.accountNumber, `bank-${index}`)}
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-stone-50 hover:bg-stone-100 text-stone-700 rounded-xl font-medium transition-colors text-sm border border-stone-200"
+                  >
+                    {copiedBank === `bank-${index}` ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    {copiedBank === `bank-${index}` ? 'Berhasil Disalin!' : 'Salin No. Rekening'}
+                  </button>
+                </div>
+              ))}
+              
+              {inviteData.digitalWallets?.map((wallet, index) => (
+                <div key={`wallet-${index}`} className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 text-left relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Gift className="w-24 h-24" />
+                  </div>
+                  <p className="text-sm font-bold text-rose-500 uppercase tracking-widest mb-1">{wallet.ewallet}</p>
+                  <p className="text-2xl font-mono text-stone-800 tracking-wider mb-2">{wallet.accountNumber}</p>
+                  <p className="text-sm text-stone-500 mb-6 font-medium">a.n. {wallet.accountName}</p>
+                  
+                  <button 
+                    onClick={() => copyToClipboard(wallet.accountNumber, `wallet-${index}`)}
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-stone-50 hover:bg-stone-100 text-stone-700 rounded-xl font-medium transition-colors text-sm border border-stone-200"
+                  >
+                    {copiedBank === `wallet-${index}` ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                    {copiedBank === `wallet-${index}` ? 'Berhasil Disalin!' : 'Salin Nomor'}
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            {inviteData.shippingAddress && (
+              <div className="bg-white mt-6 p-6 md:p-8 rounded-2xl shadow-sm border border-rose-100 max-w-3xl mx-auto text-left flex items-start gap-4">
+                <MapPin className="w-6 h-6 text-rose-400 shrink-0 mt-1" />
+                <div>
+                  <p className="text-sm font-bold text-stone-900 uppercase tracking-widest mb-2">Kirim Kado Secara Fisik</p>
+                  <p className="text-stone-600 leading-relaxed text-sm mb-4">{inviteData.shippingAddress}</p>
+                  <button 
+                    onClick={() => copyToClipboard(inviteData.shippingAddress, 'address')}
+                    className="flex items-center gap-2 text-rose-500 hover:text-rose-600 font-medium text-sm transition-colors py-1"
+                  >
+                    {copiedBank === 'address' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copiedBank === 'address' ? 'Alamat Tersalin' : 'Salin Alamat Lengkap'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
         </div>
       </section>
 
@@ -411,6 +552,53 @@ export default function InvitationView() {
           </AnimatePresence>
         </motion.div>
       </section>
+
+      {/* Guestbook Section */}
+      {inviteData.enableGuestbook && (
+      <section className="py-24 bg-stone-100 px-6 border-t border-stone-200">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="text-center mb-12">
+            <MessageSquare className="w-8 h-8 text-stone-400 mx-auto mb-4" />
+            <h2 className="text-4xl font-serif text-stone-900 mb-4">Buku Tamu</h2>
+            <p className="text-stone-500 italic font-serif">Kumpulan doa & pesan hangat dari kerabat</p>
+          </div>
+          
+          <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-stone-200">
+            <div className="max-h-[500px] overflow-y-auto pr-4 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
+              {inviteData.guestbookEntries?.map((entry) => (
+                <div key={entry.id} className="p-5 border border-stone-100 rounded-2xl bg-stone-50/50 hover:bg-stone-50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 font-bold text-sm uppercase shadow-sm">
+                        {entry.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-stone-900 text-sm">{entry.name}</p>
+                        <p className="text-[10px] text-stone-400 mt-0.5 flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {entry.timestamp}
+                        </p>
+                      </div>
+                    </div>
+                    {entry.attendance === 'yes' ? (
+                      <span className="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"><Check className="w-3 h-3" /> Hadir</span>
+                    ) : (
+                      <span className="px-2.5 py-1 bg-rose-100 text-rose-700 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"><X className="w-3 h-3" /> Tidak Hadir</span>
+                    )}
+                  </div>
+                  <p className="text-stone-600 text-sm mt-4 leading-relaxed break-words pl-[52px]">{entry.message}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+      )}
 
       {/* Footer */}
       <footer className="text-center py-8 border-t border-stone-200">

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Image as ImageIcon, Type, Palette, Music, LayoutTemplate, Settings, Eye, X, Maximize2, Trash2, ChevronLeft, ChevronRight, Upload, Play, Pause, Link as LinkIcon, Library, Heart, Info, Volume2, VolumeX, Moon, Sun, Search, Share2, Check, CalendarHeart, CheckCircle2, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon, Type, Palette, Music, LayoutTemplate, Settings, Eye, X, Maximize2, Trash2, ChevronLeft, ChevronRight, Upload, Play, Pause, Link as LinkIcon, Library, Heart, Info, Volume2, VolumeX, Moon, Sun, Search, Share2, Check, CalendarHeart, CheckCircle2, MapPin, Send, Gift, BookOpen, MessageSquare, Plus, HeartHandshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactPlayer from 'react-player';
 import dynamic from 'next/dynamic';
@@ -105,6 +105,12 @@ export default function Editor() {
     instagram: '',
     facebook: '',
     twitter: '',
+    enableRSVP: true,
+    bankAccounts: [] as { bank: string; accountName: string; accountNumber: string }[],
+    digitalWallets: [] as { ewallet: string; accountName: string; accountNumber: string }[],
+    shippingAddress: '',
+    loveStories: [] as { year: string; title: string; story: string }[],
+    enableGuestbook: true,
   });
 
   useEffect(() => {
@@ -364,6 +370,10 @@ export default function Editor() {
             <TabButton icon={<LayoutTemplate />} label="Tema & Warna" active={activeTab === 'tema'} onClick={() => setActiveTab('tema')} isDarkMode={isDarkMode} />
             <TabButton icon={<ImageIcon />} label="Galeri Foto" active={activeTab === 'galeri'} onClick={() => setActiveTab('galeri')} isDarkMode={isDarkMode} />
             <TabButton icon={<Music />} label="Musik Latar" active={activeTab === 'musik'} onClick={() => setActiveTab('musik')} isDarkMode={isDarkMode} />
+            <TabButton icon={<Send />} label="RSVP & Tamu" active={activeTab === 'rsvp'} onClick={() => setActiveTab('rsvp')} isDarkMode={isDarkMode} />
+            <TabButton icon={<Gift />} label="Amplop Digital" active={activeTab === 'amplop'} onClick={() => setActiveTab('amplop')} isDarkMode={isDarkMode} />
+            <TabButton icon={<BookOpen />} label="Kisah Cinta" active={activeTab === 'kisah'} onClick={() => setActiveTab('kisah')} isDarkMode={isDarkMode} />
+            <TabButton icon={<MessageSquare />} label="Buku Tamu" active={activeTab === 'bukutamu'} onClick={() => setActiveTab('bukutamu')} isDarkMode={isDarkMode} />
           </nav>
         </aside>
 
@@ -1024,6 +1034,267 @@ export default function Editor() {
                           className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-rose-500 ${isDarkMode ? 'bg-stone-700' : 'bg-stone-100'}`}
                         />
                       </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'rsvp' && (
+              <div className="space-y-6">
+                <h2 className={`text-2xl font-serif font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Sistem RSVP</h2>
+                
+                <div className={`p-6 border rounded-2xl ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Aktifkan Form RSVP</h3>
+                      <p className={`text-sm ${isDarkMode ? 'text-stone-400' : 'text-stone-500'}`}>Izinkan tamu untuk mengonfirmasi kehadiran mereka.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer"
+                        checked={formData.enableRSVP}
+                        onChange={(e) => setFormData({...formData, enableRSVP: e.target.checked})}
+                      />
+                      <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                    </label>
+                  </div>
+                  {formData.enableRSVP && (
+                    <div className="mt-4 p-4 bg-rose-500/10 rounded-xl border border-rose-500/20">
+                      <p className="text-sm font-medium text-rose-600 dark:text-rose-400 flex flex-col gap-1">
+                        <span>✓ Form Konfirmasi Kehadiran (Hadir / Tidak Hadir)</span>
+                        <span>✓ Pilihan Jumlah Orang yang Akan Dibawa (Maks. 5 orang)</span>
+                        <span>✓ Data akan terekam ke menu "Buku Tamu" di Dashboard</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'amplop' && (
+              <div className="space-y-6">
+                <h2 className={`text-2xl font-serif font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Amplop Digital / Kado Fisik</h2>
+                
+                {/* Rekening Bank */}
+                <div className={`p-6 border rounded-2xl ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Nomor Rekening</h3>
+                    <button 
+                      onClick={() => setFormData({...formData, bankAccounts: [...formData.bankAccounts, { bank: '', accountName: '', accountNumber: '' }]})}
+                      className="text-xs font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1"
+                    >
+                      <Plus className="w-4 h-4" /> Tambah Rekening
+                    </button>
+                  </div>
+                  
+                  {formData.bankAccounts.map((account, index) => (
+                    <div key={`bank-${index}`} className={`mb-4 p-4 border rounded-xl relative ${isDarkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200'}`}>
+                      <button 
+                        onClick={() => setFormData({
+                          ...formData, 
+                          bankAccounts: formData.bankAccounts.filter((_, i) => i !== index)
+                        })} 
+                        className="absolute right-3 top-3 text-stone-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <div className="space-y-3">
+                        <div>
+                          <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Nama Bank</label>
+                          <input type="text" value={account.bank} onChange={(e) => {
+                            const newAccounts = [...formData.bankAccounts];
+                            newAccounts[index].bank = e.target.value;
+                            setFormData({...formData, bankAccounts: newAccounts});
+                          }} placeholder="BCA / Mandiri / BNI / BRI" className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>No Rekening</label>
+                            <input type="text" value={account.accountNumber} onChange={(e) => {
+                              const newAccounts = [...formData.bankAccounts];
+                              newAccounts[index].accountNumber = e.target.value;
+                              setFormData({...formData, bankAccounts: newAccounts});
+                            }} className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                          </div>
+                          <div>
+                            <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Atas Nama</label>
+                            <input type="text" value={account.accountName} onChange={(e) => {
+                              const newAccounts = [...formData.bankAccounts];
+                              newAccounts[index].accountName = e.target.value;
+                              setFormData({...formData, bankAccounts: newAccounts});
+                            }} className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {formData.bankAccounts.length === 0 && <p className="text-sm text-stone-500 italic">Belum ada rekening yang ditambahkan.</p>}
+                </div>
+
+                {/* E-Wallet */}
+                <div className={`p-6 border rounded-2xl ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>E-Wallet (GoPay/OVO/Dana/dll)</h3>
+                    <button 
+                      onClick={() => setFormData({...formData, digitalWallets: [...formData.digitalWallets, { ewallet: '', accountName: '', accountNumber: '' }]})}
+                      className="text-xs font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1"
+                    >
+                      <Plus className="w-4 h-4" /> Tambah E-Wallet
+                    </button>
+                  </div>
+                  
+                  {formData.digitalWallets.map((wallet, index) => (
+                     <div key={`wallet-${index}`} className={`mb-4 p-4 border rounded-xl relative ${isDarkMode ? 'bg-stone-800 border-stone-700' : 'bg-white border-stone-200'}`}>
+                       <button 
+                         onClick={() => setFormData({
+                           ...formData, 
+                           digitalWallets: formData.digitalWallets.filter((_, i) => i !== index)
+                         })} 
+                         className="absolute right-3 top-3 text-stone-400 hover:text-red-500 transition-colors"
+                       >
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                       <div className="space-y-3">
+                         <div>
+                           <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Jenis E-Wallet</label>
+                           <input type="text" value={wallet.ewallet} onChange={(e) => {
+                             const newWallets = [...formData.digitalWallets];
+                             newWallets[index].ewallet = e.target.value;
+                             setFormData({...formData, digitalWallets: newWallets});
+                           }} placeholder="OVO / GoPay / Dana / ShopeePay" className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                         </div>
+                         <div className="grid grid-cols-2 gap-3">
+                           <div>
+                             <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>No. Akun / HP</label>
+                             <input type="text" value={wallet.accountNumber} onChange={(e) => {
+                               const newWallets = [...formData.digitalWallets];
+                               newWallets[index].accountNumber = e.target.value;
+                               setFormData({...formData, digitalWallets: newWallets});
+                             }} className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                           </div>
+                           <div>
+                             <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Atas Nama</label>
+                             <input type="text" value={wallet.accountName} onChange={(e) => {
+                               const newWallets = [...formData.digitalWallets];
+                               newWallets[index].accountName = e.target.value;
+                               setFormData({...formData, digitalWallets: newWallets});
+                             }} className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+                   {formData.digitalWallets.length === 0 && <p className="text-sm text-stone-500 italic">Belum ada e-wallet yang ditambahkan.</p>}
+                </div>
+
+                {/* Alamat Pengiriman Kado Fisik */}
+                <div className={`p-6 border rounded-2xl ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                  <h3 className={`font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Alamat Pengiriman Kado Fisik</h3>
+                  <textarea
+                    rows={4}
+                    value={formData.shippingAddress}
+                    onChange={(e) => setFormData({...formData, shippingAddress: e.target.value})}
+                    placeholder="Contoh: Jl. Mawar No. 123, RT 01/RW 02, Kec. Melati, Jakarta Pusat 10000 (Penerima: Budi / 08123456789)"
+                    className={`w-full px-4 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none resize-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'kisah' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className={`text-2xl font-serif font-semibold ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Kisah Cinta (Love Story)</h2>
+                  <button 
+                    onClick={() => setFormData({...formData, loveStories: [...formData.loveStories, { year: '', title: '', story: '' }]})}
+                    className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-rose-600 transition-colors shadow-sm"
+                  >
+                    <Plus className="w-4 h-4"/> Tambah Cerita
+                  </button>
+                </div>
+                
+                {formData.loveStories.map((story, index) => (
+                  <div key={`story-${index}`} className={`mb-6 p-6 border rounded-2xl relative ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                    <button 
+                      onClick={() => setFormData({
+                        ...formData, 
+                        loveStories: formData.loveStories.filter((_, i) => i !== index)
+                      })} 
+                      className="absolute right-4 top-4 text-stone-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                    <div className="space-y-4 max-w-[90%]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tahun / Waktu</label>
+                          <input type="text" value={story.year} onChange={(e) => {
+                            const newStories = [...formData.loveStories];
+                            newStories[index].year = e.target.value;
+                            setFormData({...formData, loveStories: newStories});
+                          }} placeholder="Misal: Januari 2020" className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                        </div>
+                        <div>
+                          <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Judul Cerita</label>
+                          <input type="text" value={story.title} onChange={(e) => {
+                            const newStories = [...formData.loveStories];
+                            newStories[index].title = e.target.value;
+                            setFormData({...formData, loveStories: newStories});
+                          }} placeholder="Misal: Awal Bertemu" className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Deskripsi / Cerita</label>
+                        <textarea rows={3} value={story.story} onChange={(e) => {
+                          const newStories = [...formData.loveStories];
+                          newStories[index].story = e.target.value;
+                          setFormData({...formData, loveStories: newStories});
+                        }} className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none resize-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}></textarea>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {formData.loveStories.length === 0 && (
+                  <div className={`p-8 text-center border-2 border-dashed rounded-3xl ${isDarkMode ? 'border-stone-700 mb-6' : 'border-stone-300 mb-6'}`}>
+                    <HeartHandshake className={`w-10 h-10 mx-auto mb-3 ${isDarkMode ? 'text-stone-600' : 'text-stone-300'}`} />
+                    <p className={`text-sm ${isDarkMode ? 'text-stone-400' : 'text-stone-500'}`}>Belum ada kisah cinta yang ditambahkan.<br/>Ceritakan momen spesial perjalanan cinta kalian sejak awal bertemu hingga hari bahagia tiba.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'bukutamu' && (
+              <div className="space-y-6">
+                <h2 className={`text-2xl font-serif font-semibold mb-6 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Buku Tamu & Ucapan</h2>
+                
+                <div className={`p-6 border rounded-2xl ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-stone-50 border-stone-200'}`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className={`font-medium ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Aktifkan Kolom Ucapan</h3>
+                      <p className={`text-sm ${isDarkMode ? 'text-stone-400' : 'text-stone-500'}`}>Tamu dapat mengirimkan doa dan ucapan secara langsung di undangan.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer"
+                        checked={formData.enableGuestbook}
+                        onChange={(e) => setFormData({...formData, enableGuestbook: e.target.checked})}
+                      />
+                      <div className="w-11 h-6 bg-stone-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                    </label>
+                  </div>
+                  {formData.enableGuestbook && (
+                    <div className="mt-4 p-4 border rounded-xl flex items-start gap-3 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700">
+                      <div className="mt-0.5">
+                        <MessageSquare className="w-5 h-5 text-rose-500" />
+                      </div>
+                      <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
+                        Kolom ucapan mendukung sistem <span className="font-semibold text-rose-500">Realtime Update</span>. 
+                        Tamu bisa melihat ucapan tamu lain secara langsung tanpa memuat ulang (refresh) halaman.
+                      </p>
                     </div>
                   )}
                 </div>
