@@ -13,7 +13,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'EternaInvite - Undangan Pernikahan Digital Elegan',
+  title: 'karsaloka - Undangan Pernikahan Digital Elegan',
   description: 'Buat undangan pernikahan online yang indah, kelola RSVP dengan mudah, dan bagikan momen spesial Anda.',
 };
 

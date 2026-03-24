@@ -11,7 +11,7 @@ export default function WhatsAppButton() {
       className="fixed bottom-8 left-8 z-[60]"
     >
       <a 
-        href="https://wa.me/6281234567890?text=Halo%20Admin%20EternaInvite,%20saya%20ingin%20bertanya%20tentang..." 
+        href="https://wa.me/6281234567890?text=Halo%20Admin%20karsaloka,%20saya%20ingin%20bertanya%20tentang..." 
         target="_blank" 
         rel="noopener noreferrer"
         className="group relative flex items-center gap-3 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95"

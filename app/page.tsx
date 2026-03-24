@@ -39,7 +39,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center">
               <Heart className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-serif font-bold tracking-tight">EternaInvite</span>
+            <span className="text-xl font-serif font-bold tracking-tight">karsaloka</span>
           </div>
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-stone-600">
             <Link href="#fitur" className="hover:text-rose-600 transition-colors">Fitur</Link>
@@ -103,8 +103,8 @@ export default function Home() {
                 Mulai Buat Sekarang
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="#contoh" className="w-full sm:w-auto bg-white text-stone-900 border border-stone-200 px-10 py-5 rounded-full text-lg font-medium hover:bg-stone-50 transition-all flex items-center justify-center gap-2">
-                Lihat Inspirasi Tema
+              <Link href="/invite/demo" target="_blank" className="w-full sm:w-auto bg-white text-stone-900 border border-stone-200 px-10 py-5 rounded-full text-lg font-medium hover:bg-stone-50 transition-all flex items-center justify-center gap-2 shadow-sm">
+                Lihat Demo Undangan
               </Link>
             </motion.div>
             
@@ -264,7 +264,7 @@ export default function Home() {
             className="text-center mb-24"
           >
             <h2 className="text-5xl md:text-6xl font-serif mb-8 tracking-tight">Fitur yang Memudahkan Segalanya</h2>
-            <p className="text-stone-600 text-lg max-w-2xl mx-auto">Lebih dari sekadar undangan, EternaInvite adalah asisten pribadi untuk manajemen tamu Anda.</p>
+            <p className="text-stone-600 text-lg max-w-2xl mx-auto">Lebih dari sekadar undangan, karsaloka adalah asisten pribadi untuk manajemen tamu Anda.</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -428,10 +428,13 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-            className="text-center mt-24"
+            className="text-center mt-24 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/dashboard" className="inline-flex items-center justify-center bg-stone-900 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all shadow-2xl shadow-stone-200">
+            <Link href="/dashboard" className="inline-flex items-center justify-center bg-stone-900 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all shadow-2xl shadow-stone-200 w-full sm:w-auto">
               Jelajahi 50+ Tema Eksklusif
+            </Link>
+            <Link href="/invite/demo" target="_blank" className="inline-flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 px-12 py-5 rounded-full text-lg font-bold hover:bg-rose-100 transition-all shadow-xl shadow-rose-100/50 w-full sm:w-auto">
+              Lihat Demo Interaktif
             </Link>
           </motion.div>
         </div>
@@ -468,7 +471,7 @@ export default function Home() {
                 <div className="flex text-amber-400 mb-6">
                   {[1, 2, 3, 4, 5].map(i => <Sparkles key={i} className="w-5 h-5 fill-current" />)}
                 </div>
-                <p className="text-stone-700 text-lg italic mb-6 leading-relaxed">&quot;EternaInvite membuat persiapan pernikahan kami jauh lebih ringan. Desainnya sangat berkelas!&quot;</p>
+                <p className="text-stone-700 text-lg italic mb-6 leading-relaxed">&quot;karsaloka membuat persiapan pernikahan kami jauh lebih ringan. Desainnya sangat berkelas!&quot;</p>
                 <p className="font-bold text-stone-900 text-xl">— Sarah & Kevin</p>
               </motion.div>
             </motion.div>
@@ -593,7 +596,7 @@ export default function Home() {
               <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-serif font-bold tracking-tight">EternaInvite</span>
+              <span className="text-xl font-serif font-bold tracking-tight">karsaloka</span>
             </div>
             <p className="text-stone-500 text-sm leading-relaxed">
               Platform undangan pernikahan digital terpercaya untuk momen paling berharga dalam hidup Anda.
@@ -634,7 +637,7 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto border-t border-stone-100 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-stone-400 text-sm">
-            &copy; {new Date().getFullYear()} EternaInvite. Hak Cipta Dilindungi.
+            &copy; {new Date().getFullYear()} karsaloka. Hak Cipta Dilindungi.
           </p>
           <div className="flex gap-8 text-stone-400 text-sm">
             <Link href="#" className="hover:text-stone-600">Indonesia</Link>
@@ -681,7 +684,7 @@ function TestimonialItem({ quote, author }: { quote: string, author: string }) {
 
 function TemplateCard({ name, color, seed }: { name: string, color: string, seed: string }) {
   return (
-    <div className="group cursor-pointer">
+    <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
       <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
         <Image 
           src={`https://picsum.photos/seed/${seed}/600/800`} 
@@ -703,7 +706,7 @@ function TemplateCard({ name, color, seed }: { name: string, color: string, seed
         <div className="absolute inset-0 bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
       </div>
       <h3 className="text-xl font-serif font-bold text-stone-900 text-center group-hover:text-rose-500 transition-colors">{name}</h3>
-    </div>
+    </Link>
   );
 }
 

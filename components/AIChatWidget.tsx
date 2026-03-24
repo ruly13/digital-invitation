@@ -13,7 +13,7 @@ export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Halo! Saya asisten AI EternaInvite. Ada yang bisa saya bantu terkait pembuatan undangan digital Anda?' }
+    { role: 'model', text: 'Halo! Saya asisten AI karsaloka. Ada yang bisa saya bantu terkait pembuatan undangan digital Anda?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -75,7 +75,7 @@ export default function AIChatWidget() {
                   <Bot className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm">Asisten AI EternaInvite</h3>
+                  <h3 className="font-bold text-sm">Asisten AI karsaloka</h3>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                     <span className="text-[10px] text-stone-400 uppercase tracking-widest font-bold">Online</span>

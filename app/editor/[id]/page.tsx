@@ -12,6 +12,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { supabase } from '@/lib/supabase';
+import imageCompression from 'browser-image-compression';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -82,6 +83,7 @@ export default function Editor() {
   const [showSaveDateSuccess, setShowSaveDateSuccess] = useState(false);
   const [showUploadSuccess, setShowUploadSuccess] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: 'Pernikahan Rina & Budi',
     customLink: 'rina-budi',
@@ -154,19 +156,42 @@ export default function Editor() {
     loadData();
   }, [id]);
 
-  const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          setFormData(prev => ({
-            ...prev,
-            musicUrl: reader.result as string
-          }));
-        }
-      };
-      reader.readAsDataURL(file);
+      if (file.size > 5 * 1024 * 1024) { // Lebih dari 5MB
+        alert('File audio maksimal 5MB agar mudah dimuat!');
+        return;
+      }
+      setIsUploading(true);
+      try {
+        const fileExt = file.name.split('.').pop() || 'mp3';
+        const fileName = `audio_${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
+        const filePath = `uploads/${fileName}`;
+
+        const { error } = await supabase.storage
+          .from('gallery')
+          .upload(filePath, file);
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('gallery')
+          .getPublicUrl(filePath);
+
+        setFormData(prev => ({
+          ...prev,
+          musicUrl: publicUrl
+        }));
+        
+        setShowUploadSuccess(true);
+        setTimeout(() => setShowUploadSuccess(false), 3000);
+      } catch (err) {
+        console.error("Gagal mengunggah musik:", err);
+        alert("Gagal mengunggah musik");
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -177,29 +202,75 @@ export default function Editor() {
     setTimeout(() => setShowShareSuccess(false), 2000);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (typeof reader.result === 'string') {
-            setFormData(prev => ({
-              ...prev,
-              gallery: [...prev.gallery, reader.result as string]
-            }));
-          }
+    if (!files || files.length === 0) return;
+    
+    setIsUploading(true);
+    const newImages: string[] = [];
+
+    try {
+      for (const file of Array.from(files)) {
+        // Trik 1: Kompres Gambar! Maks 0.2MB atau lebar maks 1280px
+        const options = {
+          maxSizeMB: 0.2,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
         };
-        reader.readAsDataURL(file);
-      });
-      
-      // Show success notification
+        
+        let fileToUpload = file;
+        try {
+          fileToUpload = await imageCompression(file, options);
+        } catch (comprErr) {
+          console.error("Gagal kompresi, gunakan file asli", comprErr);
+        }
+        
+        // Trik 2: Unggah ke Gudang Supabase
+        const fileExt = fileToUpload.name.split('.').pop() || 'jpg';
+        const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
+        const filePath = `uploads/${fileName}`;
+        
+        const { error } = await supabase.storage
+          .from('gallery')
+          .upload(filePath, fileToUpload);
+          
+        if (error) {
+          console.error('Error uploading image:', error);
+          alert('Gagal mengunggah foto. Coba lagi.');
+          continue;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('gallery')
+          .getPublicUrl(filePath);
+          
+        newImages.push(publicUrl);
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        gallery: [...prev.gallery, ...newImages],
+      }));
+
+      // Menampilkan popup sukses
       setShowUploadSuccess(true);
       setTimeout(() => setShowUploadSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saat kompresi/mengunggah:', error);
+      alert('Terjadi kesalahan unggahan!');
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const removeImage = (index: number) => {
+    const imgUrl = formData.gallery[index];
+    // Hapus dari Storage Supabase agar rapi & tidak menghabiskan limit
+    if (imgUrl.includes('supabase.co/storage/v1/object/public/gallery/')) {
+        const filePath = imgUrl.split('public/gallery/')[1];
+        supabase.storage.from('gallery').remove([filePath]).catch(console.error);
+    }
+
     setFormData(prev => ({
       ...prev,
       gallery: prev.gallery.filter((_, i) => i !== index)
@@ -1331,7 +1402,7 @@ export default function Editor() {
                   </div>
                   <div>
                     <h3 className="text-lg font-serif font-bold">Pratinjau Tema</h3>
-                    <p className="text-xs text-stone-400 uppercase tracking-widest">EternaInvite Premium</p>
+                    <p className="text-xs text-stone-400 uppercase tracking-widest">karsaloka Premium</p>
                   </div>
                 </div>
                 <button 
@@ -1387,7 +1458,7 @@ export default function Editor() {
                     </div>
                     <div>
                       <h3 className={`text-xl font-serif font-bold ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Inspirasi Desain</h3>
-                      <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">EternaInvite Themes</p>
+                      <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">karsaloka Themes</p>
                     </div>
                   </div>
                   <button 

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from "@google/genai";
 
-const SYSTEM_INSTRUCTION = `You are a helpful AI assistant for EternaInvite, a digital wedding invitation platform. 
+const SYSTEM_INSTRUCTION = `You are a helpful AI assistant for karsaloka, a digital wedding invitation platform. 
 Your goal is to help users understand how to use the platform to create, edit, and share their wedding invitations.
 
-Key features of EternaInvite:
+Key features of karsaloka:
 - Digital Invitations: Modern, elegant, and eco-friendly.
 - Custom Themes: Many themes like Elegant, Floral, Modern, Rustic, Luxury, etc.
 - Interactive Maps: Integrated Google Maps for venue location.

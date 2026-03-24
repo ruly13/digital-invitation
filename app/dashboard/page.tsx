@@ -76,7 +76,7 @@ export default function Dashboard() {
       <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <Heart className="w-5 h-5 text-rose-500" />
-          <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">EternaInvite</Link>
+          <Link href="/" className="text-lg font-semibold tracking-tight text-stone-900">karsaloka</Link>
         </div>
         <div className="flex items-center gap-4">
           <button onClick={handleLogout} className="text-sm font-medium text-stone-500 hover:text-rose-500 transition-colors">
@@ -145,9 +145,15 @@ export default function Dashboard() {
                 <div key={inv.id} className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium mb-3">
-                        Aktif
-                      </span>
+                      {inv.payment_status === 'active' ? (
+                        <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium mb-3">
+                          Aktif
+                        </span>
+                      ) : (
+                        <span className="inline-block px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium mb-3">
+                          Belum Aktif
+                        </span>
+                      )}
                       <h3 className="text-xl font-semibold text-stone-900">
                         {inv.bride_name && inv.groom_name 
                           ? `${inv.bride_name} & ${inv.groom_name}` 
@@ -174,29 +180,41 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 border-t border-stone-100 pt-4">
-                    <Link href={`/editor/${inv.id}`} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-medium transition-colors">
-                      <Edit className="w-4 h-4" />
-                      Edit
-                    </Link>
-                    {inv.url_slug ? (
-                      <Link href={`/invite/${inv.url_slug}`} target="_blank" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-stone-200 hover:bg-stone-50 text-stone-700 rounded-xl text-sm font-medium transition-colors">
-                        <Eye className="w-4 h-4" />
-                        Pratinjau
-                      </Link>
-                    ) : (
-                      <button disabled className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-stone-200 bg-stone-50 text-stone-400 rounded-xl text-sm font-medium cursor-not-allowed">
-                        <Eye className="w-4 h-4" />
-                        Pratinjau
-                      </button>
+                  <div className="flex flex-col gap-3 border-t border-stone-100 pt-4">
+                    {inv.payment_status !== 'active' && (
+                      <a 
+                        href={`https://wa.me/6285335660159?text=Halo%20Admin,%20saya%20ingin%20konfirmasi%20pembayaran%20untuk%20mengaktifkan%20undangan%20dengan%20ID/Link:%20${inv.url_slug || inv.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+                      >
+                       Konfirmasi Pembayaran via WhatsApp
+                      </a>
                     )}
-                    <button 
-                      onClick={() => handleDelete(inv.id)}
-                      className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
-                      title="Hapus Undangan"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <Link href={`/editor/${inv.id}`} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-medium transition-colors">
+                        <Edit className="w-4 h-4" />
+                        Edit
+                      </Link>
+                      {inv.url_slug ? (
+                        <Link href={`/invite/${inv.url_slug}`} target="_blank" className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-stone-200 hover:bg-stone-50 text-stone-700 rounded-xl text-sm font-medium transition-colors">
+                          <Eye className="w-4 h-4" />
+                          Pratinjau
+                        </Link>
+                      ) : (
+                        <button disabled className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-stone-200 bg-stone-50 text-stone-400 rounded-xl text-sm font-medium cursor-not-allowed">
+                          <Eye className="w-4 h-4" />
+                          Pratinjau
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => handleDelete(inv.id)}
+                        className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                        title="Hapus Undangan"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

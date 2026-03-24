@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
+import { supabase } from '@/lib/supabase';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -18,12 +19,75 @@ const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
 export default function InvitationView() {
   const params = useParams();
   const id = params.id as string;
+  const searchParams = useSearchParams();
+  const themeQuery = searchParams.get('theme') || 'elegant';
+
+  let mockBgColor = '';
+  let mockFont = '';
+  let mockTextColor = '';
+  let mockCover = 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200&auto=format&fit=crop';
+
+  if (themeQuery === 'floral') {
+    mockBgColor = '#fff1f2'; 
+    mockFont = 'Georgia, serif';
+    mockCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
+  } else if (themeQuery === 'modern') {
+    mockBgColor = '#f8fafc'; 
+    mockFont = 'ui-sans-serif, system-ui, sans-serif';
+    mockTextColor = '#0f172a';
+    mockCover = 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop';
+  } else if (themeQuery === 'rustic') {
+    mockBgColor = '#fef3c7'; 
+    mockFont = '"Courier New", Courier, monospace';
+    mockTextColor = '#78350f';
+    mockCover = 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1200&auto=format&fit=crop';
+  } else if (themeQuery === 'army') {
+    mockBgColor = '#f4f5f0'; 
+    mockFont = 'ui-sans-serif, system-ui, sans-serif';
+    mockTextColor = '#14532d';
+    mockCover = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop';
+  }
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [rsvpData, setRsvpData] = useState({ name: '', attendance: 'yes', count: '1', message: '' });
   const [copiedBank, setCopiedBank] = useState<string | null>(null);
+  const [dbInviteData, setDbInviteData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    const fetchInvite = async () => {
+      // Fitur Akses Demo: Jika ID-nya 'demo', langsung gunakan data contoh (bypass database)
+      if (id === 'demo') {
+        setLoading(false);
+        setIsBlocked(false);
+        setDbInviteData(null); // Memaksa penggunaan inviteData bawaan
+        return;
+      }
+      try {
+        let { data, error } = await supabase.from('invitations').select('*').eq('url_slug', id).single();
+        if (error || !data) {
+          const { data: idData, error: idError } = await supabase.from('invitations').select('*').eq('id', id).single();
+          if (!idError && idData) data = idData;
+        }
+
+        if (data) {
+          if (data.payment_status === 'unpaid') {
+            setIsBlocked(true);
+          } else {
+            setDbInviteData(data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching invitation", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvite();
+  }, [id]);
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -33,45 +97,51 @@ export default function InvitationView() {
 
   // Mock data for the invitation
   const inviteData = {
-    title: 'Pernikahan Rina & Budi',
-    groomName: 'Budi Santoso',
-    brideName: 'Rina Wijaya',
-    date: '12 Agustus 2026',
-    time: '09:00 WIB - Selesai',
-    venue: 'Gedung Serbaguna Senayan',
-    address: 'Jl. Pintu Satu Senayan, Jakarta Pusat',
-    theme: 'elegant',
+    title: 'Pernikahan Adrian & Clarissa',
+    groomName: 'Adrian Pratama',
+    brideName: 'Clarissa Maharani',
+    date: '12 September 2026',
+    time: '18:00 WIB - Selesai',
+    venue: 'The Ritz-Carlton Jakarta, Pacific Place',
+    address: 'Sudirman Central Business District (SCBD), Jl. Jend. Sudirman Kav 52-53, Jakarta Selatan',
+    theme: themeQuery,
+    customBgColor: mockBgColor,
+    customFont: mockFont,
+    customTextColor: mockTextColor,
     openingGreeting: 'The Wedding Of',
-    greeting: 'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan resepsi pernikahan putra-putri kami.',
-    coverImage: 'https://picsum.photos/seed/wedding1/800/1200',
-    groomImage: 'https://picsum.photos/seed/groom/400/400',
-    brideImage: 'https://picsum.photos/seed/bride/400/400',
+    greeting: 'Dengan mengucap syukur atas karunia Tuhan Yang Maha Esa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir pada perayaan pernikahan kami.',
+    musicUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tchaikovsky/Romeo_and_Juliet/Tchaikovsky_-_Romeo_and_Juliet.mp3',
+    coverImage: mockCover,
+    groomImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=800&auto=format&fit=crop',
+    brideImage: 'https://images.unsplash.com/photo-1595986630530-969786ad1cb8?q=80&w=800&auto=format&fit=crop',
     gallery: [
-      'https://picsum.photos/seed/gallery1/800/1200',
-      'https://picsum.photos/seed/gallery2/800/1200',
-      'https://picsum.photos/seed/gallery3/800/1200',
-      'https://picsum.photos/seed/gallery4/800/1200',
-      'https://picsum.photos/seed/gallery5/800/1200',
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1000&auto=format&fit=crop',
     ],
     enableRSVP: true,
     bankAccounts: [
-      { bank: 'BCA', accountName: 'Budi Santoso', accountNumber: '1234567890' }
+      { bank: 'BCA', accountName: 'Adrian Pratama', accountNumber: '0123 4567 89' }
     ],
     digitalWallets: [
-      { ewallet: 'GoPay', accountName: 'Rina Wijaya', accountNumber: '08123456789' }
+      { ewallet: 'GoPay', accountName: 'Clarissa Maharani', accountNumber: '0812 3456 7890' }
     ],
-    shippingAddress: 'Jl. Pintu Satu Senayan, Jakarta Pusat 10000 (Penerima: Budi / 08123456789)',
+    shippingAddress: 'The Haven Residence, Tower A Unit 1205, Jakarta Selatan 12345 (Penerima: Adrian / 081234567890)',
     loveStories: [
-      { year: 'Januari 2020', title: 'Awal Bertemu', story: 'Kami pertama kali bertemu di sebuah kedai kopi kecil saat turun hujan. Obrolan singkat berubah menjadi pertemuan-pertemuan panjang berikutnya.' },
-      { year: 'Maret 2022', title: 'Menjalin Kasih', story: 'Setelah saling mengenal cukup lama, akhirnya kami memutuskan untuk memulai sebuah babak baru sebagai pasangan kekasih.' },
-      { year: 'Desember 2025', title: 'Lamaran', story: 'Momen berharga yang dikelilingi oleh keluarga dan sahabat terdekat, di mana kami menautkan janji untuk masa depan bersama.' }
+      { year: 'September 2021', title: 'Awal Bertemu', story: 'Semesta mempertemukan kami di sebuah proyek kolaborasi di Bali. Obrolan singkat membuahkan pertemanan yang hangat dan kesamaan visi.' },
+      { year: 'Februari 2024', title: 'Lamaran', story: 'Di bawah langit malam Tokyo, disaksikan rintik salju yang turun pelan, ia berlutut dan menautkan janji untuk melangkah bersama selamanya.' },
+      { year: 'Agustus 2025', title: 'Sebuah Komitmen', story: 'Dihadapan kedua belah pihak keluarga besar, kami mengikat janji pertunangan untuk secara resmi melangkah ke pelaminan.' }
     ],
     enableGuestbook: true,
     guestbookEntries: [
-      { id: 1, name: 'Andi Pratama', attendance: 'yes', message: 'Selamat menempuh hidup baru sahabatku! Semoga perjalanan kisah kalian dipenuhi dengan kebahagiaan selalu.', timestamp: '2 Jam yang lalu' },
-      { id: 2, name: 'Siti Aisyah', attendance: 'yes', message: 'Lancar terus sampai hari H ya Rina & Budi.', timestamp: '5 Jam yang lalu' }
+      { id: 1, name: 'Anastasya', attendance: 'yes', message: 'Selamat menikah Adrian & Clarissa! Semoga cinta dan kebahagiaan selalu menyertai perjalanan keluarga baru kalian.', timestamp: '1 Jam yang lalu' },
+      { id: 2, name: 'Budi Santoso', attendance: 'yes', message: 'Lancar sampai hari H ya, can\'t wait for the beautiful wedding.', timestamp: '3 Jam yang lalu' }
     ]
   };
+
+  const finalInviteData = dbInviteData?.details ? { ...inviteData, ...dbInviteData.details, title: dbInviteData.title || inviteData.title, brideName: dbInviteData.bride_name || inviteData.brideName, groomName: dbInviteData.groom_name || inviteData.groomName, date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : inviteData.date, venue: dbInviteData.venue_name || inviteData.venue, address: dbInviteData.venue_address || inviteData.address, theme: dbInviteData.theme_name || inviteData.theme } : inviteData;
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -87,6 +157,22 @@ export default function InvitationView() {
     }, 1500);
   };
 
+  if (loading) {
+    return <div className="min-h-screen flex flex-col items-center justify-center bg-stone-900/10 text-stone-500 font-serif animate-pulse">Memuat undangan...</div>;
+  }
+
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen bg-stone-900 flex flex-col items-center justify-center font-serif text-stone-100 px-6 text-center">
+        <Heart className="w-16 h-16 text-rose-500 mb-6 opacity-80" />
+        <h1 className="text-3xl md:text-5xl font-light mb-4">Undangan Belum Aktif</h1>
+        <p className="text-stone-400 mb-8 max-w-md mx-auto">
+          Silakan selesaikan pembayaran dan konfirmasi melalui WhatsApp Admin agar tautan undangan ini dapat dibagikan kepada tamu Anda.
+        </p>
+      </div>
+    );
+  }
+
   // Cover Screen
   if (!isOpen) {
     return (
@@ -94,7 +180,7 @@ export default function InvitationView() {
         <div className="min-h-screen bg-stone-900 flex flex-col items-center justify-center relative overflow-hidden font-serif text-stone-100">
           <div className="absolute inset-0 z-0 opacity-40">
           <Image 
-            src={inviteData.coverImage} 
+            src={finalInviteData.coverImage || 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200'} 
             alt="Wedding Cover" 
             fill 
             className="object-cover"
@@ -110,10 +196,10 @@ export default function InvitationView() {
           transition={{ duration: 1, delay: 0.5 }}
           className="z-10 text-center px-6 max-w-md w-full"
         >
-          <p className="text-sm tracking-[0.3em] uppercase mb-8 text-stone-300">{inviteData.openingGreeting || 'The Wedding Of'}</p>
-          <h1 className="text-5xl md:text-6xl mb-4 font-light">{inviteData.brideName}</h1>
+          <p className="text-sm tracking-[0.3em] uppercase mb-8 text-stone-300">{finalInviteData.openingGreeting || 'The Wedding Of'}</p>
+          <h1 className="text-5xl md:text-6xl mb-4 font-light">{finalInviteData.brideName}</h1>
           <p className="text-3xl italic text-rose-300 mb-4">&</p>
-          <h1 className="text-5xl md:text-6xl mb-12 font-light">{inviteData.groomName}</h1>
+          <h1 className="text-5xl md:text-6xl mb-12 font-light">{finalInviteData.groomName}</h1>
           
           <div className="mb-12">
             <p className="text-sm text-stone-300 mb-2">Kepada Yth. Bapak/Ibu/Saudara/i</p>
@@ -140,21 +226,37 @@ export default function InvitationView() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="min-h-screen bg-[#FDFBF7] text-stone-800 font-sans relative pb-24"
+        className={`min-h-screen relative pb-24 ${finalInviteData.customBgColor ? '' : 'bg-[#FDFBF7] text-stone-800'}`}
+        style={{
+          ...(finalInviteData.customBgColor && { backgroundColor: finalInviteData.customBgColor }),
+          ...(finalInviteData.customFont && { fontFamily: finalInviteData.customFont }),
+          ...(finalInviteData.customTextColor && { color: finalInviteData.customTextColor })
+        }}
       >
       {/* Floating Music Button */}
+      {finalInviteData.musicUrl && (
+        <audio 
+           ref={(audio) => {
+             if (audio) {
+               isPlaying ? audio.play().catch(()=>setIsPlaying(false)) : audio.pause();
+             }
+           }} 
+           src={finalInviteData.musicUrl} 
+           loop 
+        />
+      )}
       <button 
         onClick={() => setIsPlaying(!isPlaying)}
         className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-stone-600 hover:text-rose-500 transition-colors border border-stone-100"
       >
-        <Music className={`w-5 h-5 ${isPlaying ? 'animate-spin-slow' : ''}`} />
+        <Music className={`w-5 h-5 ${isPlaying ? 'animate-spin-slow' : 'opacity-50'}`} />
       </button>
 
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
-            src={inviteData.coverImage} 
+            src={finalInviteData.coverImage || 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200'} 
             alt="Wedding Hero" 
             fill 
             className="object-cover opacity-30"
@@ -604,7 +706,7 @@ export default function InvitationView() {
       <footer className="text-center py-8 border-t border-stone-200">
         <p className="text-stone-500 text-sm font-serif italic mb-2">Terima Kasih</p>
         <p className="text-stone-900 font-serif text-xl">{inviteData.brideName} & {inviteData.groomName}</p>
-        <p className="text-xs text-stone-400 mt-8">Dibuat dengan <Heart className="w-3 h-3 inline text-rose-400" /> oleh EternaInvite</p>
+        <p className="text-xs text-stone-400 mt-8">Dibuat dengan <Heart className="w-3 h-3 inline text-rose-400" /> oleh karsaloka</p>
       </footer>
       <WhatsAppButton />
       <AIChatWidget />
