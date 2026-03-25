@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare, Home, Map } from 'lucide-react';
@@ -43,6 +43,20 @@ export default function InvitationView() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(err => {
+          console.warn("Audio play blocked/interrupted:", err);
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [rsvpData, setRsvpData] = useState({ name: '', attendance: 'yes', count: '1', message: '' });
   const [copiedBank, setCopiedBank] = useState<string | null>(null);
@@ -127,9 +141,9 @@ export default function InvitationView() {
     ],
     shippingAddress: 'The Haven Residence, Tower A Unit 1205, Jakarta Selatan 12345 (Penerima: Adrian / 081234567890)',
     loveStories: [
-      { year: 'September 2021', title: 'Awal Bertemu', story: 'Semesta mempertemukan kami di sebuah proyek kolaborasi di Bali. Obrolan singkat membuahkan pertemanan yang hangat dan kesamaan visi.' },
-      { year: 'Februari 2024', title: 'Lamaran', story: 'Di bawah langit malam Tokyo, disaksikan rintik salju yang turun pelan, ia berlutut dan menautkan janji untuk melangkah bersama selamanya.' },
-      { year: 'Agustus 2025', title: 'Sebuah Komitmen', story: 'Dihadapan kedua belah pihak keluarga besar, kami mengikat janji pertunangan untuk secara resmi melangkah ke pelaminan.' }
+      { year: 'September 2021', title: 'Awal Bertemu', story: 'Semesta mempertemukan kami di sebuah proyek kolaborasi di Bali. Obrolan singkat membuahkan pertemanan yang hangat dan kesamaan visi.', imageUrl: '' },
+      { year: 'Februari 2024', title: 'Lamaran', story: 'Di bawah langit malam Tokyo, disaksikan rintik salju yang turun pelan, ia berlutut dan menautkan janji untuk melangkah bersama selamanya.', imageUrl: '' },
+      { year: 'Agustus 2025', title: 'Sebuah Komitmen', story: 'Dihadapan kedua belah pihak keluarga besar, kami mengikat janji pertunangan untuk secara resmi melangkah ke pelaminan.', imageUrl: '' }
     ],
     enableGuestbook: true,
     guestbookEntries: [
@@ -272,11 +286,7 @@ export default function InvitationView() {
       {/* Floating Music Button */}
       {finalInviteData.musicUrl && (
         <audio 
-           ref={(audio) => {
-             if (audio) {
-               isPlaying ? audio.play().catch(()=>setIsPlaying(false)) : audio.pause();
-             }
-           }} 
+           ref={audioRef}
            src={finalInviteData.musicUrl} 
            loop 
         />
@@ -657,7 +667,8 @@ export default function InvitationView() {
       </section>
 
       {/* RSVP Section */}
-      <section className="py-24 px-6 max-w-3xl mx-auto">
+      {finalInviteData.enableRSVP && (
+      <section id="rsvp" className="py-24 px-6 max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
