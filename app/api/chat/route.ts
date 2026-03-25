@@ -47,8 +47,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ text });
   } catch (error) {
     console.error("AI Chat API Error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Maaf, layanan AI sedang tidak tersedia saat ini. Silakan hubungi admin via WhatsApp.", details: error.message },
+      { error: "Maaf, layanan AI sedang tidak tersedia saat ini. Silakan hubungi admin via WhatsApp.", details: errorMessage },
       { status: 500 }
     );
   }
