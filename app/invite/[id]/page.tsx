@@ -10,6 +10,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { supabase } from '@/lib/supabase';
+import { THEMES } from '@/lib/themes';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -22,29 +23,21 @@ export default function InvitationView() {
   const searchParams = useSearchParams();
   const themeQuery = searchParams.get('theme') || 'elegant';
 
-  let mockBgColor = '';
-  let mockFont = '';
-  let mockTextColor = '';
+  const selectedTheme = THEMES.find(t => t.id === themeQuery) || THEMES[0];
+  let mockBgClass = selectedTheme.color;
+  let mockFontClass = selectedTheme.fontClass;
+  let mockTextClass = selectedTheme.textColor || 'text-stone-800';
+  let mockAccentClass = selectedTheme.accentColor || 'text-rose-500';
   let mockCover = 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200&auto=format&fit=crop';
 
+  // Specific cover images for test themes
   if (themeQuery === 'floral') {
-    mockBgColor = '#fff1f2'; 
-    mockFont = 'Georgia, serif';
     mockCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
   } else if (themeQuery === 'modern') {
-    mockBgColor = '#f8fafc'; 
-    mockFont = 'ui-sans-serif, system-ui, sans-serif';
-    mockTextColor = '#0f172a';
     mockCover = 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop';
   } else if (themeQuery === 'rustic') {
-    mockBgColor = '#fef3c7'; 
-    mockFont = '"Courier New", Courier, monospace';
-    mockTextColor = '#78350f';
     mockCover = 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1200&auto=format&fit=crop';
   } else if (themeQuery === 'army') {
-    mockBgColor = '#f4f5f0'; 
-    mockFont = 'ui-sans-serif, system-ui, sans-serif';
-    mockTextColor = '#14532d';
     mockCover = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop';
   }
 
@@ -105,11 +98,15 @@ export default function InvitationView() {
     venue: 'The Ritz-Carlton Jakarta, Pacific Place',
     address: 'Sudirman Central Business District (SCBD), Jl. Jend. Sudirman Kav 52-53, Jakarta Selatan',
     theme: themeQuery,
-    customBgColor: mockBgColor,
-    customFont: mockFont,
-    customTextColor: mockTextColor,
+    customBgClass: mockBgClass,
+    customFontClass: mockFontClass,
+    customTextClass: mockTextClass,
+    customAccentClass: mockAccentClass,
     openingGreeting: 'The Wedding Of',
-    greeting: 'Dengan mengucap syukur atas karunia Tuhan Yang Maha Esa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir pada perayaan pernikahan kami.',
+    openingPrayer: "Assalamu'alaikum Warahmatullahi Wabarakatuh",
+    quranicVerse: "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berfikir. (QS. Ar-Rum: 21)",
+    greeting: 'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir pada perayaan pernikahan kami.',
+    videoUrl: 'https://www.youtube.com/embed/jfKfPfyJRdk',
     musicUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tchaikovsky/Romeo_and_Juliet/Tchaikovsky_-_Romeo_and_Juliet.mp3',
     coverImage: mockCover,
     groomImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=800&auto=format&fit=crop',
@@ -219,6 +216,11 @@ export default function InvitationView() {
     );
   }
 
+  const bgCls = finalInviteData.customBgClass || 'bg-[#FDFBF7]';
+  const textCls = finalInviteData.customTextClass || 'text-stone-900';
+  const fontCls = finalInviteData.customFontClass?.split(' ')[0] || 'font-serif';
+  const accentCls = finalInviteData.customAccentClass || 'text-rose-400';
+
   // Main Invitation Content
   return (
     <PageTransition>
@@ -226,12 +228,7 @@ export default function InvitationView() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`min-h-screen relative pb-24 ${finalInviteData.customBgColor ? '' : 'bg-[#FDFBF7] text-stone-800'}`}
-        style={{
-          ...(finalInviteData.customBgColor && { backgroundColor: finalInviteData.customBgColor }),
-          ...(finalInviteData.customFont && { fontFamily: finalInviteData.customFont }),
-          ...(finalInviteData.customTextColor && { color: finalInviteData.customTextColor })
-        }}
+        className={`min-h-screen relative pb-24 ${bgCls} ${textCls} ${fontCls}`}
       >
       {/* Floating Music Button */}
       {finalInviteData.musicUrl && (
@@ -272,11 +269,11 @@ export default function InvitationView() {
           transition={{ duration: 1 }}
           className="z-10 text-center px-6"
         >
-          <p className="font-serif text-lg italic text-stone-500 mb-6">Pernikahan</p>
-          <h1 className="text-6xl md:text-8xl font-serif font-light text-stone-900 mb-6 leading-none">
-            {inviteData.brideName} <br/> <span className="text-4xl md:text-6xl text-rose-400 italic">&</span> <br/> {inviteData.groomName}
+          <p className={`${fontCls} text-lg italic opacity-70 mb-6`}>Pernikahan</p>
+          <h1 className={`text-6xl md:text-8xl ${fontCls} font-light mb-6 leading-none`}>
+            {inviteData.brideName} <br/> <span className={`text-4xl md:text-6xl ${accentCls} italic`}>&</span> <br/> {inviteData.groomName}
           </h1>
-          <p className="text-stone-600 tracking-[0.2em] uppercase text-sm mt-8">{inviteData.date}</p>
+          <p className="opacity-60 tracking-[0.2em] font-sans uppercase text-sm mt-8">{inviteData.date}</p>
         </motion.div>
       </section>
 
@@ -288,9 +285,22 @@ export default function InvitationView() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <Heart className="w-8 h-8 text-rose-300 mx-auto mb-8" />
-          <p className="text-lg md:text-xl text-stone-600 leading-relaxed max-w-2xl mx-auto mb-20 font-serif italic">
-            &quot;{inviteData.greeting}&quot;
+          <Heart className={`w-8 h-8 ${accentCls} mx-auto mb-8`} />
+
+          {inviteData.openingPrayer && (
+            <h3 className={`text-2xl ${fontCls} font-medium mb-6`}>{inviteData.openingPrayer}</h3>
+          )}
+          
+          {inviteData.quranicVerse && (
+            <div className="mb-12 max-w-2xl mx-auto">
+              <p className={`text-sm md:text-base opacity-75 leading-relaxed ${fontCls} italic mb-4 text-balance`}>
+                &quot;{inviteData.quranicVerse}&quot;
+              </p>
+            </div>
+          )}
+
+          <p className={`text-lg md:text-xl opacity-80 leading-relaxed max-w-2xl mx-auto mb-20 ${fontCls}`}>
+            {inviteData.greeting}
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
@@ -469,6 +479,44 @@ export default function InvitationView() {
           </div>
         </div>
       </section>
+
+      {/* Cinematic Video Section */}
+      {inviteData.videoUrl && (
+        <section className={`py-24 px-6 relative overflow-hidden text-stone-100 ${accentCls.replace('text-', 'bg-') || 'bg-stone-900'}`}>
+          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+          <div className="absolute inset-0 bg-stone-900/40"></div>
+          
+          <div className="max-w-5xl mx-auto relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <h2 className={`text-4xl ${fontCls} text-white mb-4`}>Video Sinematik</h2>
+              <p className={`text-white/70 italic ${fontCls}`}>Kisah indah yang terekam dalam sebuah karya visual</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="aspect-video w-full rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10"
+            >
+              <iframe 
+                src={inviteData.videoUrl} 
+                title="Cinematic Wedding Video" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                className="w-full h-full"
+              ></iframe>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Amplop Digital Section */}
       <section className="py-24 bg-rose-50 px-6">

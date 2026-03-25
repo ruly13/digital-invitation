@@ -22,6 +22,7 @@ import Image from 'next/image';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
+import { THEMES } from '@/lib/themes';
 
 export default function Home() {
   return (
@@ -380,47 +381,26 @@ export default function Home() {
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Setiap tema dirancang dengan penuh cinta dan perhatian pada detail terkecil.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-            >
-              <TemplateCard name="Elegan Klasik" color="bg-stone-100" seed="elegant" />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            >
-              <TemplateCard name="Bunga Musim Semi" color="bg-rose-50" seed="floral" />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            >
-              <TemplateCard name="Modern Minimalis" color="bg-slate-100" seed="modern" />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            >
-              <TemplateCard name="Rustic Alam" color="bg-amber-50" seed="rustic" />
-            </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-            >
-              <TemplateCard name="Militer Tentara" color="bg-[#4b5320]" seed="army" />
-            </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {THEMES.slice(0, 16).map((theme, index) => (
+              <motion.div 
+                key={theme.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: 0.1 * ((index % 4) + 1), ease: "easeOut" }}
+              >
+                <TemplateCard 
+                  name={theme.name}
+                  color={theme.color}
+                  seed={theme.id}
+                  fontClass={theme.fontClass}
+                  textColor={theme.textColor}
+                  accentColor={theme.accentColor}
+                  dividerColor={theme.dividerColor}
+                />
+              </motion.div>
+            ))}
           </div>
           
           <motion.div 
@@ -682,7 +662,23 @@ function TestimonialItem({ quote, author }: { quote: string, author: string }) {
   );
 }
 
-function TemplateCard({ name, color, seed }: { name: string, color: string, seed: string }) {
+function TemplateCard({ 
+  name, 
+  color, 
+  seed, 
+  fontClass = "font-serif text-3xl",
+  textColor = "text-stone-900",
+  accentColor = "text-rose-500",
+  dividerColor = "bg-stone-300"
+}: { 
+  name: string, 
+  color: string, 
+  seed: string,
+  fontClass?: string,
+  textColor?: string,
+  accentColor?: string,
+  dividerColor?: string
+}) {
   return (
     <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
       <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
@@ -694,16 +690,16 @@ function TemplateCard({ name, color, seed }: { name: string, color: string, seed
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-          <div className="w-12 h-[1px] bg-stone-300 mb-6"></div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-stone-500 mb-4">The Wedding Of</p>
-          <h4 className="text-3xl font-serif font-light mb-2 text-stone-900">Romeo</h4>
-          <p className="text-2xl italic text-rose-500 my-2">&</p>
-          <h4 className="text-3xl font-serif font-light mb-6 text-stone-900">Juliet</h4>
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-stone-400">12 . 08 . 2026</p>
-          <div className="w-12 h-[1px] bg-stone-300 mt-6"></div>
+          <div className={`w-12 h-[1px] ${dividerColor} mb-6`}></div>
+          <p className={`text-[10px] uppercase tracking-[0.3em] font-sans ${textColor} opacity-60 mb-4`}>The Wedding Of</p>
+          <h4 className={`${fontClass} font-light mb-2 ${textColor}`}>Romeo</h4>
+          <p className={`text-2xl font-serif italic ${accentColor} my-2`}>&</p>
+          <h4 className={`${fontClass} font-light mb-6 ${textColor}`}>Juliet</h4>
+          <p className={`text-[10px] font-bold tracking-[0.2em] font-sans uppercase ${textColor} opacity-50`}>12 . 08 . 2026</p>
+          <div className={`w-12 h-[1px] ${dividerColor} mt-6`}></div>
         </div>
         
-        <div className="absolute inset-0 bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div className="absolute inset-0 bg-stone-900/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
       </div>
       <h3 className="text-xl font-serif font-bold text-stone-900 text-center group-hover:text-rose-500 transition-colors">{name}</h3>
     </Link>
