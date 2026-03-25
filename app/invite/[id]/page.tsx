@@ -315,8 +315,8 @@ export default function InvitationView() {
           className="z-10 text-center px-6"
         >
           <p className={`${fontCls} text-lg italic opacity-70 mb-6`}>Pernikahan</p>
-          <h1 className={`text-6xl md:text-8xl ${fontCls} font-light mb-6 leading-none`}>
-            {inviteData.brideName} <br/> <span className={`text-4xl md:text-6xl ${accentCls} italic`}>&</span> <br/> {inviteData.groomName}
+          <h1 className={`text-5xl sm:text-6xl md:text-8xl ${fontCls} font-light mb-6 leading-none`}>
+            {inviteData.brideName} <br/> <span className={`text-3xl sm:text-4xl md:text-6xl ${accentCls} italic`}>&</span> <br/> {inviteData.groomName}
           </h1>
           <p className="opacity-60 tracking-[0.2em] font-sans uppercase text-sm mt-8">{inviteData.date}</p>
         </motion.div>
@@ -348,23 +348,23 @@ export default function InvitationView() {
             {inviteData.greeting}
           </p>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 md:gap-24">
             <div className="flex flex-col items-center">
-              <div className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
+              <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
                 <Image src={inviteData.brideImage} alt="Bride" fill className="object-cover" referrerPolicy="no-referrer" />
               </div>
-              <h2 className="text-3xl font-serif text-stone-900 mb-2">{inviteData.brideName}</h2>
-              <p className="text-stone-500 text-sm">Putri dari Bapak Fulan & Ibu Fulanah</p>
+              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{inviteData.brideName}</h2>
+              <p className="text-stone-500 text-sm text-center">Putri dari Bapak Fulan & Ibu Fulanah</p>
             </div>
 
-            <div className="text-4xl font-serif italic text-rose-300">&</div>
+            <div className="text-3xl sm:text-4xl font-serif italic text-rose-300">&</div>
 
             <div className="flex flex-col items-center">
-              <div className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
+              <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
                 <Image src={inviteData.groomImage} alt="Groom" fill className="object-cover" referrerPolicy="no-referrer" />
               </div>
-              <h2 className="text-3xl font-serif text-stone-900 mb-2">{inviteData.groomName}</h2>
-              <p className="text-stone-500 text-sm">Putra dari Bapak Fulan & Ibu Fulanah</p>
+              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{inviteData.groomName}</h2>
+              <p className="text-stone-500 text-sm text-center">Putra dari Bapak Fulan & Ibu Fulanah</p>
             </div>
           </div>
         </motion.div>
@@ -452,7 +452,7 @@ export default function InvitationView() {
             <p className="text-stone-500 italic font-serif">Awal mula perjalanan kami</p>
           </motion.div>
 
-          <div className="space-y-16 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
+          <div className="space-y-12 sm:space-y-16 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
             {inviteData.loveStories.map((story, idx) => (
               <motion.div 
                 key={idx}
@@ -472,15 +472,15 @@ export default function InvitationView() {
                   delay: idx * 0.2,
                   ease: [0.22, 1, 0.36, 1] // Custom cubic-bezier for smoother feel
                 }}
-                className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
+                className="relative flex items-start gap-4 md:gap-0 md:items-center md:justify-normal md:odd:flex-row-reverse group"
               >
                 {/* Timeline Icon with Pulse Effect */}
-                <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-rose-100 text-rose-500 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform duration-500 group-hover:scale-125 group-hover:bg-rose-500 group-hover:text-white">
-                  <Heart className="w-5 h-5 fill-current" />
+                <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border-4 border-white bg-rose-100 text-rose-500 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform duration-500 group-hover:scale-125 group-hover:bg-rose-500 group-hover:text-white">
+                  <Heart className="w-4 h-4 md:w-5 md:h-5 fill-current" />
                 </div>
 
                 {/* Content Card with Hover Lift */}
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-8 rounded-[2.5rem] shadow-sm border border-stone-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group-hover:border-rose-200 overflow-hidden">
+                <div className="flex-1 md:flex-none md:w-[calc(50%-2.5rem)] bg-white p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-stone-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group-hover:border-rose-200 overflow-hidden">
                   <span className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase mb-4 shadow-sm ${idx % 2 === 0 ? 'bg-rose-500 text-white' : 'bg-stone-900 text-white'}`}>
                     {story.year}
                   </span>

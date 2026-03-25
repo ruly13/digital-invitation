@@ -30,3 +30,25 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Safe area for iOS devices with notch/home indicator */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Better touch responsiveness on mobile */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent text overflow on small screens */
+.break-words {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Gallery horizontal scroll hide scrollbar */
+.snap-x {
+  -webkit-overflow-scrolling: touch;
+}

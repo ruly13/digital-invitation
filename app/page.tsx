@@ -78,7 +78,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="text-6xl md:text-8xl font-serif leading-[0.88] text-stone-900 mb-8 tracking-tighter"
+              className="text-5xl sm:text-6xl md:text-8xl font-serif leading-[0.88] text-stone-900 mb-8 tracking-tighter"
             >
               Sampaikan <br />
               <span className="italic text-rose-500">Kabar Bahagia</span> <br />
@@ -189,22 +189,22 @@ export default function Home() {
           <div className="absolute top-0 left-2/4 w-px h-full bg-white"></div>
           <div className="absolute top-0 left-3/4 w-px h-full bg-white"></div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-around gap-12 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 relative z-10">
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">500+</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Undangan Dibuat</p>
+            <p className="text-4xl sm:text-5xl font-serif font-bold mb-1">500+</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest text-stone-400">Undangan Dibuat</p>
           </div>
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">50K+</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Tamu Menerima Undangan</p>
+            <p className="text-4xl sm:text-5xl font-serif font-bold mb-1">50K+</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest text-stone-400">Tamu Menerima Undangan</p>
           </div>
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">4.9★</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Rating Pengguna</p>
+            <p className="text-4xl sm:text-5xl font-serif font-bold mb-1">4.9★</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest text-stone-400">Rating Pengguna</p>
           </div>
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">100%</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Ramah Lingkungan</p>
+            <p className="text-4xl sm:text-5xl font-serif font-bold mb-1">100%</p>
+            <p className="text-[10px] sm:text-xs uppercase tracking-widest text-stone-400">Ramah Lingkungan</p>
           </div>
         </div>
       </section>
@@ -212,9 +212,9 @@ export default function Home() {
       {/* How it Works Section - Brutalist/Creative */}
       <section id="cara-kerja" className="py-32 bg-white px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 sm:mb-24 gap-8">
             <div className="max-w-2xl">
-              <h2 className="text-5xl md:text-7xl font-serif mb-8 leading-[0.9] tracking-tighter">
+              <h2 className="text-4xl sm:text-5xl md:text-7xl font-serif mb-8 leading-[0.9] tracking-tighter">
                 Wujudkan Undangan <br />
                 <span className="italic text-rose-500">Hanya Dalam 3 Menit.</span>
               </h2>
@@ -482,7 +482,7 @@ export default function Home() {
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Pilih paket yang paling sesuai dengan skala perayaan Anda. Tanpa biaya tersembunyi.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10 max-w-6xl mx-auto">
             <PricingCard 
               title="Essential" 
               price="Gratis" 

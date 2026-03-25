@@ -439,7 +439,7 @@ export default function Editor() {
       <PageTransition>
       <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${isDarkMode ? 'bg-stone-950 text-stone-200' : 'bg-stone-100 text-stone-900'}`}>
         {/* Topbar */}
-      <header className={`border-b px-4 py-3 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
+      <header className={`border-b px-3 sm:px-4 py-3 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className={`p-2 rounded-full transition-colors ${isDarkMode ? 'hover:bg-stone-800 text-stone-400' : 'hover:bg-stone-100 text-stone-600'}`}>
             <ArrowLeft className="w-5 h-5" />
@@ -469,8 +469,8 @@ export default function Editor() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar Tools */}
-        <aside className={`w-20 sm:w-64 border-r flex flex-col shrink-0 overflow-y-auto transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
+        {/* Sidebar Tools — hidden on mobile, shown on md+ */}
+        <aside className={`hidden md:flex w-64 border-r flex-col shrink-0 overflow-y-auto transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
           <nav className="flex flex-col p-2 gap-1">
             <TabButton icon={<Settings />} label="Umum" active={activeTab === 'umum'} onClick={() => setActiveTab('umum')} isDarkMode={isDarkMode} />
             <TabButton icon={<Type />} label="Teks & Konten" active={activeTab === 'teks'} onClick={() => setActiveTab('teks')} isDarkMode={isDarkMode} />
@@ -485,8 +485,8 @@ export default function Editor() {
         </aside>
 
         {/* Editor Panel */}
-        <main className={`flex-1 overflow-y-auto p-6 transition-colors duration-300 ${isDarkMode ? 'bg-stone-950' : 'bg-stone-50'}`}>
-          <div className={`max-w-3xl mx-auto rounded-3xl shadow-sm border p-8 overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
+        <main className={`flex-1 overflow-y-auto p-3 sm:p-6 pb-24 md:pb-6 transition-colors duration-300 ${isDarkMode ? 'bg-stone-950' : 'bg-stone-50'}`}>
+          <div className={`max-w-3xl mx-auto rounded-2xl sm:rounded-3xl shadow-sm border p-4 sm:p-8 overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -1172,7 +1172,7 @@ export default function Editor() {
                       <p className="text-sm font-medium text-rose-600 dark:text-rose-400 flex flex-col gap-1">
                         <span>✓ Form Konfirmasi Kehadiran (Hadir / Tidak Hadir)</span>
                         <span>✓ Pilihan Jumlah Orang yang Akan Dibawa (Maks. 5 orang)</span>
-                        <span>✓ Data akan terekam ke menu "Buku Tamu" di Dashboard</span>
+                        <span>✓ Data akan terekam ke menu "Buku tamu" di Dashboard</span>
                       </p>
                     </div>
                   )}
@@ -1569,7 +1569,7 @@ export default function Editor() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-stone-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-800"
+            className="fixed bottom-20 md:bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-stone-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-stone-800"
           >
             <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
               <Check className="w-4 h-4 text-white" />
@@ -1578,6 +1578,37 @@ export default function Editor() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile Bottom Tab Navigation */}
+      <div className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t safe-area-bottom ${isDarkMode ? 'bg-stone-900 border-stone-800' : 'bg-white border-stone-200'}`}>
+        <div className="flex items-center justify-around px-1 py-1 overflow-x-auto no-scrollbar">
+          {[
+            { id: 'umum', icon: <Settings className="w-4 h-4" />, label: 'Umum' },
+            { id: 'teks', icon: <Type className="w-4 h-4" />, label: 'Teks' },
+            { id: 'tema', icon: <LayoutTemplate className="w-4 h-4" />, label: 'Tema' },
+            { id: 'galeri', icon: <ImageIcon className="w-4 h-4" />, label: 'Galeri' },
+            { id: 'musik', icon: <Music className="w-4 h-4" />, label: 'Musik' },
+            { id: 'rsvp', icon: <Send className="w-4 h-4" />, label: 'RSVP' },
+            { id: 'amplop', icon: <Gift className="w-4 h-4" />, label: 'Amplop' },
+            { id: 'kisah', icon: <BookOpen className="w-4 h-4" />, label: 'Kisah' },
+            { id: 'bukutamu', icon: <MessageSquare className="w-4 h-4" />, label: 'Tamu' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center justify-center min-w-[52px] px-1 py-1.5 rounded-lg transition-all ${
+                activeTab === tab.id
+                  ? 'text-rose-500'
+                  : isDarkMode ? 'text-stone-500' : 'text-stone-400'
+              }`}
+            >
+              {tab.icon}
+              <span className={`text-[9px] mt-0.5 font-medium ${activeTab === tab.id ? 'font-bold' : ''}`}>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <WhatsAppButton />
       <AIChatWidget />
     </div>
