@@ -66,13 +66,14 @@ export default function InvitationView() {
 
   useEffect(() => {
     const fetchInvite = async () => {
-      // Fitur Akses Demo: Jika ID-nya 'demo', langsung gunakan data contoh (bypass database)
+      // === DEMO MODE: bypass database completely ===
       if (id === 'demo') {
-        setLoading(false);
+        setDbInviteData(null);
         setIsBlocked(false);
-        setDbInviteData(null); // Memaksa penggunaan inviteData bawaan
+        setLoading(false);
         return;
       }
+
       try {
         let { data, error } = await supabase.from('invitations').select('*').eq('url_slug', id).single();
         if (error || !data) {

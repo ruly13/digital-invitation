@@ -116,21 +116,14 @@ export default function Home() {
               className="mt-12 flex items-center gap-6"
             >
               <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-stone-200 overflow-hidden">
-                    <Image 
-                      src={`https://picsum.photos/seed/user${i}/100/100`} 
-                      alt="User" 
-                      width={40} 
-                      height={40} 
-                      className="object-cover"
-                      referrerPolicy="no-referrer"
-                    />
+                {['A', 'R', 'D', 'S'].map((initial, i) => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-rose-100 flex items-center justify-center text-rose-600 font-bold text-xs">
+                    {initial}
                   </div>
                 ))}
               </div>
               <p className="text-sm text-stone-500 font-medium">
-                Dipercaya oleh <span className="text-stone-900 font-bold">5,000+</span> pasangan di seluruh Indonesia
+                Dipercaya oleh <span className="text-stone-900 font-bold">1,000+</span> pasangan di seluruh Indonesia
               </p>
             </motion.div>
           </div>
@@ -143,7 +136,7 @@ export default function Home() {
           >
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
               <Image 
-                src="https://picsum.photos/seed/wedding-hero/1200/1500" 
+                src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop" 
                 alt="Wedding Invitation Preview" 
                 fill 
                 className="object-cover"
@@ -198,16 +191,16 @@ export default function Home() {
         </div>
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-around gap-12 relative z-10">
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">15k+</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Kisah Cinta Terukir</p>
+            <p className="text-5xl font-serif font-bold mb-1">500+</p>
+            <p className="text-xs uppercase tracking-widest text-stone-400">Undangan Dibuat</p>
           </div>
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">1M+</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Tamu Terkesan</p>
+            <p className="text-5xl font-serif font-bold mb-1">50K+</p>
+            <p className="text-xs uppercase tracking-widest text-stone-400">Tamu Menerima Undangan</p>
           </div>
           <div className="text-center">
-            <p className="text-5xl font-serif font-bold mb-1">4.95</p>
-            <p className="text-xs uppercase tracking-widest text-stone-400">Bintang Kepuasan</p>
+            <p className="text-5xl font-serif font-bold mb-1">4.9★</p>
+            <p className="text-xs uppercase tracking-widest text-stone-400">Rating Pengguna</p>
           </div>
           <div className="text-center">
             <p className="text-5xl font-serif font-bold mb-1">100%</p>
@@ -287,7 +280,7 @@ export default function Home() {
               </div>
               <div className="w-full md:w-80 aspect-square bg-stone-50 rounded-[2.5rem] overflow-hidden relative border border-stone-100 shadow-inner">
                 <Image 
-                  src="https://picsum.photos/seed/rsvp/600/600" 
+                  src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?q=80&w=600&auto=format&fit=crop" 
                   alt="RSVP Feature" 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -434,7 +427,7 @@ export default function Home() {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl relative border-[12px] border-white">
                 <Image 
-                  src="https://picsum.photos/seed/happy-couple/1000/1000" 
+                  src="https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?q=80&w=1000&auto=format&fit=crop" 
                   alt="Happy Couple" 
                   fill 
                   className="object-cover"
@@ -594,10 +587,9 @@ export default function Home() {
           <div>
             <h4 className="font-bold mb-6">Bantuan</h4>
             <ul className="space-y-4 text-sm text-stone-500">
-              <li><Link href="#" className="hover:text-rose-500 transition-colors">Pusat Bantuan</Link></li>
-              <li><a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">Chat Admin</a></li>
-              <li><Link href="#" className="hover:text-rose-500 transition-colors">Kebijakan Privasi</Link></li>
-              <li><Link href="#" className="hover:text-rose-500 transition-colors">Syarat & Ketentuan</Link></li>
+              <li><Link href="/privacy" className="hover:text-rose-500 transition-colors">Kebijakan Privasi</Link></li>
+              <li><Link href="/terms" className="hover:text-rose-500 transition-colors">Syarat & Ketentuan</Link></li>
+              <li><a href="https://wa.me/6285335660159" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">Chat Admin</a></li>
             </ul>
           </div>
           <div>
@@ -683,7 +675,7 @@ function TemplateCard({
     <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
       <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
         <Image 
-          src={`https://picsum.photos/seed/${seed}/600/800`} 
+          src={`https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&h=800&auto=format&fit=crop&sig=${seed}`} 
           alt={name} 
           fill 
           className="object-cover opacity-20 group-hover:opacity-40 transition-opacity"
