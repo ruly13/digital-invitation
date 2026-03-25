@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare } from 'lucide-react';
+import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare, Home, Map } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
-import { supabase } from '@/lib/supabase';
 import { supabase } from '@/lib/supabase';
 import { THEMES } from '@/lib/themes';
 
@@ -17,10 +16,6 @@ const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-stone-100 animate-pulse flex items-center justify-center text-stone-400 text-xs">Memuat Peta...</div>
 });
-
-// Enable Incremental Static Regeneration (ISR) to cache invitation pages
-// This saves 90% of Supabase database calls by caching the result for 60 seconds
-export const revalidate = 60;
 
 export default function InvitationView() {
   const params = useParams();
@@ -144,7 +139,22 @@ export default function InvitationView() {
   };
 
   // Use fetched data if available, otherwise use default/mock data
-  const finalInviteData = inviteData || defaultInviteData;
+  const finalInviteData = dbInviteData?.details ? { 
+    ...inviteData, 
+    ...dbInviteData.details,
+    brideName: dbInviteData.bride_name || dbInviteData.details.brideName || inviteData.brideName,
+    groomName: dbInviteData.groom_name || dbInviteData.details.groomName || inviteData.groomName,
+    date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : (dbInviteData.details.date || inviteData.date),
+    venue: dbInviteData.venue_name || dbInviteData.details.venue || inviteData.venue,
+    address: dbInviteData.venue_address || dbInviteData.details.address || inviteData.address,
+  } : inviteData;
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollInToView({ behavior: 'smooth' });
+    }
+  };
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -271,15 +281,10 @@ export default function InvitationView() {
            loop 
         />
       )}
-      <button 
-        onClick={() => setIsPlaying(!isPlaying)}
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-stone-600 hover:text-rose-500 transition-colors border border-stone-100"
-      >
-        <Music className={`w-5 h-5 ${isPlaying ? 'animate-spin-slow' : 'opacity-50'}`} />
-      </button>
+      {/* Music Control is now inside Floating Nav */}
 
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      <section id="home" className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image 
             src={finalInviteData.coverImage || 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200'} 
@@ -355,7 +360,7 @@ export default function InvitationView() {
       </section>
 
       {/* Event Details Section */}
-      <section className="py-20 bg-stone-100 px-6">
+      <section id="event" className="py-20 bg-stone-100 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -436,25 +441,56 @@ export default function InvitationView() {
             <p className="text-stone-500 italic font-serif">Awal mula perjalanan kami</p>
           </motion.div>
 
-          <div className="space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
+          <div className="space-y-16 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
             {inviteData.loveStories.map((story, idx) => (
               <motion.div 
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                initial={{ 
+                  opacity: 0, 
+                  x: idx % 2 === 0 ? -50 : 50,
+                  scale: 0.9
+                }}
+                whileInView={{ 
+                  opacity: 1, 
+                  x: 0,
+                  scale: 1 
+                }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ 
+                  duration: 1, 
+                  delay: idx * 0.2,
+                  ease: [0.22, 1, 0.36, 1] // Custom cubic-bezier for smoother feel
+                }}
                 className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-rose-200 text-rose-600 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                  <Heart className="w-4 h-4" />
+                {/* Timeline Icon with Pulse Effect */}
+                <div className="flex items-center justify-center w-12 h-12 rounded-full border-4 border-white bg-rose-100 text-rose-500 shadow-sm shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform duration-500 group-hover:scale-125 group-hover:bg-rose-500 group-hover:text-white">
+                  <Heart className="w-5 h-5 fill-current" />
                 </div>
-                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
-                  <span className="inline-block px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
+
+                {/* Content Card with Hover Lift */}
+                <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-8 rounded-[2.5rem] shadow-sm border border-stone-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group-hover:border-rose-200 overflow-hidden">
+                  <span className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase mb-4 shadow-sm ${idx % 2 === 0 ? 'bg-rose-500 text-white' : 'bg-stone-900 text-white'}`}>
                     {story.year}
                   </span>
-                  <h3 className="text-xl font-serif text-stone-900 mb-2">{story.title}</h3>
-                  <p className="text-stone-600 leading-relaxed text-sm">{story.story}</p>
+
+                  {story.imageUrl && (
+                    <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-6 group-hover:shadow-md transition-all duration-500">
+                      <Image 
+                        src={story.imageUrl} 
+                        alt={story.title} 
+                        fill 
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  )}
+
+                  <h3 className="text-2xl font-serif text-stone-900 mb-3 group-hover:text-rose-600 transition-colors">{story.title}</h3>
+                  <div className="w-12 h-0.5 bg-rose-200 mb-4 transition-all duration-500 group-hover:w-24 group-hover:bg-rose-500"></div>
+                  <p className="text-stone-600 leading-relaxed text-sm italic font-serif opacity-80 group-hover:opacity-100 transition-opacity">
+                    &quot;{story.story}&quot;
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -731,10 +767,11 @@ export default function InvitationView() {
           </AnimatePresence>
         </motion.div>
       </section>
+      )}
 
       {/* Guestbook Section */}
       {inviteData.enableGuestbook && (
-      <section className="py-24 bg-stone-100 px-6 border-t border-stone-200">
+      <section id="guestbook" className="py-24 bg-stone-100 px-6 border-t border-stone-200">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -785,6 +822,74 @@ export default function InvitationView() {
         <p className="text-stone-900 font-serif text-xl">{inviteData.brideName} & {inviteData.groomName}</p>
         <p className="text-xs text-stone-400 mt-8">Dibuat dengan <Heart className="w-3 h-3 inline text-rose-400" /> oleh karsaloka</p>
       </footer>
+
+      {/* Floating Navigation Menu (Glassmorphism) */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.nav
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-md pb-safe"
+          >
+            <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full p-2 flex items-center justify-around gap-1 group relative overflow-hidden">
+              {/* Highlight background effect */}
+              <div className="absolute inset-x-0 h-px top-0 bg-gradient-to-r from-transparent via-rose-300 to-transparent opacity-50"></div>
+              
+              <button 
+                onClick={() => scrollToSection('home')}
+                className="flex flex-col items-center justify-center w-12 h-12 rounded-full text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 group"
+                title="Beranda"
+              >
+                <Home className="w-5 h-5" />
+                <span className="text-[8px] font-bold uppercase mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Home</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('event')}
+                className="flex flex-col items-center justify-center w-12 h-12 rounded-full text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 group"
+                title="Detail Acara"
+              >
+                <Map className="w-5 h-5" />
+                <span className="text-[8px] font-bold uppercase mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Maps</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('rsvp')}
+                className="flex flex-col items-center justify-center w-14 h-14 bg-rose-500 text-white rounded-full shadow-lg shadow-rose-500/30 hover:bg-rose-600 transition-all duration-300 transform hover:scale-110 -mt-2 group"
+                title="Konfirmasi Kehadiran"
+              >
+                <HeartHandshake className="w-6 h-6" />
+                <span className="text-[8px] font-bold uppercase mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">RSVP</span>
+              </button>
+
+              <button 
+                onClick={() => scrollToSection('guestbook')}
+                className="flex flex-col items-center justify-center w-12 h-12 rounded-full text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-300 group"
+                title="Buku Tamu"
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span className="text-[8px] font-bold uppercase mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Guest</span>
+              </button>
+
+              {/* Music Minimalist Control */}
+              <button 
+                onClick={() => setIsPlaying(!isPlaying)}
+                className={`flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 group ${isPlaying ? 'text-rose-500 hover:bg-rose-50' : 'text-stone-300 hover:bg-stone-50'}`}
+                title={isPlaying ? "Matikan Musik" : "Putar Musik"}
+              >
+                {isPlaying ? (
+                  <Music className="w-5 h-5 animate-pulse" />
+                ) : (
+                  <Music className="w-5 h-5 opacity-50" />
+                )}
+                <span className="text-[8px] font-bold uppercase mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Audio</span>
+              </button>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
       <WhatsAppButton />
       <AIChatWidget />
     </motion.div>

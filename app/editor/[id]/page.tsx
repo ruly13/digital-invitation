@@ -108,12 +108,32 @@ export default function Editor() {
     facebook: '',
     twitter: '',
     enableRSVP: true,
-    bankAccounts: [] as { bank: string; accountName: string; accountNumber: string }[],
-    digitalWallets: [] as { ewallet: string; accountName: string; accountNumber: string }[],
+    bankAccounts: [] as { bank: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
+    digitalWallets: [] as { ewallet: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
     shippingAddress: '',
-    loveStories: [] as { year: string; title: string; story: string }[],
+    loveStories: [] as { year: string; title: string; story: string; imageUrl?: string }[],
     enableGuestbook: true,
+    preventSpam: true,
   });
+
+  const handleQRUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'bank' | 'wallet', index: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Simple mock upload simulation since we don't have a storage logic yet
+    // In real app, this would use supabase.storage
+    const imageUrl = URL.createObjectURL(file);
+    
+    if (type === 'bank') {
+      const newAccounts = [...formData.bankAccounts];
+      newAccounts[index].qrisUrl = imageUrl;
+      setFormData({...formData, bankAccounts: newAccounts});
+    } else {
+      const newWallets = [...formData.digitalWallets];
+      newWallets[index].qrisUrl = imageUrl;
+      setFormData({...formData, digitalWallets: newWallets});
+    }
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -1295,7 +1315,7 @@ export default function Editor() {
                 <div className="flex justify-between items-center mb-6">
                   <h2 className={`text-2xl font-serif font-semibold ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Kisah Cinta (Love Story)</h2>
                   <button 
-                    onClick={() => setFormData({...formData, loveStories: [...formData.loveStories, { year: '', title: '', story: '' }]})}
+                    onClick={() => setFormData({...formData, loveStories: [...formData.loveStories, { year: '', title: '', story: '', imageUrl: '' }]})}
                     className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-rose-600 transition-colors shadow-sm"
                   >
                     <Plus className="w-4 h-4"/> Tambah Cerita
@@ -1332,6 +1352,38 @@ export default function Editor() {
                           }} placeholder="Misal: Awal Bertemu" className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
                         </div>
                       </div>
+
+                      {/* Image Upload for Story */}
+                      <div className="mt-2">
+                        <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Foto Momen (Opsional)</label>
+                        <div className="flex items-center gap-4">
+                          {story.imageUrl ? (
+                            <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-stone-200 shadow-sm">
+                              <Image src={story.imageUrl} alt="Story Moment" fill className="object-cover" />
+                              <button 
+                                onClick={() => {
+                                  const newStories = [...formData.loveStories];
+                                  newStories[index].imageUrl = '';
+                                  setFormData({...formData, loveStories: newStories});
+                                }}
+                                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label className={`w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer hover:border-rose-400 hover:bg-rose-50/50 transition-all ${isDarkMode ? 'border-stone-700 bg-stone-900' : 'border-stone-200 bg-stone-50'}`}>
+                              <ImageIcon className="w-6 h-6 text-stone-400" />
+                              <span className="text-[10px] text-stone-500 mt-1 font-medium text-center">Upload<br/>Foto</span>
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleStoryImageUpload(e, index)} />
+                            </label>
+                          )}
+                          <div className="flex-1">
+                            <p className="text-[10px] text-stone-500 leading-relaxed italic">Upload foto untuk momen ini (format JPG/PNG, maks 2MB). Foto akan ditampilkan di atas teks cerita.</p>
+                          </div>
+                        </div>
+                      </div>
+
                       <div>
                         <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Deskripsi / Cerita</label>
                         <textarea rows={3} value={story.story} onChange={(e) => {
