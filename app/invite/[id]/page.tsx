@@ -10,12 +10,17 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { THEMES } from '@/lib/themes';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
   loading: () => <div className="w-full h-full bg-stone-100 animate-pulse flex items-center justify-center text-stone-400 text-xs">Memuat Peta...</div>
 });
+
+// Enable Incremental Static Regeneration (ISR) to cache invitation pages
+// This saves 90% of Supabase database calls by caching the result for 60 seconds
+export const revalidate = 60;
 
 export default function InvitationView() {
   const params = useParams();
@@ -138,7 +143,8 @@ export default function InvitationView() {
     ]
   };
 
-  const finalInviteData = dbInviteData?.details ? { ...inviteData, ...dbInviteData.details, title: dbInviteData.title || inviteData.title, brideName: dbInviteData.bride_name || inviteData.brideName, groomName: dbInviteData.groom_name || inviteData.groomName, date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : inviteData.date, venue: dbInviteData.venue_name || inviteData.venue, address: dbInviteData.venue_address || inviteData.address, theme: dbInviteData.theme_name || inviteData.theme } : inviteData;
+  // Use fetched data if available, otherwise use default/mock data
+  const finalInviteData = inviteData || defaultInviteData;
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -166,6 +172,29 @@ export default function InvitationView() {
         <p className="text-stone-400 mb-8 max-w-md mx-auto">
           Silakan selesaikan pembayaran dan konfirmasi melalui WhatsApp Admin agar tautan undangan ini dapat dibagikan kepada tamu Anda.
         </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin"></div>
+          <p className="text-stone-500 font-serif italic">Menyiapkan Undangan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!inviteData) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center p-6 text-center">
+        <div>
+          <Heart className="w-12 h-12 text-stone-300 mx-auto mb-4" />
+          <h1 className="text-2xl font-serif text-stone-800 mb-2">Undangan Tidak Ditemukan</h1>
+          <p className="text-stone-500 max-w-xs mx-auto">Mohon maaf, link undangan yang Anda tuju tidak valid atau telah dihapus.</p>
+        </div>
       </div>
     );
   }

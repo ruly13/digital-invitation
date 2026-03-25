@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus, Settings, Users, Eye, Edit, Trash2, Heart, Loader2 } from 'lucide-react';
+import { Plus, Settings, Users, Eye, Edit, Trash2, Heart, Loader2, Copy, Check } from 'lucide-react';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
@@ -14,50 +14,64 @@ export default function Dashboard() {
   const [invitations, setInvitations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-      
-      // Get profile info
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    const fetchData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          router.push('/login');
+          return;
+        }
         
-      setUserProfile(profile || { full_name: user.email });
+        // Get profile info
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        setUserProfile(profile || { full_name: user.email });
 
-      // Get invitations
-      const { data: invs, error } = await supabase
-        .from('invitations')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        // Get invitations
+        const { data: invs, error } = await supabase
+          .from('invitations')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setInvitations(invs || []);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (error) throw error;
+        setInvitations(invs || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [router]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (inv: any) => {
     if (!confirm('Apakah Anda yakin ingin menghapus undangan ini? Tindakan ini tidak dapat dibatalkan.')) return;
     try {
-      const { error } = await supabase.from('invitations').delete().eq('id', id);
+      // 1. Bersihkan Galeri di Storage agar hemat kuota 100%
+      if (inv.details?.gallery && Array.isArray(inv.details.gallery)) {
+        const filePaths = inv.details.gallery
+          .filter((url: string) => url.includes('supabase.co/storage/v1/object/public/gallery/'))
+          .map((url: string) => url.split('public/gallery/')[1]);
+        
+        if (filePaths.length > 0) {
+          await supabase.storage.from('gallery').remove(filePaths);
+          console.log('Storage cleaned up for deleted invitation');
+        }
+      }
+
+      // 2. Hapus data di Database
+      const { error } = await supabase.from('invitations').delete().eq('id', inv.id);
       if (error) throw error;
-      setInvitations(invitations.filter((inv) => inv.id !== id));
+      setInvitations(invitations.filter((i) => i.id !== inv.id));
     } catch (error) {
       console.error('Error deleting:', error);
       alert('Gagal menghapus undangan.');
@@ -67,6 +81,13 @@ export default function Dashboard() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
+  };
+
+  const copyLink = (slug: string, id: string) => {
+    const fullUrl = `${window.location.protocol}//${window.location.host}/invite/${slug}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
@@ -145,7 +166,7 @@ export default function Dashboard() {
                 <div key={inv.id} className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      {inv.payment_status === 'active' ? (
+                      {(inv.payment_status === 'active' || inv.payment_status === 'paid') ? (
                         <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium mb-3">
                           Aktif
                         </span>
@@ -172,16 +193,27 @@ export default function Dashboard() {
                       <p className="text-xs text-stone-500 font-medium uppercase tracking-wider mb-1">Tema</p>
                       <p className="text-sm font-semibold text-stone-900">{inv.theme_name || 'Elegant'}</p>
                     </div>
-                    <div>
+                    <div className="relative group/link">
                       <p className="text-xs text-stone-500 font-medium uppercase tracking-wider mb-1">Link</p>
-                      <p className="text-sm font-semibold text-rose-500 truncate">
-                        {inv.url_slug ? `/${inv.url_slug}` : 'Belum Atur Link'}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-rose-500 truncate">
+                          {inv.url_slug ? `/invite/${inv.url_slug}` : 'Belum Atur Link'}
+                        </p>
+                        {inv.url_slug && (
+                          <button 
+                            onClick={() => copyLink(inv.url_slug, inv.id)}
+                            className="p-1 hover:bg-stone-200 rounded-md transition-colors text-stone-400 hover:text-stone-900"
+                            title="Salin Link"
+                          >
+                            {copiedId === inv.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-3 border-t border-stone-100 pt-4">
-                    {inv.payment_status !== 'active' && (
+                    {!(inv.payment_status === 'active' || inv.payment_status === 'paid') && (
                       <a 
                         href={`https://wa.me/6285335660159?text=Halo%20Admin,%20saya%20ingin%20konfirmasi%20pembayaran%20untuk%20mengaktifkan%20undangan%20dengan%20ID/Link:%20${inv.url_slug || inv.id}`}
                         target="_blank"
@@ -208,7 +240,7 @@ export default function Dashboard() {
                         </button>
                       )}
                       <button 
-                        onClick={() => handleDelete(inv.id)}
+                        onClick={() => handleDelete(inv)}
                         className="p-2 text-stone-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
                         title="Hapus Undangan"
                       >

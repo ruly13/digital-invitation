@@ -211,22 +211,26 @@ export default function Editor() {
 
     try {
       for (const file of Array.from(files)) {
-        // Trik 1: Kompres Gambar! Maks 0.2MB atau lebar maks 1280px
+        // Trik: Kompres Gambar! Maks 0.2MB atau lebar maks 1280px untuk Lighthouse Score tinggi
         const options = {
           maxSizeMB: 0.2,
           maxWidthOrHeight: 1280,
           useWebWorker: true,
+          fileType: 'image/webp' // Gunakan WebP untuk kompresi maksimal
         };
         
         let fileToUpload = file;
         try {
+          // @ts-ignore
           fileToUpload = await imageCompression(file, options);
+          // Ganti extension ke .webp karena kita convert
+          const blob = fileToUpload as Blob;
+          fileToUpload = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".webp", { type: 'image/webp' });
         } catch (comprErr) {
           console.error("Gagal kompresi, gunakan file asli", comprErr);
         }
         
-        // Trik 2: Unggah ke Gudang Supabase
-        const fileExt = fileToUpload.name.split('.').pop() || 'jpg';
+        const fileExt = 'webp';
         const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
         const filePath = `uploads/${fileName}`;
         
@@ -252,7 +256,6 @@ export default function Editor() {
         gallery: [...prev.gallery, ...newImages],
       }));
 
-      // Menampilkan popup sukses
       setShowUploadSuccess(true);
       setTimeout(() => setShowUploadSuccess(false), 3000);
     } catch (error) {
@@ -298,6 +301,21 @@ export default function Editor() {
         return;
       }
 
+      // 1. Cek Keunikan Link (Slug)
+      if (formData.customLink) {
+        const { data: existingLink } = await supabase
+          .from('invitations')
+          .select('id')
+          .eq('url_slug', formData.customLink)
+          .neq('id', id) // Jangan cek diri sendiri jika sedang edit
+          .single();
+
+        if (existingLink) {
+          alert(`Maaf, link "/invite/${formData.customLink}" sudah digunakan oleh orang lain. Silakan pilih link lain.`);
+          return;
+        }
+      }
+
       const payload = {
         user_id: userData.user.id,
         url_slug: formData.customLink || null,
@@ -308,15 +326,13 @@ export default function Editor() {
         venue_address: formData.address,
         theme_name: formData.theme,
         music_url: formData.musicUrl,
-        details: formData // Menyimpan semua isi formData di kolom details
+        details: formData
       };
 
       if (id === 'new') {
-        // Insert new
         const { error } = await supabase.from('invitations').insert([payload]);
         if (error) throw error;
       } else {
-        // Update existing
         const { error } = await supabase.from('invitations').update(payload).eq('id', id);
         if (error) throw error;
       }
