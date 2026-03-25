@@ -286,6 +286,50 @@ export default function Editor() {
     }
   };
 
+  const handleStoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, storyIndex: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const options = {
+        maxSizeMB: 0.3,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+        fileType: 'image/webp' as const,
+      };
+
+      let fileToUpload: File = file;
+      try {
+        // @ts-ignore
+        const compressed = await imageCompression(file, options);
+        fileToUpload = new File([compressed], file.name.replace(/\.[^/.]+$/, '') + '.webp', { type: 'image/webp' });
+      } catch {
+        // fallback to original if compression fails
+      }
+
+      const fileName = `story_${Math.random().toString(36).substring(2, 10)}_${Date.now()}.webp`;
+      const filePath = `uploads/${fileName}`;
+
+      const { error } = await supabase.storage.from('gallery').upload(filePath, fileToUpload);
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath);
+
+      const newStories = [...formData.loveStories];
+      newStories[storyIndex] = { ...newStories[storyIndex], imageUrl: publicUrl };
+      setFormData({ ...formData, loveStories: newStories });
+
+      setShowUploadSuccess(true);
+      setTimeout(() => setShowUploadSuccess(false), 3000);
+    } catch (err) {
+      console.error('Gagal upload foto kisah cinta:', err);
+      alert('Gagal mengunggah foto. Coba lagi.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const removeImage = (index: number) => {
     const imgUrl = formData.gallery[index];
     // Hapus dari Storage Supabase agar rapi & tidak menghabiskan limit
