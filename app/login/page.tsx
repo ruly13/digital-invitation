@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Heart, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -11,42 +11,44 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+
+  const validate = () => {
+    const errs: { email?: string; password?: string } = {};
+    if (!email.trim()) errs.email = 'Email tidak boleh kosong.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Format email tidak valid.';
+    if (!password) errs.password = 'Kata sandi tidak boleh kosong.';
+    else if (password.length < 6) errs.password = 'Kata sandi minimal 6 karakter.';
+    return errs;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setFieldErrors(errs); return; }
+    setFieldErrors({});
     setLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Email atau kata sandi salah. Silakan coba lagi.');
+        } else if (error.message.includes('Email not confirmed')) {
+          throw new Error('Email Anda belum diverifikasi. Cek kotak masuk email Anda.');
+        } else {
+          throw error;
+        }
+      }
       router.push('/dashboard');
     } catch (err: any) {
-      setError('Gagal masuk. Cek email dan kata sandi Anda.');
-      console.error(err);
+      setError(err.message || 'Gagal masuk. Cek email dan kata sandi Anda.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleOAuth = async (provider: 'google' | 'facebook') => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      setError(`Gagal masuk dengan ${provider}.`);
-      console.error(err);
     }
   };
 
@@ -82,38 +84,55 @@ export default function Login() {
               <label htmlFor="email" className="block text-sm font-medium text-stone-700">
                 Alamat Email
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   id="email"
                   name="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setFieldErrors(p => ({...p, email: undefined})); }}
                   autoComplete="email"
-                  required
-                  className="appearance-none block w-full px-4 py-3 border border-stone-300 rounded-xl shadow-sm placeholder-stone-400 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm transition-all"
+                  className={`appearance-none block w-full pl-10 pr-4 py-3 border rounded-xl shadow-sm placeholder-stone-400 focus:outline-none sm:text-sm transition-all ${
+                    fieldErrors.email ? 'border-rose-400 focus:ring-rose-500 focus:border-rose-500 bg-rose-50' : 'border-stone-300 focus:ring-rose-500 focus:border-rose-500'
+                  }`}
                   placeholder="nama@email.com"
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />{fieldErrors.email}
+                </p>
+              )}
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-stone-700">
                 Kata Sandi
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPass ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setFieldErrors(p => ({...p, password: undefined})); }}
                   autoComplete="current-password"
-                  required
-                  className="appearance-none block w-full px-4 py-3 border border-stone-300 rounded-xl shadow-sm placeholder-stone-400 focus:outline-none focus:ring-rose-500 focus:border-rose-500 sm:text-sm transition-all"
+                  className={`appearance-none block w-full pl-10 pr-10 py-3 border rounded-xl shadow-sm placeholder-stone-400 focus:outline-none sm:text-sm transition-all ${
+                    fieldErrors.password ? 'border-rose-400 focus:ring-rose-500 focus:border-rose-500 bg-rose-50' : 'border-stone-300 focus:ring-rose-500 focus:border-rose-500'
+                  }`}
                   placeholder="••••••••"
                 />
+                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
+                  {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />{fieldErrors.password}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -130,9 +149,9 @@ export default function Login() {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-rose-600 hover:text-rose-500 transition-colors">
+                <Link href="/forgot-password" className="font-medium text-rose-600 hover:text-rose-500 transition-colors">
                   Lupa kata sandi?
-                </a>
+                </Link>
               </div>
             </div>
 

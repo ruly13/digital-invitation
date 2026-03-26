@@ -459,14 +459,23 @@ export default function Home() {
                 <TestimonialItem 
                   quote="Fitur RSVP otomatisnya sangat membantu kami mengatur katering dengan presisi. Benar-benar menghemat waktu!"
                   author="Rina & Budi"
+                  role="Menikah Sep 2025 · Tema Elegant"
+                  initials="RB"
+                  color="bg-rose-100 text-rose-600"
                 />
                 <TestimonialItem 
                   quote="Saya sangat suka betapa mudahnya menyesuaikan font dan warna. Undangan kami terasa sangat personal."
                   author="Maya & Aris"
+                  role="Menikah Nov 2025 · Tema Floral"
+                  initials="MA"
+                  color="bg-violet-100 text-violet-600"
                 />
                 <TestimonialItem 
                   quote="Pelayanan yang sangat profesional. Tim support-nya sangat membantu saat saya bingung memilih lagu."
                   author="Dina & Reza"
+                  role="Menikah Jan 2026 · Tema Rustic"
+                  initials="DR"
+                  color="bg-amber-100 text-amber-600"
                 />
               </div>
             </motion.div>
@@ -611,10 +620,9 @@ export default function Home() {
           <p className="text-stone-400 text-sm">
             &copy; {new Date().getFullYear()} karsaloka. Hak Cipta Dilindungi.
           </p>
-          <div className="flex gap-8 text-stone-400 text-sm">
-            <Link href="#" className="hover:text-stone-600">Indonesia</Link>
-            <Link href="#" className="hover:text-stone-600">English</Link>
-          </div>
+          <p className="text-stone-400 text-sm">
+            Dibuat dengan <Heart className="w-3 h-3 inline text-rose-400" /> untuk para pasangan di seluruh Indonesia.
+          </p>
         </div>
       </footer>
 
@@ -640,15 +648,24 @@ function StepCard({ number, title, description, icon }: { number: string, title:
   );
 }
 
-function TestimonialItem({ quote, author }: { quote: string, author: string }) {
+function TestimonialItem({ quote, author, role = 'Pengguna karsaloka', initials, color = 'bg-rose-100 text-rose-600' }: { 
+  quote: string, 
+  author: string,
+  role?: string,
+  initials: string,
+  color?: string
+}) {
   return (
-    <div className="flex gap-6 items-start">
-      <div className="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center text-rose-500 shrink-0">
-        <Heart className="w-6 h-6 fill-current" />
+    <div className="flex gap-6 items-start group">
+      <div className={`w-12 h-12 rounded-full ${color} flex items-center justify-center font-bold text-sm shrink-0 shadow-sm`}>
+        {initials}
       </div>
       <div>
-        <p className="text-lg text-stone-700 mb-2 leading-relaxed">&quot;{quote}&quot;</p>
-        <p className="font-bold text-stone-900">— {author}</p>
+        <p className="text-lg text-stone-700 mb-3 leading-relaxed">&quot;{quote}&quot;</p>
+        <div>
+          <p className="font-bold text-stone-900">— {author}</p>
+          <p className="text-xs text-stone-400 mt-0.5">{role}</p>
+        </div>
       </div>
     </div>
   );
@@ -661,7 +678,9 @@ function TemplateCard({
   fontClass = "font-serif text-3xl",
   textColor = "text-stone-900",
   accentColor = "text-rose-500",
-  dividerColor = "bg-stone-300"
+  dividerColor = "bg-stone-300",
+  groomName = "Romeo",
+  brideName = "Juliet",
 }: { 
   name: string, 
   color: string, 
@@ -669,7 +688,9 @@ function TemplateCard({
   fontClass?: string,
   textColor?: string,
   accentColor?: string,
-  dividerColor?: string
+  dividerColor?: string,
+  groomName?: string,
+  brideName?: string,
 }) {
   return (
     <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
@@ -684,9 +705,9 @@ function TemplateCard({
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
           <div className={`w-12 h-[1px] ${dividerColor} mb-6`}></div>
           <p className={`text-[10px] uppercase tracking-[0.3em] font-sans ${textColor} opacity-60 mb-4`}>The Wedding Of</p>
-          <h4 className={`${fontClass} font-light mb-2 ${textColor}`}>Romeo</h4>
+          <h4 className={`${fontClass} font-light mb-2 ${textColor}`}>{groomName}</h4>
           <p className={`text-2xl font-serif italic ${accentColor} my-2`}>&</p>
-          <h4 className={`${fontClass} font-light mb-6 ${textColor}`}>Juliet</h4>
+          <h4 className={`${fontClass} font-light mb-6 ${textColor}`}>{brideName}</h4>
           <p className={`text-[10px] font-bold tracking-[0.2em] font-sans uppercase ${textColor} opacity-50`}>12 . 08 . 2026</p>
           <div className={`w-12 h-[1px] ${dividerColor} mt-6`}></div>
         </div>
