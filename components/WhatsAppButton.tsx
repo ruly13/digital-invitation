@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { WHATSAPP_URL } from '@/lib/constants';
 
 export default function WhatsAppButton() {
   return (
@@ -11,7 +12,7 @@ export default function WhatsAppButton() {
       className="fixed bottom-8 left-8 z-[60]"
     >
       <a 
-        href="https://wa.me/6281234567890?text=Halo%20Admin%20karsaloka,%20saya%20ingin%20bertanya%20tentang..." 
+        href={WHATSAPP_URL()} 
         target="_blank" 
         rel="noopener noreferrer"
         className="group relative flex items-center gap-3 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95"

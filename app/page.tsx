@@ -27,10 +27,71 @@ import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { THEMES } from '@/lib/themes';
 import { useState } from 'react';
+import { WHATSAPP_URL } from '@/lib/constants';
 
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "karsaloka Digital Invitation",
+    "description": "Platform pembuat undangan pernikahan digital elegan dengan RSVP otomatis dan amplop digital.",
+    "brand": {
+      "@type": "Brand",
+      "name": "karsaloka"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "lowPrice": "0",
+      "highPrice": "299000",
+      "priceCurrency": "IDR",
+      "offerCount": "3"
+    }
+  };
+
+  const localBusinessData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "karsaloka",
+    "image": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200",
+    "description": "Layanan undangan pernikahan digital premium di Indonesia.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Jakarta",
+      "addressRegion": "DKI Jakarta",
+      "addressCountry": "ID"
+    },
+    "url": "https://digital-invitation-rouge.vercel.app"
+  };
+
+  const themeVariants = [
+    { g: "Adrian", b: "Clarissa", photoId: "1519225421980-715cb0215aed" },
+    { g: "Bima", b: "Aulia", photoId: "1511285560929-80b456fea0bc" },
+    { g: "Dimas", b: "Sari", photoId: "1519741497674-611481863552" },
+    { g: "Eko", b: "Dewi", photoId: "1465495976277-4387d4b0b4c6" },
+    { g: "Farhan", b: "Gita", photoId: "1537633552985-df8429e8048b" },
+    { g: "Gilang", b: "Hani", photoId: "1583939003579-730e3918a45a" },
+    { g: "Hendra", b: "Indah", photoId: "1515934751635-c81c6bc9a2d8" },
+    { g: "Irwan", b: "Jihan", photoId: "1510076857158-e4952d423deb" },
+    { g: "Kevin", b: "Lala", photoId: "1519741497674-611481863552" },
+    { g: "Lukas", b: "Maya", photoId: "1537633552985-df8429e8048b" },
+    { g: "Mario", b: "Nadia", photoId: "1519225421980-715cb0215aed" },
+    { g: "Nico", b: "Olive", photoId: "1511285560929-80b456fea0bc" },
+    { g: "Oscar", b: "Putri", photoId: "1511285560929-80b456fea0bc" },
+    { g: "Panji", b: "Raisa", photoId: "1519741497674-611481863552" },
+    { g: "Rama", b: "Siska", photoId: "1465495976277-4387d4b0b4c6" },
+    { g: "Sakti", b: "Tiara", photoId: "1537633552985-df8429e8048b" }
+  ];
+
   return (
     <PageTransition>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessData) }}
+      />
       <div className="min-h-screen bg-[#FDFBF7] text-stone-900 selection:bg-rose-100 selection:text-rose-900">
         {/* Navigation */}
       <motion.nav 
@@ -143,6 +204,8 @@ export default function Home() {
                 src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop" 
                 alt="Wedding Invitation Preview" 
                 fill 
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -395,6 +458,9 @@ export default function Home() {
                   textColor={theme.textColor}
                   accentColor={theme.accentColor}
                   dividerColor={theme.dividerColor}
+                  groomName={themeVariants[index].g}
+                  brideName={themeVariants[index].b}
+                  photoId={themeVariants[index].photoId}
                 />
               </motion.div>
             ))}
@@ -659,7 +725,7 @@ export default function Home() {
                 TT
               </a>
               <a 
-                href="https://wa.me/6285335660159" 
+                href={WHATSAPP_URL()} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-green-500 hover:text-white transition-all text-xs font-bold"
@@ -736,6 +802,7 @@ function TemplateCard({
   dividerColor = "bg-stone-300",
   groomName = "Romeo",
   brideName = "Juliet",
+  photoId = "1511285560929-80b456fea0bc"
 }: { 
   name: string, 
   color: string, 
@@ -746,14 +813,16 @@ function TemplateCard({
   dividerColor?: string,
   groomName?: string,
   brideName?: string,
+  photoId?: string
 }) {
   return (
     <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
       <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
         <Image 
-          src={`https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=600&h=800&auto=format&fit=crop&sig=${seed}`} 
+          src={`https://images.unsplash.com/photo-${photoId}?q=80&w=400&h=600&auto=format&fit=crop`} 
           alt={name} 
           fill 
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover opacity-20 group-hover:opacity-40 transition-opacity"
           referrerPolicy="no-referrer"
         />
