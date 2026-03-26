@@ -570,7 +570,7 @@ export default function Editor() {
                     <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tautan Kustom</label>
                     <div className="flex items-center">
                       <span className={`px-4 py-2 border border-r-0 rounded-l-xl text-sm ${isDarkMode ? 'bg-stone-800 border-stone-700 text-stone-500' : 'bg-stone-100 border-stone-300 text-stone-500'}`}>
-                        eterna.invite/
+                        karsaloka.id/
                       </span>
                       <input 
                         type="text" 

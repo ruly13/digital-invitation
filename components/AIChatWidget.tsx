@@ -161,7 +161,7 @@ export default function AIChatWidget() {
         {!isOpen && (
           <div className="absolute -top-12 right-0 bg-white text-stone-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl border border-stone-100 whitespace-nowrap pointer-events-none animate-pulse">
             <Sparkles className="w-3 h-3 inline mr-1 text-rose-500" />
-            Tanya AI Eterna
+            Tanya AI karsaloka
           </div>
         )}
       </motion.button>

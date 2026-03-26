@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Heart, 
   CalendarHeart, 
@@ -16,13 +16,17 @@ import {
   Share2,
   Clock,
   LayoutTemplate,
-  Type
+  Type,
+  ChevronDown,
+  Instagram,
+  Lock
 } from 'lucide-react';
 import Image from 'next/image';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { THEMES } from '@/lib/themes';
+import { useState } from 'react';
 
 export default function Home() {
   return (
@@ -404,7 +408,7 @@ export default function Home() {
             className="text-center mt-24 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link href="/dashboard" className="inline-flex items-center justify-center bg-stone-900 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all shadow-2xl shadow-stone-200 w-full sm:w-auto">
-              Jelajahi 50+ Tema Eksklusif
+              Jelajahi 15+ Tema Eksklusif
             </Link>
             <Link href="/invite/demo" target="_blank" className="inline-flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 px-12 py-5 rounded-full text-lg font-bold hover:bg-rose-100 transition-all shadow-xl shadow-rose-100/50 w-full sm:w-auto">
               Lihat Demo Interaktif
@@ -543,6 +547,38 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Trust Badges + FAQ Section */}
+      <section className="py-20 bg-stone-50 px-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Trust Badges */}
+          <div className="flex flex-wrap justify-center gap-8 mb-20 pb-16 border-b border-stone-200">
+            {[
+              { icon: <Lock className="w-5 h-5" />, label: 'SSL 256-bit', sub: 'Data terenkripsi penuh' },
+              { icon: <ShieldCheck className="w-5 h-5" />, label: 'Aman & Terpercaya', sub: 'Dijaga Supabase Auth' },
+              { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Tanpa Biaya Tersembunyi', sub: 'Harga transparan' },
+              { icon: <Heart className="w-5 h-5" />, label: '500+ Pasangan', sub: 'Sudah mempercayai kami' },
+            ].map((badge, i) => (
+              <div key={i} className="flex items-center gap-3 text-stone-600">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-stone-100 text-rose-500">
+                  {badge.icon}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-stone-900">{badge.label}</p>
+                  <p className="text-xs text-stone-400">{badge.sub}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* FAQ */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-serif mb-4 tracking-tight">Pertanyaan Umum</h2>
+            <p className="text-stone-500">Semua yang perlu Anda ketahui sebelum memulai.</p>
+          </div>
+          <FAQSection />
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-32 px-6">
         <div className="max-w-7xl mx-auto bg-stone-900 rounded-[4rem] p-16 md:p-32 text-center relative overflow-hidden shadow-2xl">
@@ -603,17 +639,36 @@ export default function Home() {
           </div>
           <div>
             <h4 className="font-bold mb-6">Ikuti Kami</h4>
-            <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-rose-500 hover:text-white transition-all cursor-pointer">
-                <Users className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-rose-500 hover:text-white transition-all cursor-pointer">
-                <Music className="w-5 h-5" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-rose-500 hover:text-white transition-all cursor-pointer">
-                <Smartphone className="w-5 h-5" />
-              </div>
+            <div className="flex gap-3">
+              <a 
+                href="https://instagram.com/karsaloka" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-rose-500 hover:text-white transition-all"
+                title="Instagram karsaloka"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a 
+                href="https://tiktok.com/@karsaloka" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-stone-900 hover:text-white transition-all text-xs font-bold"
+                title="TikTok karsaloka"
+              >
+                TT
+              </a>
+              <a 
+                href="https://wa.me/6285335660159" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-green-500 hover:text-white transition-all text-xs font-bold"
+                title="WhatsApp karsaloka"
+              >
+                WA
+              </a>
             </div>
+            <p className="text-xs text-stone-400 mt-4">Dapatkan inspirasi undangan terbaru!</p>
           </div>
         </div>
         <div className="max-w-7xl mx-auto border-t border-stone-100 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -773,6 +828,40 @@ function PricingCard({
       >
         {buttonText}
       </Link>
+    </div>
+  );
+}
+
+const FAQ_ITEMS = [
+  { q: 'Apa yang terjadi dengan undangan saya setelah masa aktif habis?', a: 'Undangan Anda akan otomatis disembunyikan dari publik, namun data tidak dihapus. Anda bisa memperpanjang masa aktif kapan saja. Pada paket Prestige, undangan aktif selamanya.' },
+  { q: 'Apakah bisa menggunakan domain kustom sendiri?', a: 'Untuk saat ini, undangan tersedia di karsaloka.id/nama-anda. Dukungan custom domain penuh sedang dikembangkan dan akan segera tersedia untuk paket Prestige.' },
+  { q: 'Bagaimana cara pembayaran paket berbayar?', a: 'Kami mendukung transfer bank, GoPay, OVO, DANA, dan kartu kredit/debit. Setelah memilih paket, Anda akan diarahkan ke halaman pembayaran aman dan konfirmasi dikirim via email.' },
+  { q: 'Apakah ada kebijakan refund?', a: 'Garansi uang kembali 7 hari apabila produk tidak berfungsi sesuai yang dijanjikan. Hubungi tim kami via WhatsApp untuk proses refund dalam 1x24 jam.' },
+  { q: 'Berapa jumlah tamu yang bisa melihat undangan?', a: 'Halaman undangan dapat diakses siapa saja yang punya link tanpa batasan pengunjung. Angka di paket adalah kapasitas konfirmasi RSVP.' },
+  { q: 'Apakah data tamu dan RSVP saya aman?', a: 'Ya. Data dienkripsi SSL 256-bit dan disimpan di server Supabase tersertifikasi SOC 2. Kami tidak pernah menjual atau membagikan data Anda.' },
+  { q: 'Bisa diubah setelah undangan dikirim ke tamu?', a: 'Tentu! Semua konten bisa diedit kapan saja. Perubahan langsung tampil ke tamu tanpa perlu mengirim link baru.' },
+  { q: 'Apakah undangan bisa diakses di HP?', a: 'Semua undangan karsaloka dirancang mobile-first. Tamu tidak perlu mengunduh aplikasi apapun.' },
+];
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  return (
+    <div className="space-y-3">
+      {FAQ_ITEMS.map((item, i) => (
+        <div key={i} className="bg-white rounded-2xl border border-stone-100 overflow-hidden shadow-sm">
+          <button onClick={() => setOpenIndex(openIndex === i ? null : i)} className="w-full flex items-center justify-between px-6 py-5 text-left">
+            <span className="font-semibold text-stone-900 pr-4 text-sm sm:text-base">{item.q}</span>
+            <ChevronDown className={`w-5 h-5 text-stone-400 shrink-0 transition-transform duration-300 ${openIndex === i ? 'rotate-180 text-rose-500' : ''}`} />
+          </button>
+          <AnimatePresence initial={false}>
+            {openIndex === i && (
+              <motion.div key="c" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }}>
+                <p className="px-6 pb-5 pt-3 text-stone-600 text-sm leading-relaxed border-t border-stone-50">{item.a}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
     </div>
   );
 }

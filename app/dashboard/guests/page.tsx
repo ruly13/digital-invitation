@@ -31,7 +31,7 @@ export default function GuestList() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', 'daftar_tamu_eternainvite.csv');
+    link.setAttribute('download', 'daftar_tamu_karsaloka.csv');
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
