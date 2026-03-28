@@ -100,24 +100,26 @@ export default function Home() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100"
       >
-        <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-rose-500 rounded-lg flex items-center justify-center shrink-0">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <span className="text-xl font-serif font-bold tracking-tight">karsaloka</span>
+            <span className="text-lg sm:text-xl font-serif font-bold tracking-tight">karsaloka</span>
           </div>
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-stone-600">
             <Link href="#fitur" className="hover:text-rose-600 transition-colors">Fitur</Link>
             <Link href="#cara-kerja" className="hover:text-rose-600 transition-colors">Cara Kerja</Link>
             <Link href="#harga" className="hover:text-rose-600 transition-colors">Harga</Link>
+            <Link href="/tema" className="hover:text-rose-600 transition-colors">Tema</Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            <Link href="/tema" className="text-xs sm:text-sm font-bold text-rose-500 hover:text-rose-600 transition-colors md:hidden whitespace-nowrap">Tema</Link>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors hidden sm:block">Masuk</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/dashboard" className="bg-stone-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-rose-600 transition-all shadow-sm hover:shadow-md">
+              <Link href="/dashboard" className="bg-stone-900 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium hover:bg-rose-600 transition-all shadow-sm hover:shadow-md whitespace-nowrap">
                 Mulai Buat
               </Link>
             </motion.div>
@@ -133,10 +135,10 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold tracking-wider uppercase mb-6 w-fit"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-xs font-bold tracking-wider mb-6 w-fit shadow-sm"
             >
-              <Sparkles className="w-3 h-3" />
-              <span>Rayakan Cinta dengan Elegan</span>
+              <span className="text-amber-500 text-lg leading-none mb-0.5">★★★★★</span>
+              <span>4.9/5 DARI 1.000+ PASANGAN</span>
             </motion.div>
 
             <motion.h1 
@@ -200,14 +202,14 @@ export default function Home() {
             className="relative"
           >
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
-              <Image 
-                src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop" 
-                alt="Wedding Invitation Preview" 
-                fill 
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                referrerPolicy="no-referrer"
+              <video 
+                src="https://videos.pexels.com/video-files/3200057/3200057-uhd_2160_4096_25fps.mp4" 
+                poster="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop"
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
               <div className="absolute bottom-10 left-10 right-10 text-white">
@@ -334,7 +336,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-              className="md:col-span-8 bg-white p-12 rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row gap-12 items-center group"
+              className="md:col-span-8 bg-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-xl transition-all flex flex-col md:flex-row gap-8 md:gap-12 items-center group"
             >
               <div className="flex-1">
                 <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mb-8 group-hover:scale-110 transition-transform">
@@ -361,7 +363,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-              className="md:col-span-4 bg-stone-900 text-white p-12 rounded-[3rem] flex flex-col justify-between group"
+              className="md:col-span-4 bg-stone-900 text-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] flex flex-col justify-between group"
             >
               <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-rose-400 mb-8 group-hover:rotate-12 transition-transform">
                 <Music className="w-10 h-10" />
@@ -379,7 +381,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              className="md:col-span-4 bg-white p-12 rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-lg transition-all group"
+              className="md:col-span-4 bg-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-lg transition-all group"
             >
               <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 mb-8 group-hover:translate-y-[-4px] transition-transform">
                 <Smartphone className="w-10 h-10" />
@@ -395,7 +397,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-              className="md:col-span-4 bg-rose-500 text-white p-12 rounded-[3rem] flex flex-col justify-between group"
+              className="md:col-span-4 bg-rose-500 text-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] flex flex-col justify-between group"
             >
               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-white mb-8 group-hover:scale-110 transition-transform">
                 <Camera className="w-10 h-10" />
@@ -413,7 +415,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-              className="md:col-span-4 bg-white p-12 rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-lg transition-all group"
+              className="md:col-span-4 bg-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-lg transition-all group"
             >
               <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 mb-8 group-hover:rotate-[-12deg] transition-transform">
                 <ShieldCheck className="w-10 h-10" />
@@ -441,14 +443,15 @@ export default function Home() {
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Setiap tema dirancang dengan penuh cinta dan perhatian pada detail terkecil.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {THEMES.slice(0, 16).map((theme, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-10 max-w-5xl mx-auto">
+            {THEMES.slice(0, 3).map((theme, index) => (
               <motion.div 
                 key={theme.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, delay: 0.1 * ((index % 4) + 1), ease: "easeOut" }}
+                className="max-w-[280px] sm:max-w-none mx-auto w-full"
               >
                 <TemplateCard 
                   name={theme.name}
@@ -561,55 +564,7 @@ export default function Home() {
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Pilih paket yang paling sesuai dengan skala perayaan Anda. Tanpa biaya tersembunyi.</p>
           </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10 max-w-6xl mx-auto">
-            <PricingCard 
-              title="Essential" 
-              price="Gratis" 
-              description="Sempurna untuk perayaan intim dan sederhana."
-              features={[
-                "Hingga 50 tamu undangan",
-                "3 Pilihan tema elegan",
-                "Manajemen RSVP standar",
-                "Tautan undangan standar",
-                "Masa aktif 1 bulan"
-              ]}
-              buttonText="Mulai Sekarang"
-              buttonLink="/dashboard"
-            />
-            <PricingCard 
-              title="Signature" 
-              price="Rp 149k" 
-              description="Pilihan terpopuler untuk pernikahan yang berkesan."
-              isPopular
-              features={[
-                "Hingga 500 tamu undangan",
-                "Akses semua tema premium",
-                "Manajemen RSVP & Buku Tamu",
-                "Galeri foto (20 foto)",
-                "Musik latar kustom",
-                "Tautan undangan kustom",
-                "Masa aktif 6 bulan"
-              ]}
-              buttonText="Pilih Paket Ini"
-              buttonLink="/dashboard"
-            />
-            <PricingCard 
-              title="Prestige" 
-              price="Rp 299k" 
-              description="Layanan eksklusif tanpa batas untuk kemewahan total."
-              features={[
-                "Tamu undangan tak terbatas",
-                "Desain tema kustom eksklusif",
-                "Manajemen RSVP & QR Code",
-                "Galeri foto & video tak terbatas",
-                "Kirim via WhatsApp Otomatis",
-                "Dukungan prioritas 24/7",
-                "Masa aktif selamanya"
-              ]}
-              buttonText="Pilih Prestige"
-              buttonLink="/dashboard"
-            />
-          </div>
+          <PricingSection />
         </div>
       </section>
 
@@ -647,7 +602,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto bg-stone-900 rounded-[4rem] p-16 md:p-32 text-center relative overflow-hidden shadow-2xl">
+        <div className="max-w-7xl mx-auto bg-stone-900 rounded-[2.5rem] md:rounded-[4rem] p-8 sm:p-16 md:p-32 text-center relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-10 left-10 w-96 h-96 border border-white rounded-full"></div>
             <div className="absolute bottom-10 right-10 w-[30rem] h-[30rem] border border-white rounded-full"></div>
@@ -665,8 +620,8 @@ export default function Home() {
             <p className="text-stone-400 text-xl md:text-2xl mb-16 max-w-2xl mx-auto leading-relaxed">
               Jangan biarkan momen berharga Anda berlalu begitu saja. Buat undangan yang akan dikenang selamanya.
             </p>
-            <Link href="/dashboard" className="inline-flex items-center justify-center bg-rose-500 text-white px-16 py-6 rounded-full text-2xl font-bold hover:bg-rose-600 transition-all hover:scale-105 shadow-2xl shadow-rose-500/40">
-              Mulai Buat Undangan — Gratis
+            <Link href="/dashboard" className="inline-flex items-center justify-center w-full sm:w-auto bg-rose-500 text-white px-6 sm:px-8 md:px-16 py-4 md:py-6 rounded-full text-base sm:text-xl md:text-2xl font-bold hover:bg-rose-600 transition-all hover:scale-105 shadow-2xl shadow-rose-500/40">
+              Mulai Buat Undangan Sekarang
             </Link>
           </motion.div>
         </div>
@@ -746,6 +701,13 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Sticky Bottom CTA for Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-stone-100 md:hidden z-[60] transform transition-transform duration-300">
+        <Link href="/dashboard" className="flex items-center justify-center w-full bg-stone-900 text-white px-6 py-4 rounded-full text-lg font-bold shadow-2xl shadow-stone-900/20">
+          Buat Undangan Sekarang
+        </Link>
+      </div>
 
       <WhatsAppButton />
       <AIChatWidget />
@@ -861,7 +823,7 @@ function PricingCard({
   isPopular?: boolean
 }) {
   return (
-    <div className={`relative p-10 rounded-[2.5rem] border ${isPopular ? 'border-rose-500 shadow-2xl bg-white scale-105 z-10' : 'border-stone-100 bg-stone-50'} flex flex-col h-full transition-all duration-300 hover:shadow-xl`}>
+    <div className={`relative p-8 md:p-10 rounded-[2.5rem] border ${isPopular ? 'border-rose-500 shadow-xl md:shadow-2xl bg-white md:scale-105 z-10' : 'border-stone-100 bg-stone-50'} flex flex-col h-full transition-all duration-300 hover:shadow-xl`}>
       {isPopular && (
         <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-6 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-lg">
           Paling Populer
@@ -931,6 +893,119 @@ function FAQSection() {
           </AnimatePresence>
         </div>
       ))}
+    </div>
+  );
+}
+
+const PRICING_PLANS = [
+  {
+    id: 'essential',
+    title: 'Essential',
+    price: 'Rp 99k',
+    description: 'Sempurna untuk perayaan intim dan sederhana.',
+    features: [
+      "Hingga 50 tamu undangan",
+      "3 Pilihan tema elegan",
+      "Manajemen RSVP standar",
+      "Tautan undangan standar",
+      "Masa aktif 1 bulan"
+    ],
+    buttonText: 'Mulai Sekarang',
+    buttonLink: '/dashboard',
+    isPopular: false
+  },
+  {
+    id: 'signature',
+    title: 'Signature',
+    price: 'Rp 149k',
+    description: 'Pilihan terpopuler untuk pernikahan yang berkesan.',
+    features: [
+      "Hingga 500 tamu undangan",
+      "Akses semua tema premium",
+      "Manajemen RSVP & Buku Tamu",
+      "Galeri foto (20 foto)",
+      "Musik latar kustom",
+      "Tautan undangan kustom",
+      "Masa aktif 6 bulan"
+    ],
+    buttonText: 'Pilih Paket Ini',
+    buttonLink: '/dashboard',
+    isPopular: true
+  },
+  {
+    id: 'prestige',
+    title: 'Prestige',
+    price: 'Rp 299k',
+    description: 'Layanan eksklusif tanpa batas untuk kemewahan total.',
+    features: [
+      "Tamu undangan tak terbatas",
+      "Desain tema kustom eksklusif",
+      "Manajemen RSVP & QR Code",
+      "Galeri foto & video tak terbatas",
+      "Kirim via WhatsApp Otomatis",
+      "Dukungan prioritas 24/7",
+      "Masa aktif selamanya"
+    ],
+    buttonText: 'Pilih Prestige',
+    buttonLink: '/dashboard',
+    isPopular: false
+  }
+];
+
+function PricingSection() {
+  const [activeTab, setActiveTab] = useState('signature');
+  
+  return (
+    <div className="max-w-6xl mx-auto w-full">
+      {/* Mobile Tab Triggers */}
+      <div className="flex md:hidden bg-stone-100 p-1.5 rounded-full mb-10 max-w-[360px] mx-auto shadow-inner relative justify-between gap-1">
+        {PRICING_PLANS.map((plan) => (
+          <button
+            key={plan.id}
+            onClick={() => setActiveTab(plan.id)}
+            className={`flex-1 py-3 px-2 text-[11px] sm:text-xs font-bold rounded-full transition-all duration-300 relative z-10 tracking-wider ${
+              activeTab === plan.id 
+                ? 'text-stone-900 shadow-sm' 
+                : 'text-stone-500 hover:text-stone-700'
+            }`}
+          >
+            {activeTab === plan.id && (
+              <motion.div 
+                layoutId="activeTabBadge"
+                className="absolute inset-0 bg-white rounded-full -z-10 shadow-sm border border-stone-200"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+            {plan.title.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop Grid & Mobile Single display */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
+        <AnimatePresence mode="wait">
+          {PRICING_PLANS.map((plan) => (
+            <motion.div 
+              key={`${plan.id}-${activeTab === plan.id ? 'active' : 'inactive'}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className={`${activeTab === plan.id ? 'block' : 'hidden'} md:!block transition-all duration-300 h-full`}
+            >
+              <PricingCard 
+                title={plan.title} 
+                price={plan.price} 
+                description={plan.description} 
+                features={plan.features} 
+                buttonText={plan.buttonText} 
+                buttonLink={plan.buttonLink} 
+                isPopular={plan.isPopular} 
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
