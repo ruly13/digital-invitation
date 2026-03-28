@@ -983,28 +983,25 @@ function PricingSection() {
 
       {/* Desktop Grid & Mobile Single display */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
-        <AnimatePresence mode="wait">
-          {PRICING_PLANS.map((plan) => (
-            <motion.div 
-              key={`${plan.id}-${activeTab === plan.id ? 'active' : 'inactive'}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className={`${activeTab === plan.id ? 'block' : 'hidden'} md:!block transition-all duration-300 h-full`}
-            >
-              <PricingCard 
-                title={plan.title} 
-                price={plan.price} 
-                description={plan.description} 
-                features={plan.features} 
-                buttonText={plan.buttonText} 
-                buttonLink={plan.buttonLink} 
-                isPopular={plan.isPopular} 
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {PRICING_PLANS.map((plan) => (
+          <motion.div 
+            key={plan.id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className={`${activeTab === plan.id ? 'block' : 'hidden'} md:!block transition-opacity duration-300 h-full w-full`}
+          >
+            <PricingCard 
+              title={plan.title} 
+              price={plan.price} 
+              description={plan.description} 
+              features={plan.features} 
+              buttonText={plan.buttonText} 
+              buttonLink={plan.buttonLink} 
+              isPopular={plan.isPopular} 
+            />
+          </motion.div>
+        ))}
       </div>
     </div>
   );
