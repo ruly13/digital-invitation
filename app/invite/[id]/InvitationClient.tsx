@@ -76,7 +76,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
 
       try {
         let { data, error } = await supabase.from('invitations').select('*').eq('url_slug', id).single();
-        if (error || !data) {
+        if ((error || !data) && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
           const { data: idData, error: idError } = await supabase.from('invitations').select('*').eq('id', id).single();
           if (!idError && idData) data = idData;
         }
@@ -176,13 +176,33 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     setIsPlaying(true); // Auto-play music when opened
   };
 
-  const submitRsvp = (e: React.FormEvent) => {
+  const submitRsvp = async (e: React.FormEvent) => {
     e.preventDefault();
     setRsvpStatus('submitting');
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      if (id === 'demo') {
+        // Just simulate for demo
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setRsvpStatus('success');
+        return;
+      }
+
+      const { error } = await supabase.from('guests').insert({
+        invitation_id: dbInviteData?.id,
+        name: rsvpData.name,
+        status: rsvpData.attendance === 'yes' ? 'Hadir' : 'Tidak Hadir',
+        count: parseInt(rsvpData.count) || 1,
+        message: rsvpData.message
+      });
+
+      if (error) throw error;
       setRsvpStatus('success');
-    }, 1500);
+    } catch (err) {
+      console.error("Error submitting RSVP:", err);
+      alert("Gagal mengirim konfirmasi. Silakan coba lagi.");
+      setRsvpStatus('idle');
+    }
   };
 
   if (loading) {

@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     let query = supabase.from('invitations').select('details, bride_name, groom_name').eq('url_slug', id);
     let { data } = await query.single();
-    if (!data) {
+    if (!data && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
       const res = await supabase.from('invitations').select('details, bride_name, groom_name').eq('id', id).single();
       data = res.data;
     }
