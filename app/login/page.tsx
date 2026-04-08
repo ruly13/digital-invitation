@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Heart, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'motion/react';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
 function LoginForm() {
@@ -17,14 +17,28 @@ function LoginForm() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string; captcha?: string }>({});
+  
+  const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  
+  // init captcha
+  useEffect(() => {
+    setCaptcha({ a: Math.floor(Math.random() * 8) + 1, b: Math.floor(Math.random() * 8) + 1 });
+  }, []);
 
   const validate = () => {
-    const errs: { email?: string; password?: string } = {};
+    const errs: { email?: string; password?: string; captcha?: string } = {};
     if (!email.trim()) errs.email = 'Email tidak boleh kosong.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Format email tidak valid.';
     if (!password) errs.password = 'Kata sandi tidak boleh kosong.';
     else if (password.length < 6) errs.password = 'Kata sandi minimal 6 karakter.';
+    if (!captchaAnswer || parseInt(captchaAnswer) !== captcha.a + captcha.b) {
+      errs.captcha = 'Jawaban salah.';
+      // refresh captcha
+      setCaptcha({ a: Math.floor(Math.random() * 8) + 1, b: Math.floor(Math.random() * 8) + 1 });
+      setCaptchaAnswer('');
+    }
     return errs;
   };
 
@@ -137,6 +151,29 @@ function LoginForm() {
             Lupa kata sandi?
           </Link>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-stone-700">
+          Keamanan: {captcha.a} + {captcha.b} = ?
+        </label>
+        <div className="mt-1">
+          <input
+            type="number"
+            value={captchaAnswer}
+            onChange={(e) => { setCaptchaAnswer(e.target.value); setFieldErrors(p => ({...p, captcha: undefined})); }}
+            className={`appearance-none block w-full px-4 py-3 border rounded-xl shadow-sm placeholder-stone-400 focus:outline-none sm:text-sm transition-all ${
+              fieldErrors.captcha ? 'border-rose-400 focus:ring-rose-500 border-rose-500 bg-rose-50' : 'border-stone-300 focus:ring-rose-500 border-rose-500'
+            }`}
+            placeholder="Jawaban"
+            required
+          />
+        </div>
+        {fieldErrors.captcha && (
+          <p className="mt-1 text-xs text-rose-500 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />{fieldErrors.captcha}
+          </p>
+        )}
       </div>
 
       <div>

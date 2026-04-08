@@ -332,7 +332,7 @@ export default function Dashboard() {
                     <div className="flex flex-col gap-3">
                       {!(inv.payment_status === 'active' || inv.payment_status === 'paid') && (
                         <a 
-                          href={`https://wa.me/6285335660159?text=Halo%20Admin,%20saya%20ingin%20konfirmasi%20pembayaran%20untuk%20mengaktifkan%20undangan%20dengan%20ID/Link:%20${inv.url_slug || inv.id}`}
+                          href={`/api/contact?msg=Halo%20Admin,%20saya%20ingin%20konfirmasi%20pembayaran%20untuk%20mengaktifkan%20undangan%20dengan%20ID/Link:%20${inv.url_slug || inv.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl text-sm font-bold transition-all shadow-emerald-500/20 shadow-lg"

@@ -6,6 +6,7 @@ export interface ThemeConfig {
   textColor?: string;
   accentColor?: string;
   dividerColor?: string;
+  category: string;
 }
 
 export const THEMES: ThemeConfig[] = [
@@ -15,6 +16,7 @@ export const THEMES: ThemeConfig[] = [
     name: 'Elegan Klasik',
     color: 'bg-stone-100',
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
+    category: 'Elegan',
   },
   {
     id: 'elegant-dark',
@@ -24,6 +26,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-stone-300',
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
     dividerColor: 'bg-stone-700',
+    category: 'Elegan',
   },
   {
     id: 'elegant-champagne',
@@ -33,6 +36,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#d4af37]', // Gold/Champagne
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
     dividerColor: 'bg-[#e8decb]',
+    category: 'Elegan',
   },
   
   // --- FLORAL / ROMANTIC ---
@@ -41,6 +45,7 @@ export const THEMES: ThemeConfig[] = [
     name: 'Bunga Musim Semi',
     color: 'bg-rose-50',
     fontClass: 'font-[family:var(--font-great-vibes)] text-4xl',
+    category: 'Floral',
   },
   {
     id: 'floral-lavender',
@@ -50,6 +55,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#9b7eac]',
     fontClass: 'font-[family:var(--font-great-vibes)] text-4xl',
     dividerColor: 'bg-[#e0d6e8]',
+    category: 'Floral',
   },
   {
     id: 'floral-sage',
@@ -59,6 +65,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#7e906b]',
     fontClass: 'font-[family:var(--font-great-vibes)] text-4xl',
     dividerColor: 'bg-[#d2dcc6]',
+    category: 'Floral',
   },
 
   // --- MODERN / SANS-SERIF ---
@@ -67,6 +74,7 @@ export const THEMES: ThemeConfig[] = [
     name: 'Modern Minimalis',
     color: 'bg-slate-100',
     fontClass: 'font-[family:var(--font-montserrat)] text-xl font-bold uppercase tracking-[0.2em]',
+    category: 'Modern',
   },
   {
     id: 'modern-monochrome',
@@ -76,6 +84,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-stone-500',
     fontClass: 'font-[family:var(--font-montserrat)] text-2xl font-black uppercase tracking-widest',
     dividerColor: 'bg-black',
+    category: 'Modern',
   },
   {
     id: 'modern-navy',
@@ -85,6 +94,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-blue-400',
     fontClass: 'font-[family:var(--font-montserrat)] text-xl font-semibold uppercase tracking-widest',
     dividerColor: 'bg-[#334155]',
+    category: 'Modern',
   },
 
   // --- RUSTIC / VINTAGE ---
@@ -93,6 +103,7 @@ export const THEMES: ThemeConfig[] = [
     name: 'Rustic Alam',
     color: 'bg-amber-50',
     fontClass: 'font-[family:var(--font-lora)] text-3xl',
+    category: 'Rustic',
   },
   {
     id: 'rustic-terracotta',
@@ -102,6 +113,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#d67a58]',
     fontClass: 'font-[family:var(--font-lora)] text-3xl font-medium',
     dividerColor: 'bg-[#f0d4c6]',
+    category: 'Rustic',
   },
   {
     id: 'vintage',
@@ -111,6 +123,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#8b5a2b]',
     fontClass: 'font-serif text-3xl',
     dividerColor: 'bg-[#d2b48c]',
+    category: 'Rustic',
   },
 
   // --- LUXURY / MEGAH ---
@@ -122,6 +135,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-amber-500',
     fontClass: 'font-[family:var(--font-cinzel)] text-2xl',
     dividerColor: 'bg-amber-900/50',
+    category: 'Luxury',
   },
   {
     id: 'luxury-ruby',
@@ -131,6 +145,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-rose-300',
     fontClass: 'font-[family:var(--font-cinzel)] text-3xl',
     dividerColor: 'bg-[#7a1b38]',
+    category: 'Luxury',
   },
   {
     id: 'luxury-emerald',
@@ -140,6 +155,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#34d399]',
     fontClass: 'font-[family:var(--font-cinzel)] text-3xl',
     dividerColor: 'bg-[#0f766e]',
+    category: 'Luxury',
   },
 
   // --- UNIQUE / THEMATIC ---
@@ -151,6 +167,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-amber-400',
     fontClass: 'font-[family:var(--font-montserrat)] font-bold uppercase tracking-widest',
     dividerColor: 'bg-amber-800',
+    category: 'Tematik',
   },
   {
     id: 'ocean',
@@ -160,6 +177,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-blue-500',
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
     dividerColor: 'bg-blue-200',
+    category: 'Tematik',
   },
   {
     id: 'starlight',
@@ -169,6 +187,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-violet-300',
     fontClass: 'font-[family:var(--font-great-vibes)] text-4xl',
     dividerColor: 'bg-[#4338ca]',
+    category: 'Tematik',
   },
   {
     id: 'autumn',
@@ -178,6 +197,7 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-[#d97706]', // amber-600
     fontClass: 'font-[family:var(--font-lora)] text-3xl',
     dividerColor: 'bg-[#fcd34d]',
+    category: 'Tematik',
   },
   {
     id: 'celestial',
@@ -187,5 +207,6 @@ export const THEMES: ThemeConfig[] = [
     accentColor: 'text-pink-500',
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
     dividerColor: 'bg-pink-200',
+    category: 'Tematik',
   }
 ];

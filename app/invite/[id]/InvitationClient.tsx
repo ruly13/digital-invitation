@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare, Home, Map } from 'lucide-react';
+import { Calendar, MapPin, Clock, Heart, Music, Check, X, Copy, Gift, HeartHandshake, MessageSquare, Home, Map, Lock as LockIcon } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
-import { supabase } from '@/lib/supabase';
+import { getInvitationBase, submitRsvpAction } from './actions';
 import { THEMES } from '@/lib/themes';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
@@ -59,43 +59,63 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   }, [isPlaying]);
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [rsvpData, setRsvpData] = useState({ name: '', attendance: 'yes', count: '1', message: '' });
+  const [captcha, setCaptcha] = useState({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+  useEffect(() => {
+    setCaptcha({ a: Math.floor(Math.random() * 8) + 1, b: Math.floor(Math.random() * 8) + 1 });
+  }, []);
   const [copiedBank, setCopiedBank] = useState<string | null>(null);
   const [dbInviteData, setDbInviteData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isBlocked, setIsBlocked] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const fetchInvite = async (pwd?: string) => {
+    if (!pwd) setLoading(true); // only show global loading on first fetch
+    
+    // === DEMO MODE: bypass database completely ===
+    if (id === 'demo') {
+      setDbInviteData(null);
+      setIsBlocked(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await getInvitationBase(id as string, pwd);
+      setPasswordError('');
+
+      if (data) {
+        if (data.requiresPassword && !pwd) {
+          setDbInviteData(data); // Will trigger password UI
+        } else if (data.requiresPassword) {
+          // If we tried with a password and it still requires it, it's incorrect.
+          setPasswordError('Kata sandi salah. Silakan coba lagi.');
+        } else if (data.payment_status === 'unpaid') {
+          setIsBlocked(true);
+        } else {
+          setDbInviteData(data);
+        }
+      } else {
+        console.warn("No data or error:", error);
+      }
+    } catch (err) {
+      console.error("Error fetching invitation", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchInvite = async () => {
-      // === DEMO MODE: bypass database completely ===
-      if (id === 'demo') {
-        setDbInviteData(null);
-        setIsBlocked(false);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        let { data, error } = await supabase.from('invitations').select('*').eq('url_slug', id).single();
-        if ((error || !data) && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-          const { data: idData, error: idError } = await supabase.from('invitations').select('*').eq('id', id).single();
-          if (!idError && idData) data = idData;
-        }
-
-        if (data) {
-          if (data.payment_status === 'unpaid') {
-            setIsBlocked(true);
-          } else {
-            setDbInviteData(data);
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching invitation", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchInvite();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchInvite(passwordInput);
+  };
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -180,6 +200,14 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     e.preventDefault();
     setRsvpStatus('submitting');
     
+    if (parseInt(captchaAnswer) !== captcha.a + captcha.b) {
+      alert('Jawaban CAPTCHA salah. Silakan coba lagi.');
+      setCaptchaAnswer('');
+      setCaptcha({ a: Math.floor(Math.random() * 8) + 1, b: Math.floor(Math.random() * 8) + 1 });
+      setRsvpStatus('idle');
+      return;
+    }
+    
     try {
       if (id === 'demo') {
         // Just simulate for demo
@@ -188,19 +216,23 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
         return;
       }
 
-      const { error } = await supabase.from('guests').insert({
+      const res = await submitRsvpAction({
         invitation_id: dbInviteData?.id,
         name: rsvpData.name,
         status: rsvpData.attendance === 'yes' ? 'Hadir' : 'Tidak Hadir',
         count: parseInt(rsvpData.count) || 1,
-        message: rsvpData.message
+        message: rsvpData.message,
+        captchaAnswer: captchaAnswer,
+        expectedCaptcha: captcha.a + captcha.b
       });
 
-      if (error) throw error;
+      if (res.error) throw new Error(res.error);
       setRsvpStatus('success');
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error submitting RSVP:", err);
-      alert("Gagal mengirim konfirmasi. Silakan coba lagi.");
+      alert(err.message || 'Gagal mengirim konfirmasi. Silakan coba lagi.');
+      setCaptcha({ a: Math.floor(Math.random() * 8) + 1, b: Math.floor(Math.random() * 8) + 1 });
+      setCaptchaAnswer('');
       setRsvpStatus('idle');
     }
   };
@@ -239,6 +271,41 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
           <Heart className="w-12 h-12 text-stone-300 mx-auto mb-4" />
           <h1 className="text-2xl font-serif text-stone-800 mb-2">Undangan Tidak Ditemukan</h1>
           <p className="text-stone-500 max-w-xs mx-auto">Mohon maaf, link undangan yang Anda tuju tidak valid atau telah dihapus.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Password Protection Screen
+  if (dbInviteData?.requiresPassword) {
+    return (
+      <div className="min-h-screen bg-stone-900 flex items-center justify-center font-serif text-stone-100 px-6 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-20">
+          <Image 
+            src={mockCover} 
+            alt="Wedding Cover" 
+            fill 
+            className="object-cover blur-sm"
+          />
+        </div>
+        <div className="relative z-10 max-w-sm w-full bg-stone-800/80 backdrop-blur p-8 rounded-3xl border border-stone-700 shadow-2xl">
+          <LockIcon className="w-10 h-10 text-rose-400 mx-auto mb-6" />
+          <h1 className="text-2xl font-light mb-2">Undangan Terkunci</h1>
+          <p className="text-stone-400 text-sm mb-6">Undangan ini dilindungi kata sandi.</p>
+          <form onSubmit={handlePasswordSubmit}>
+            <input 
+              type="password" 
+              value={passwordInput}
+              onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(''); }}
+              placeholder="Masukkan Kata Sandi"
+              className="w-full px-4 py-3 bg-stone-900 border border-stone-700 rounded-xl mb-4 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 text-center"
+              required
+            />
+            {passwordError && <p className="text-rose-400 text-xs mb-4">{passwordError}</p>}
+            <button type="submit" className="w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-3 rounded-xl transition-colors">
+              Buka Undangan
+            </button>
+          </form>
         </div>
       </div>
     );
@@ -780,6 +847,20 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                     onChange={(e) => setRsvpData({...rsvpData, message: e.target.value})}
                     className="w-full px-5 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition-all resize-none"
                     placeholder="Tuliskan pesan dan doa untuk kedua mempelai..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    Keamanan: Berapa hasil {captcha.a} + {captcha.b} ?
+                  </label>
+                  <input 
+                    type="number" 
+                    required
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                    className="w-full px-5 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition-all"
+                    placeholder="Jawaban"
                   />
                 </div>
 

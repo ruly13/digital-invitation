@@ -14,11 +14,11 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: 'karsaloka — Undangan Pernikahan Digital Elegan',
+    default: 'karsaloka — Undangan Pernikahan Digital Elegan & Modern',
     template: '%s | karsaloka',
   },
-  description: 'Buat undangan pernikahan digital yang elegan dan modern. Kelola RSVP otomatis, amplop digital, dan bagikan momen spesial Anda dengan mudah bersama karsaloka.',
-  keywords: ['undangan pernikahan digital', 'wedding invitation online', 'RSVP online', 'undangan digital', 'karsaloka'],
+  description: 'Buat undangan pernikahan digital elegan, unik, dan premium di Indonesia bersama karsaloka. Kelola RSVP, bagikan amplop digital dengan harga yang paling murah dan hemat.',
+  keywords: ['undangan pernikahan digital', 'undangan nikah online indonesia', 'undangan digital murah', 'wedding invitation online', 'RSVP online', 'karsaloka'],
   authors: [{ name: 'karsaloka' }],
   metadataBase: new URL('https://digital-invitation-rouge.vercel.app'),
   openGraph: {
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     url: 'https://digital-invitation-rouge.vercel.app',
     siteName: 'karsaloka',
-    title: 'karsaloka — Undangan Pernikahan Digital Elegan',
-    description: 'Buat undangan pernikahan digital yang elegan dan modern. Kelola RSVP otomatis, amplop digital, dan bagikan momen spesial Anda.',
+    title: 'karsaloka — Undangan Pernikahan Digital Elegan & Modern',
+    description: 'Buat undangan pernikahan digital elegan, murah, dan modern di Indonesia bersama karsaloka.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'karsaloka — Undangan Pernikahan Digital Elegan',
-    description: 'Buat undangan pernikahan digital yang elegan, kelola RSVP, dan bagikan momen spesial Anda.',
+    description: 'Buat undangan pernikahan digital elegan, unik, dan hemat bersama karsaloka.',
     images: ['https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop'],
   },
   robots: {

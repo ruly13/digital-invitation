@@ -13,7 +13,7 @@ export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Halo! Saya asisten AI karsaloka. Ada yang bisa saya bantu terkait pembuatan undangan digital Anda?' }
+    { role: 'model', text: 'Halo! Saya asisten AI karsaloka. Saya siap membantu Anda memilih tema yang cocok, menyusun kata-kata undangan (caption/quotes), atau menjawab pertanyaan seputar fitur dan harga kami. Ada yang bisa saya bantu?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -59,7 +59,7 @@ export default function AIChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[70]">
+    <div className="fixed bottom-28 md:bottom-8 right-4 md:right-8 z-[70]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -159,9 +159,12 @@ export default function AIChatWidget() {
           <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full animate-bounce" />
         )}
         {!isOpen && (
-          <div className="absolute -top-12 right-0 bg-white text-stone-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl border border-stone-100 whitespace-nowrap pointer-events-none animate-pulse">
-            <Sparkles className="w-3 h-3 inline mr-1 text-rose-500" />
-            Tanya AI karsaloka
+          <div className="absolute -top-12 right-0 bg-white text-stone-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl border border-stone-100 whitespace-nowrap pointer-events-none animate-pulse flex flex-col items-end">
+            <div className="flex items-center">
+              <Sparkles className="w-3 h-3 inline mr-1 text-rose-500" />
+              Tanya AI karsaloka
+            </div>
+            <span className="text-[10px] font-normal text-stone-500 mt-0.5">Setup Tema, Tips Kata-Kata, FAQ</span>
           </div>
         )}
       </motion.button>

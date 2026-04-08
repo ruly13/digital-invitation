@@ -26,10 +26,20 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { THEMES } from '@/lib/themes';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WHATSAPP_URL } from '@/lib/constants';
 
 export default function Home() {
+  const [videoSrc, setVideoSrc] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    // Only load 4K video on desktop devices to save mobile bandwidth
+    const timer = setTimeout(() => {
+      if (window.innerWidth > 768) {
+        setVideoSrc("https://videos.pexels.com/video-files/3200057/3200057-uhd_2160_4096_25fps.mp4");
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -72,14 +82,18 @@ export default function Home() {
     { g: "Gilang", b: "Hani", photoId: "1583939003579-730e3918a45a" },
     { g: "Hendra", b: "Indah", photoId: "1515934751635-c81c6bc9a2d8" },
     { g: "Irwan", b: "Jihan", photoId: "1510076857158-e4952d423deb" },
-    { g: "Kevin", b: "Lala", photoId: "1519741497674-611481863552" },
-    { g: "Lukas", b: "Maya", photoId: "1537633552985-df8429e8048b" },
-    { g: "Mario", b: "Nadia", photoId: "1519225421980-715cb0215aed" },
-    { g: "Nico", b: "Olive", photoId: "1511285560929-80b456fea0bc" },
-    { g: "Oscar", b: "Putri", photoId: "1511285560929-80b456fea0bc" },
-    { g: "Panji", b: "Raisa", photoId: "1519741497674-611481863552" },
-    { g: "Rama", b: "Siska", photoId: "1465495976277-4387d4b0b4c6" },
-    { g: "Sakti", b: "Tiara", photoId: "1537633552985-df8429e8048b" }
+    { g: "Kevin", b: "Lala", photoId: "1520854221256-17451e0eb7e3" },
+    { g: "Lukas", b: "Maya", photoId: "1469334031218-e382a71b716b" },
+    { g: "Mario", b: "Nadia", photoId: "1511795409834-432f7b1728d2" },
+    { g: "Nico", b: "Olive", photoId: "1522673607200-164d1f6ce362" },
+    { g: "Oscar", b: "Putri", photoId: "1564020426549-fae26ad86576" },
+    { g: "Panji", b: "Raisa", photoId: "1581451676678-01140954b9d0" },
+    { g: "Rama", b: "Siska", photoId: "1610174092497-6a58a74e1d90" },
+    { g: "Sakti", b: "Tiara", photoId: "1475715562772-763d3fd0ebd4" },
+    { g: "Yudha", b: "Vania", photoId: "1464366400600-71af9914b434" },
+    { g: "Zayn", b: "Anya", photoId: "1500350444315-998bd340156d" },
+    { g: "Bayu", b: "Cinta", photoId: "1629734138092-2bb85fdb0e73" },
+    { g: "Dika", b: "Elsa", photoId: "1622359487920-a15d2a912bb0" },
   ];
 
   return (
@@ -201,10 +215,10 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
             className="relative"
           >
-            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white">
+            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-white bg-stone-100">
               <video 
-                src="https://videos.pexels.com/video-files/3200057/3200057-uhd_2160_4096_25fps.mp4" 
-                poster="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1200&auto=format&fit=crop"
+                src={videoSrc} 
+                poster="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=800&auto=format&fit=crop"
                 autoPlay 
                 loop 
                 muted 
@@ -464,6 +478,7 @@ export default function Home() {
                   groomName={themeVariants[index].g}
                   brideName={themeVariants[index].b}
                   photoId={themeVariants[index].photoId}
+                  priority={true}
                 />
               </motion.div>
             ))}
@@ -565,6 +580,19 @@ export default function Home() {
           </div>
 
           <PricingSection />
+          
+          <div className="mt-16 pt-10 border-t border-stone-100 max-w-4xl mx-auto text-center">
+            <p className="text-stone-500 font-medium mb-6 text-sm uppercase tracking-widest">Metode Pembayaran yang Didukung</p>
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500 hover:opacity-100">
+              <span className="font-black text-xl lg:text-2xl text-stone-900 border-[3px] border-stone-900 px-4 py-1.5 rounded-lg tracking-wider">QRIS</span>
+              <span className="font-extrabold text-xl lg:text-2xl text-blue-800 italic px-4 py-1.5 rounded-lg">BCA</span>
+              <span className="font-bold text-xl lg:text-2xl text-amber-500 px-4 py-1.5 rounded-lg">Mandiri</span>
+              <span className="font-bold text-xl lg:text-2xl text-green-500 px-4 py-1.5 rounded-lg">GoPay</span>
+              <span className="font-bold text-xl lg:text-2xl text-purple-600 px-4 py-1.5 rounded-lg italic">OVO</span>
+              <span className="font-bold text-xl lg:text-2xl text-orange-500 px-4 py-1.5 rounded-lg">ShopeePay</span>
+            </div>
+            <p className="text-stone-400 text-xs mt-6">Transaksi terenkripsi aman dan diproses konfirmasi otomatis 24/7</p>
+          </div>
         </div>
       </section>
 
@@ -644,6 +672,7 @@ export default function Home() {
           <div>
             <h4 className="font-bold mb-6">Tautan Cepat</h4>
             <ul className="space-y-4 text-sm text-stone-500">
+              <li><Link href="/about" className="hover:text-rose-500 transition-colors">Tentang Kami</Link></li>
               <li><Link href="#fitur" className="hover:text-rose-500 transition-colors">Fitur</Link></li>
               <li><Link href="#cara-kerja" className="hover:text-rose-500 transition-colors">Cara Kerja</Link></li>
               <li><Link href="#harga" className="hover:text-rose-500 transition-colors">Harga</Link></li>
@@ -655,7 +684,7 @@ export default function Home() {
             <ul className="space-y-4 text-sm text-stone-500">
               <li><Link href="/privacy" className="hover:text-rose-500 transition-colors">Kebijakan Privasi</Link></li>
               <li><Link href="/terms" className="hover:text-rose-500 transition-colors">Syarat & Ketentuan</Link></li>
-              <li><a href="https://wa.me/6285335660159" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">Chat Admin</a></li>
+              <li><a href="/api/contact" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors">Chat Admin</a></li>
             </ul>
           </div>
           <div>
@@ -764,7 +793,8 @@ function TemplateCard({
   dividerColor = "bg-stone-300",
   groomName = "Romeo",
   brideName = "Juliet",
-  photoId = "1511285560929-80b456fea0bc"
+  photoId = "1511285560929-80b456fea0bc",
+  priority = false
 }: { 
   name: string, 
   color: string, 
@@ -775,7 +805,8 @@ function TemplateCard({
   dividerColor?: string,
   groomName?: string,
   brideName?: string,
-  photoId?: string
+  photoId?: string,
+  priority?: boolean
 }) {
   return (
     <Link href={`/invite/demo?theme=${seed}`} target="_blank" className="group cursor-pointer block">
@@ -787,15 +818,18 @@ function TemplateCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover opacity-20 group-hover:opacity-40 transition-opacity"
           referrerPolicy="no-referrer"
+          unoptimized
+          priority={priority}
+          loading={priority ? undefined : "lazy"}
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-          <div className={`w-12 h-[1px] ${dividerColor} mb-6`}></div>
-          <p className={`text-[10px] uppercase tracking-[0.3em] font-sans ${textColor} opacity-60 mb-4`}>The Wedding Of</p>
-          <h4 className={`${fontClass} font-light mb-2 ${textColor}`}>{groomName}</h4>
-          <p className={`text-2xl font-serif italic ${accentColor} my-2`}>&</p>
-          <h4 className={`${fontClass} font-light mb-6 ${textColor}`}>{brideName}</h4>
-          <p className={`text-[10px] font-bold tracking-[0.2em] font-sans uppercase ${textColor} opacity-50`}>12 . 08 . 2026</p>
-          <div className={`w-12 h-[1px] ${dividerColor} mt-6`}></div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center drop-shadow-xl z-10">
+          <div className={`w-12 h-[1px] ${dividerColor} shadow-sm mb-6`}></div>
+          <p className={`text-[10px] uppercase tracking-[0.3em] font-sans ${textColor} opacity-80 mb-4 drop-shadow-sm`}>The Wedding Of</p>
+          <h4 className={`${fontClass} font-light mb-2 ${textColor} drop-shadow-md`}>{groomName}</h4>
+          <p className={`text-2xl font-serif italic ${accentColor} my-2 drop-shadow-md`}>&</p>
+          <h4 className={`${fontClass} font-light mb-6 ${textColor} drop-shadow-md`}>{brideName}</h4>
+          <p className={`text-[10px] font-bold tracking-[0.2em] font-sans uppercase ${textColor} opacity-80 drop-shadow-sm`}>12 . 08 . 2026</p>
+          <div className={`w-12 h-[1px] ${dividerColor} shadow-sm mt-6`}></div>
         </div>
         
         <div className="absolute inset-0 bg-stone-900/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>

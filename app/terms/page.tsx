@@ -83,7 +83,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-2xl font-serif font-semibold text-stone-900 mb-4">10. Hubungi Kami</h2>
             <p>Untuk pertanyaan mengenai syarat ini:</p>
-            <a href="https://wa.me/6285335660159" target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-rose-600 font-semibold hover:underline">+62 853-3566-0159</a>
+            <a href="/api/contact" target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-rose-600 font-semibold hover:underline">+62 853-3566-0159</a>
           </section>
         </div>
       </main>

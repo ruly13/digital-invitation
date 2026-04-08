@@ -9,7 +9,7 @@ export default function WhatsAppButton() {
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 1, duration: 0.5 }}
-      className="fixed bottom-8 left-8 z-[60]"
+      className="fixed bottom-28 md:bottom-8 left-4 md:left-8 z-[60]"
     >
       <a 
         href={WHATSAPP_URL()} 

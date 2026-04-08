@@ -3,8 +3,26 @@ import { createServerClient } from '@supabase/ssr';
 
 const PROTECTED_ROUTES = ['/dashboard', '/editor'];
 
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Rate limit /invite/demo to prevent scraping
+  if (pathname.startsWith('/invite/demo')) {
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const now = Date.now();
+    const record = rateLimitMap.get(ip);
+    if (record && now - record.timestamp < 60000) {
+      if (record.count > 10) {
+        return new NextResponse('Too Many Requests', { status: 429 });
+      }
+      record.count += 1;
+      rateLimitMap.set(ip, record);
+    } else {
+      rateLimitMap.set(ip, { count: 1, timestamp: now });
+    }
+  }
 
   // Only guard protected routes
   const isProtected = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
@@ -41,5 +59,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/editor/:path*'],
+  matcher: ['/dashboard/:path*', '/editor/:path*', '/invite/demo'],
 };
