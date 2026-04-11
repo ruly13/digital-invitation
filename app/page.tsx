@@ -130,11 +130,8 @@ export default function Home() {
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <Link href="/tema" className="text-xs sm:text-sm font-bold text-rose-500 hover:text-rose-600 transition-colors md:hidden whitespace-nowrap">Tema</Link>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors hidden sm:block">Masuk</Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/dashboard" className="bg-stone-900 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium hover:bg-rose-600 transition-all shadow-sm hover:shadow-md whitespace-nowrap">
-                Mulai Buat
+              <Link href={WHATSAPP_URL()} target="_blank" className="bg-rose-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium hover:bg-rose-600 transition-all shadow-sm hover:shadow-md whitespace-nowrap">
+                Pesan Sekarang
               </Link>
             </motion.div>
           </div>
@@ -181,8 +178,8 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
               className="flex flex-col sm:flex-row items-center gap-4"
             >
-              <Link href="/dashboard" className="w-full sm:w-auto bg-stone-900 text-white px-10 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all hover:scale-105 flex items-center justify-center gap-2 group shadow-xl shadow-stone-200">
-                Mulai Buat Sekarang
+              <Link href={WHATSAPP_URL()} target="_blank" className="w-full sm:w-auto bg-stone-900 text-white px-10 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all hover:scale-105 flex items-center justify-center gap-2 group shadow-xl shadow-stone-200">
+                Pesan Undangan Sekarang
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link href="/invite/demo" target="_blank" className="w-full sm:w-auto bg-white text-stone-900 border border-stone-200 px-10 py-5 rounded-full text-lg font-medium hover:bg-stone-50 transition-all flex items-center justify-center gap-2 shadow-sm">
@@ -491,8 +488,8 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
             className="text-center mt-24 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link href="/dashboard" className="inline-flex items-center justify-center bg-stone-900 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all shadow-2xl shadow-stone-200 w-full sm:w-auto">
-              Jelajahi 15+ Tema Eksklusif
+            <Link href={WHATSAPP_URL()} target="_blank" className="inline-flex items-center justify-center bg-stone-900 text-white px-12 py-5 rounded-full text-lg font-medium hover:bg-rose-600 transition-all shadow-2xl shadow-stone-200 w-full sm:w-auto">
+              Pesan Tema Eksklusif Ini
             </Link>
             <Link href="/invite/demo" target="_blank" className="inline-flex items-center justify-center bg-rose-50 border border-rose-200 text-rose-600 px-12 py-5 rounded-full text-lg font-bold hover:bg-rose-100 transition-all shadow-xl shadow-rose-100/50 w-full sm:w-auto">
               Lihat Demo Interaktif
@@ -648,8 +645,8 @@ export default function Home() {
             <p className="text-stone-400 text-xl md:text-2xl mb-16 max-w-2xl mx-auto leading-relaxed">
               Jangan biarkan momen berharga Anda berlalu begitu saja. Buat undangan yang akan dikenang selamanya.
             </p>
-            <Link href="/dashboard" className="inline-flex items-center justify-center w-full sm:w-auto bg-rose-500 text-white px-6 sm:px-8 md:px-16 py-4 md:py-6 rounded-full text-base sm:text-xl md:text-2xl font-bold hover:bg-rose-600 transition-all hover:scale-105 shadow-2xl shadow-rose-500/40">
-              Mulai Buat Undangan Sekarang
+            <Link href={WHATSAPP_URL()} target="_blank" className="inline-flex items-center justify-center w-full sm:w-auto bg-rose-500 text-white px-6 sm:px-8 md:px-16 py-4 md:py-6 rounded-full text-base sm:text-xl md:text-2xl font-bold hover:bg-rose-600 transition-all hover:scale-105 shadow-2xl shadow-rose-500/40">
+              Konsultasikan Undangan Anda Bersama Kami
             </Link>
           </motion.div>
         </div>
@@ -733,8 +730,8 @@ export default function Home() {
 
       {/* Sticky Bottom CTA for Mobile */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-stone-100 md:hidden z-[60] transform transition-transform duration-300">
-        <Link href="/dashboard" className="flex items-center justify-center w-full bg-stone-900 text-white px-6 py-4 rounded-full text-lg font-bold shadow-2xl shadow-stone-900/20">
-          Buat Undangan Sekarang
+        <Link href={WHATSAPP_URL()} target="_blank" className="flex items-center justify-center w-full bg-stone-900 text-white px-6 py-4 rounded-full text-lg font-bold shadow-2xl shadow-stone-900/20">
+          Pesan Undangan Via WA
         </Link>
       </div>
 

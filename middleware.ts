@@ -49,7 +49,9 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  
+  if (!user || (adminEmail && user.email !== adminEmail)) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);

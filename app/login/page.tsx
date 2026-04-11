@@ -204,10 +204,7 @@ export default function Login() {
           Masuk ke Akun Anda
         </h2>
         <p className="mt-2 text-center text-sm text-stone-600">
-          Atau{' '}
-          <Link href="/register" className="font-medium text-rose-600 hover:text-rose-500 transition-colors">
-            buat akun baru secara gratis
-          </Link>
+          Hanya untuk admin karsaloka
         </p>
       </div>
 
