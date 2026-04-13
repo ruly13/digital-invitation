@@ -94,6 +94,7 @@ export default function Editor() {
     time: '09:00',
     venue: 'Gedung Serbaguna Senayan',
     address: 'Jl. Pintu Satu Senayan, Jakarta Pusat',
+    mapCoordinates: null as { lat: number; lng: number } | null,
     theme: 'elegant',
     openingGreeting: 'The Wedding Of',
     saveTheDateDate: '',
@@ -462,9 +463,14 @@ export default function Editor() {
               <div className="flex-1 relative">
                 <LeafletMap 
                   address={formData.address} 
+                  mapCoordinates={formData.mapCoordinates}
                   editable={true}
-                  onSelectAddress={(newAddress) => {
-                    setFormData({...formData, address: newAddress});
+                  onSelectAddress={(newAddress, lat, lng) => {
+                    setFormData({
+                      ...formData, 
+                      address: newAddress,
+                      mapCoordinates: lat && lng ? { lat, lng } : formData.mapCoordinates
+                    });
                     setIsMapModalOpen(false);
                   }}
                 />
@@ -725,8 +731,13 @@ export default function Editor() {
                         <div className={`w-full h-[220px] sm:h-[300px] md:aspect-video rounded-[2rem] overflow-hidden border-2 shadow-xl relative group transition-all duration-300 z-0 ${isDarkMode ? 'border-stone-800 bg-stone-900 shadow-black/20' : 'border-stone-100 bg-stone-50 shadow-stone-200/50'}`}>
                           <LeafletMap 
                             address={formData.address} 
-                            editable={true}
-                            onSelectAddress={(newAddress) => setFormData({...formData, address: newAddress})}
+                            mapCoordinates={formData.mapCoordinates}
+                            editable={false}
+                            onSelectAddress={(newAddress, lat, lng) => setFormData({
+                              ...formData, 
+                              address: newAddress,
+                              mapCoordinates: lat && lng ? { lat, lng } : formData.mapCoordinates
+                            })}
                           />
                           <div className="absolute inset-0 pointer-events-none border-[8px] border-transparent group-hover:border-rose-500/10 transition-all rounded-[2rem] z-[1001]"></div>
                           <a 

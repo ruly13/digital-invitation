@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 're
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Check } from 'lucide-react';
+import { resolveGoogleMapsUrl } from '@/app/invite/[id]/actions';
 
 // Fix for default marker icon in Leaflet with Next.js
 const icon = L.icon({
@@ -38,13 +39,17 @@ function MapEvents({ onClick }: { onClick: (lat: number, lon: number) => void })
 
 interface LeafletMapProps {
   address: string;
+  mapCoordinates?: { lat: number; lng: number } | null;
   className?: string;
-  onSelectAddress?: (address: string) => void;
+  onSelectAddress?: (address: string, lat?: number, lng?: number) => void;
   editable?: boolean;
 }
 
-export default function LeafletMap({ address, className, onSelectAddress, editable = false }: LeafletMapProps) {
-  const [position, setPosition] = useState<[number, number]>([-6.2088, 106.8456]); // Default Jakarta
+export default function LeafletMap({ address, mapCoordinates, className, onSelectAddress, editable = false }: LeafletMapProps) {
+  const defaultPos: [number, number] = [-6.2088, 106.8456];
+  const [position, setPosition] = useState<[number, number]>(
+    mapCoordinates ? [mapCoordinates.lat, mapCoordinates.lng] : defaultPos
+  );
   const [tempPosition, setTempPosition] = useState<[number, number] | null>(null);
   const [tempAddress, setTempAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,6 +57,78 @@ export default function LeafletMap({ address, className, onSelectAddress, editab
 
   // Initial geocoding when address changes from outside
   useEffect(() => {
+    // Detect if the address contains direct coordinates or a Google Maps URL containing coordinates
+    if (address) {
+      const trimmed = address.trim();
+      let detectedCoords: [number, number] | null = null;
+      
+      const directMatch = trimmed.match(/^(-?\d+(?:\.\d+)?)[,\s]+(-?\d+(?:\.\d+)?)$/);
+      if (directMatch) {
+        detectedCoords = [parseFloat(directMatch[1]), parseFloat(directMatch[2])];
+      } else {
+        const urlMatch = trimmed.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (urlMatch) {
+          detectedCoords = [parseFloat(urlMatch[1]), parseFloat(urlMatch[2])];
+        } else if (trimmed.includes('maps.app.goo.gl') || trimmed.includes('goo.gl/maps')) {
+          // If it's a short URL, we must resolve it via server action
+          const urlPattern = /(https?:\/\/[^\s]+)/;
+          const match = trimmed.match(urlPattern);
+          if (match) {
+            setLoading(true);
+            resolveGoogleMapsUrl(match[1]).then(result => {
+              setLoading(false);
+              if (result && !result.error && result.lat && result.lng) {
+                const asyncCoords: [number, number] = [result.lat, result.lng];
+                setPosition(asyncCoords);
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${asyncCoords[0]}&lon=${asyncCoords[1]}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    const finalAddress = (data && data.display_name) ? data.display_name : `${asyncCoords[0]}, ${asyncCoords[1]}`;
+                    if (onSelectAddress) {
+                      onSelectAddress(finalAddress, asyncCoords[0], asyncCoords[1]);
+                    }
+                  })
+                  .catch(() => {
+                    if (onSelectAddress) {
+                      onSelectAddress(`${asyncCoords[0]}, ${asyncCoords[1]}`, asyncCoords[0], asyncCoords[1]);
+                    }
+                  });
+              } else {
+                 setError('Gagal membaca koordinat dari link tersebut.');
+                 setTimeout(() => setError(null), 3000);
+              }
+            });
+            return; // Exit out because we handled it async
+          }
+        }
+      }
+
+      // Existing logic for direct matched coordinates
+      if (detectedCoords && !isNaN(detectedCoords[0]) && !isNaN(detectedCoords[1])) {
+        // Segera atur kamera ke koordinat tersebut dan otomatis ubah teksnya jadi nama area
+        setPosition(detectedCoords);
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${detectedCoords[0]}&lon=${detectedCoords[1]}`)
+          .then(res => res.json())
+          .then(data => {
+            const finalAddress = (data && data.display_name) ? data.display_name : `${detectedCoords![0]}, ${detectedCoords![1]}`;
+            if (onSelectAddress) {
+              onSelectAddress(finalAddress, detectedCoords![0], detectedCoords![1]);
+            }
+          })
+          .catch(err => {
+            console.error('Reverse geocoding error:', err);
+            if (onSelectAddress) {
+              onSelectAddress(`${detectedCoords![0]}, ${detectedCoords![1]}`, detectedCoords![0], detectedCoords![1]);
+            }
+          });
+        return;
+      }
+    }
+
+    if (mapCoordinates) {
+      setPosition([mapCoordinates.lat, mapCoordinates.lng]);
+      return;
+    }
     if (!address || tempPosition) return;
 
     const geocode = async () => {
@@ -97,9 +174,9 @@ export default function LeafletMap({ address, className, onSelectAddress, editab
   };
 
   const handleSaveLocation = () => {
-    if (tempAddress && onSelectAddress) {
-      onSelectAddress(tempAddress);
-      setPosition(tempPosition!);
+    if (tempAddress && tempPosition && onSelectAddress) {
+      onSelectAddress(tempAddress, tempPosition[0], tempPosition[1]);
+      setPosition(tempPosition);
       setTempPosition(null);
       setTempAddress(null);
     }
@@ -171,7 +248,7 @@ export default function LeafletMap({ address, className, onSelectAddress, editab
           </Marker>
         )}
 
-        <ChangeView center={position} />
+        <ChangeView center={tempPosition || position} />
         {editable && <MapEvents onClick={handleMapClick} />}
       </MapContainer>
     </div>

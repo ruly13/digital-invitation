@@ -18,7 +18,7 @@ function GuestListContent() {
       try {
         let query = supabase
           .from('guests')
-          .select('*, invitations(bride_name, groom_name, id)')
+          .select('*')
           .order('created_at', { ascending: false });
         
         if (invitationId) {
@@ -27,9 +27,28 @@ function GuestListContent() {
 
         const { data, error } = await query;
         if (error) throw error;
-        setGuests(data || []);
-      } catch (error) {
-        console.error('Error fetching guests:', error);
+        
+        let guestsData = data || [];
+        
+        // Fetch invitations separately to bypass PostgREST foreign key relationship errors
+        const invIds = Array.from(new Set(guestsData.map(g => g.invitation_id).filter(Boolean)));
+        if (invIds.length > 0) {
+          const { data: invs } = await supabase
+            .from('invitations')
+            .select('id, bride_name, groom_name')
+            .in('id', invIds);
+            
+          if (invs) {
+            guestsData = guestsData.map(g => ({
+              ...g,
+              invitations: invs.find(i => i.id === g.invitation_id) || null
+            }));
+          }
+        }
+        
+        setGuests(guestsData);
+      } catch (error: any) {
+        console.error('Error fetching guests:', error?.message || JSON.stringify(error) || error);
       } finally {
         setLoading(false);
       }

@@ -895,8 +895,8 @@ function PricingCard({
 }
 
 const FAQ_ITEMS = [
-  { q: 'Apa yang terjadi dengan undangan saya setelah masa aktif habis?', a: 'Undangan Anda akan otomatis disembunyikan dari publik, namun data tidak dihapus. Anda bisa memperpanjang masa aktif kapan saja. Pada paket Prestige, undangan aktif selamanya.' },
-  { q: 'Apakah bisa menggunakan domain kustom sendiri?', a: 'Untuk saat ini, undangan tersedia di karsaloka.id/nama-anda. Dukungan custom domain penuh sedang dikembangkan dan akan segera tersedia untuk paket Prestige.' },
+  { q: 'Apa yang terjadi dengan undangan saya setelah masa aktif habis?', a: 'Undangan Anda akan otomatis disembunyikan dari publik begitu masa aktifnya berakhir, namun kami tetap menjaga data Anda dengan aman. Anda bisa mengajukan perpanjangan masa aktif kapan saja.' },
+  { q: 'Apakah bisa menggunakan domain kustom sendiri?', a: 'Untuk saat ini, undangan tersedia di karsaloka.id/nama-anda. Dukungan custom domain penuh disediakan khusus untuk pilihan paket tertinggi sesuai syarat & ketentuan.' },
   { q: 'Bagaimana cara pembayaran paket berbayar?', a: 'Kami mendukung transfer bank, GoPay, OVO, DANA, dan kartu kredit/debit. Setelah memilih paket, Anda akan diarahkan ke halaman pembayaran aman dan konfirmasi dikirim via email.' },
   { q: 'Apakah ada kebijakan refund?', a: 'Garansi uang kembali 7 hari apabila produk tidak berfungsi sesuai yang dijanjikan. Hubungi tim kami via WhatsApp untuk proses refund dalam 1x24 jam.' },
   { q: 'Berapa jumlah tamu yang bisa melihat undangan?', a: 'Halaman undangan dapat diakses siapa saja yang punya link tanpa batasan pengunjung. Angka di paket adalah kapasitas konfirmasi RSVP.' },
@@ -932,14 +932,14 @@ const PRICING_PLANS = [
   {
     id: 'essential',
     title: 'Essential',
-    price: 'Rp 99k',
+    price: 'Rp 149k',
     description: 'Sempurna untuk perayaan intim dan sederhana.',
     features: [
       "Hingga 50 tamu undangan",
       "3 Pilihan tema elegan",
       "Manajemen RSVP standar",
       "Tautan undangan standar",
-      "Masa aktif 1 bulan"
+      "Masa aktif 2 bulan"
     ],
     buttonText: 'Mulai Sekarang',
     buttonLink: '/dashboard',
@@ -948,7 +948,7 @@ const PRICING_PLANS = [
   {
     id: 'signature',
     title: 'Signature',
-    price: 'Rp 149k',
+    price: 'Rp 249k',
     description: 'Pilihan terpopuler untuk pernikahan yang berkesan.',
     features: [
       "Hingga 500 tamu undangan",
@@ -957,7 +957,7 @@ const PRICING_PLANS = [
       "Galeri foto (20 foto)",
       "Musik latar kustom",
       "Tautan undangan kustom",
-      "Masa aktif 6 bulan"
+      "Masa aktif 4 bulan"
     ],
     buttonText: 'Pilih Paket Ini',
     buttonLink: '/dashboard',
@@ -966,7 +966,7 @@ const PRICING_PLANS = [
   {
     id: 'prestige',
     title: 'Prestige',
-    price: 'Rp 299k',
+    price: 'Rp 499k',
     description: 'Layanan eksklusif tanpa batas untuk kemewahan total.',
     features: [
       "Tamu undangan tak terbatas",
@@ -975,7 +975,7 @@ const PRICING_PLANS = [
       "Galeri foto & video tak terbatas",
       "Kirim via WhatsApp Otomatis",
       "Dukungan prioritas 24/7",
-      "Masa aktif selamanya"
+      "Masa aktif 1 tahun"
     ],
     buttonText: 'Pilih Prestige',
     buttonLink: '/dashboard',

@@ -11,6 +11,7 @@ import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { getInvitationBase, submitRsvpAction } from './actions';
 import { THEMES } from '@/lib/themes';
+import VogueTheme from '@/components/themes/VogueTheme';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -177,11 +178,11 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   const finalInviteData = dbInviteData?.details ? { 
     ...inviteData, 
     ...dbInviteData.details,
-    brideName: dbInviteData.bride_name || dbInviteData.details.brideName || inviteData.brideName,
-    groomName: dbInviteData.groom_name || dbInviteData.details.groomName || inviteData.groomName,
-    date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : (dbInviteData.details.date || inviteData.date),
-    venue: dbInviteData.venue_name || dbInviteData.details.venue || inviteData.venue,
-    address: dbInviteData.venue_address || dbInviteData.details.address || inviteData.address,
+    brideName: dbInviteData.bride_name || dbInviteData.details.brideName || finalInviteData.brideName,
+    groomName: dbInviteData.groom_name || dbInviteData.details.groomName || finalInviteData.groomName,
+    date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : (dbInviteData.details.date || finalInviteData.date),
+    venue: dbInviteData.venue_name || dbInviteData.details.venue || finalInviteData.venue,
+    address: dbInviteData.venue_address || dbInviteData.details.address || finalInviteData.address,
   } : inviteData;
 
   const scrollToSection = (id: string) => {
@@ -311,6 +312,30 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     );
   }
 
+  // Vogue Theme Override
+  if (finalInviteData.theme === 'vogue') {
+    return (
+      <PageTransition>
+        <VogueTheme 
+          data={finalInviteData} 
+          isOpen={isOpen} 
+          handleOpen={handleOpen}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          rsvpData={rsvpData}
+          setRsvpData={setRsvpData}
+          submitRsvp={submitRsvp}
+          rsvpStatus={rsvpStatus}
+          copiedBank={copiedBank}
+          copyToClipboard={copyToClipboard}
+        />
+        {finalInviteData.musicUrl && (
+          <audio ref={audioRef} src={finalInviteData.musicUrl} loop />
+        )}
+      </PageTransition>
+    );
+  }
+
   // Cover Screen
   if (!isOpen) {
     return (
@@ -403,9 +428,9 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
         >
           <p className={`${fontCls} text-lg italic opacity-70 mb-6`}>Pernikahan</p>
           <h1 className={`text-5xl sm:text-6xl md:text-8xl ${fontCls} font-light mb-6 leading-none`}>
-            {inviteData.brideName} <br/> <span className={`text-3xl sm:text-4xl md:text-6xl ${accentCls} italic`}>&</span> <br/> {inviteData.groomName}
+            {finalInviteData.brideName} <br/> <span className={`text-3xl sm:text-4xl md:text-6xl ${accentCls} italic`}>&</span> <br/> {finalInviteData.groomName}
           </h1>
-          <p className="opacity-60 tracking-[0.2em] font-sans uppercase text-sm mt-8">{inviteData.date}</p>
+          <p className="opacity-60 tracking-[0.2em] font-sans uppercase text-sm mt-8">{finalInviteData.date}</p>
         </motion.div>
       </section>
 
@@ -419,28 +444,28 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
         >
           <Heart className={`w-8 h-8 ${accentCls} mx-auto mb-8`} />
 
-          {inviteData.openingPrayer && (
-            <h3 className={`text-2xl ${fontCls} font-medium mb-6`}>{inviteData.openingPrayer}</h3>
+          {finalInviteData.openingPrayer && (
+            <h3 className={`text-2xl ${fontCls} font-medium mb-6`}>{finalInviteData.openingPrayer}</h3>
           )}
           
-          {inviteData.quranicVerse && (
+          {finalInviteData.quranicVerse && (
             <div className="mb-12 max-w-2xl mx-auto">
               <p className={`text-sm md:text-base opacity-75 leading-relaxed ${fontCls} italic mb-4 text-balance`}>
-                &quot;{inviteData.quranicVerse}&quot;
+                &quot;{finalInviteData.quranicVerse}&quot;
               </p>
             </div>
           )}
 
           <p className={`text-lg md:text-xl opacity-80 leading-relaxed max-w-2xl mx-auto mb-20 ${fontCls}`}>
-            {inviteData.greeting}
+            {finalInviteData.greeting}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 md:gap-24">
             <div className="flex flex-col items-center">
               <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
-                <Image src={inviteData.brideImage} alt="Bride" fill className="object-cover" referrerPolicy="no-referrer" />
+                <Image src={finalInviteData.brideImage} alt="Bride" fill className="object-cover" referrerPolicy="no-referrer" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{inviteData.brideName}</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{finalInviteData.brideName}</h2>
               <p className="text-stone-500 text-sm text-center">Putri dari Bapak Fulan & Ibu Fulanah</p>
             </div>
 
@@ -448,9 +473,9 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
 
             <div className="flex flex-col items-center">
               <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border-4 border-white shadow-xl relative">
-                <Image src={inviteData.groomImage} alt="Groom" fill className="object-cover" referrerPolicy="no-referrer" />
+                <Image src={finalInviteData.groomImage} alt="Groom" fill className="object-cover" referrerPolicy="no-referrer" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{inviteData.groomName}</h2>
+              <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 mb-2">{finalInviteData.groomName}</h2>
               <p className="text-stone-500 text-sm text-center">Putra dari Bapak Fulan & Ibu Fulanah</p>
             </div>
           </div>
@@ -480,7 +505,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                   </div>
                   <div>
                     <p className="text-sm text-stone-500 uppercase tracking-wider mb-1">Tanggal</p>
-                    <p className="text-lg font-medium text-stone-900">{inviteData.date}</p>
+                    <p className="text-lg font-medium text-stone-900">{finalInviteData.date}</p>
                   </div>
                 </div>
 
@@ -490,7 +515,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                   </div>
                   <div>
                     <p className="text-sm text-stone-500 uppercase tracking-wider mb-1">Waktu</p>
-                    <p className="text-lg font-medium text-stone-900">{inviteData.time}</p>
+                    <p className="text-lg font-medium text-stone-900">{finalInviteData.time}</p>
                   </div>
                 </div>
 
@@ -500,10 +525,10 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                   </div>
                   <div className="w-full">
                     <p className="text-sm text-stone-500 uppercase tracking-wider mb-1">Lokasi</p>
-                    <p className="text-lg font-medium text-stone-900 mb-1">{inviteData.venue}</p>
-                    <p className="text-stone-600 leading-relaxed">{inviteData.address}</p>
+                    <p className="text-lg font-medium text-stone-900 mb-1">{finalInviteData.venue}</p>
+                    <p className="text-stone-600 leading-relaxed">{finalInviteData.address}</p>
                     <a 
-                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(inviteData.venue + ' ' + inviteData.address)}`} 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(finalInviteData.venue + ' ' + finalInviteData.address)}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="inline-block mt-3 text-sm font-medium text-rose-500 hover:text-rose-600 underline underline-offset-4 transition-colors mb-6"
@@ -513,7 +538,10 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                     
                     {/* Interactive Map */}
                     <div className="w-full h-64 rounded-2xl overflow-hidden border border-stone-200 bg-stone-100 relative z-0">
-                      <LeafletMap address={inviteData.venue + ' ' + inviteData.address} />
+                      <LeafletMap 
+                        address={finalInviteData.venue + ' ' + finalInviteData.address} 
+                        mapCoordinates={(finalInviteData as any).mapCoordinates}
+                      />
                     </div>
                   </div>
                 </div>
@@ -524,7 +552,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
       </section>
 
       {/* Love Story Section */}
-      {inviteData.loveStories && inviteData.loveStories.length > 0 && (
+      {finalInviteData.loveStories && finalInviteData.loveStories.length > 0 && (
       <section className="py-24 bg-[#FDFBF7] px-6">
         <div className="max-w-3xl mx-auto">
           <motion.div
@@ -540,7 +568,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
           </motion.div>
 
           <div className="space-y-12 sm:space-y-16 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rose-200 before:to-transparent">
-            {inviteData.loveStories.map((story, idx) => (
+            {finalInviteData.loveStories.map((story, idx) => (
               <motion.div 
                 key={idx}
                 initial={{ 
@@ -613,7 +641,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
 
           <div className="relative group">
             <div className="flex overflow-x-auto gap-6 pb-12 snap-x snap-mandatory scrollbar-hide no-scrollbar scroll-smooth">
-              {inviteData.gallery.map((img, index) => (
+              {finalInviteData.gallery.map((img, index) => (
                 <motion.div 
                   key={index}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -635,7 +663,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
             
             {/* Carousel Indicators/Hints */}
             <div className="flex justify-center gap-2 mt-4">
-              {inviteData.gallery.map((_, i) => (
+              {finalInviteData.gallery.map((_, i) => (
                 <div key={i} className="w-1.5 h-1.5 rounded-full bg-stone-200" />
               ))}
             </div>
@@ -644,7 +672,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
       </section>
 
       {/* Cinematic Video Section */}
-      {inviteData.videoUrl && (
+      {finalInviteData.videoUrl && (
         <section className={`py-24 px-6 relative overflow-hidden text-stone-100 ${accentCls.replace('text-', 'bg-') || 'bg-stone-900'}`}>
           <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
           <div className="absolute inset-0 bg-stone-900/40"></div>
@@ -669,7 +697,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
               className="aspect-video w-full rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10"
             >
               <iframe 
-                src={inviteData.videoUrl} 
+                src={finalInviteData.videoUrl} 
                 title="Cinematic Wedding Video" 
                 frameBorder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -695,7 +723,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
             <p className="text-stone-600 max-w-2xl mx-auto mb-12">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless.</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              {inviteData.bankAccounts?.map((bank, index) => (
+              {finalInviteData.bankAccounts?.map((bank, index) => (
                 <div key={`bank-${index}`} className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 text-left relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                     <Gift className="w-24 h-24" />
@@ -714,7 +742,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                 </div>
               ))}
               
-              {inviteData.digitalWallets?.map((wallet, index) => (
+              {finalInviteData.digitalWallets?.map((wallet, index) => (
                 <div key={`wallet-${index}`} className="bg-white p-6 rounded-2xl shadow-sm border border-rose-100 text-left relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                     <Gift className="w-24 h-24" />
@@ -734,12 +762,12 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
               ))}
             </div>
             
-            {inviteData.shippingAddress && (
+            {finalInviteData.shippingAddress && (
               <div className="bg-white mt-6 p-6 md:p-8 rounded-2xl shadow-sm border border-rose-100 max-w-3xl mx-auto text-left flex items-start gap-4">
                 <MapPin className="w-6 h-6 text-rose-400 shrink-0 mt-1" />
                 <div>
                   <p className="text-sm font-bold text-stone-900 uppercase tracking-widest mb-2">Kirim Kado Secara Fisik</p>
-                  <p className="text-stone-600 leading-relaxed text-sm mb-4">{inviteData.shippingAddress}</p>
+                  <p className="text-stone-600 leading-relaxed text-sm mb-4">{finalInviteData.shippingAddress}</p>
                   <button 
                     onClick={() => copyToClipboard(inviteData.shippingAddress, 'address')}
                     className="flex items-center gap-2 text-rose-500 hover:text-rose-600 font-medium text-sm transition-colors py-1"
@@ -883,7 +911,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
       )}
 
       {/* Guestbook Section */}
-      {inviteData.enableGuestbook && (
+      {finalInviteData.enableGuestbook && (
       <section id="guestbook" className="py-24 bg-stone-100 px-6 border-t border-stone-200">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -900,7 +928,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
           
           <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-stone-200">
             <div className="max-h-[500px] overflow-y-auto pr-4 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
-              {inviteData.guestbookEntries?.map((entry) => (
+              {finalInviteData.guestbookEntries?.map((entry) => (
                 <div key={entry.id} className="p-5 border border-stone-100 rounded-2xl bg-stone-50/50 hover:bg-stone-50 transition-colors">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-3">
@@ -932,7 +960,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
       {/* Footer */}
       <footer className="text-center py-8 border-t border-stone-200">
         <p className="text-stone-500 text-sm font-serif italic mb-2">Terima Kasih</p>
-        <p className="text-stone-900 font-serif text-xl">{inviteData.brideName} & {inviteData.groomName}</p>
+        <p className="text-stone-900 font-serif text-xl">{finalInviteData.brideName} & {finalInviteData.groomName}</p>
         <p className="text-xs text-stone-400 mt-8">Dibuat dengan <Heart className="w-3 h-3 inline text-rose-400" /> oleh karsaloka</p>
       </footer>
 

@@ -72,3 +72,44 @@ export async function submitRsvpAction(payload: { invitation_id: string; name: s
 
   return { success: true };
 }
+
+export async function resolveGoogleMapsUrl(url: string) {
+  try {
+    const res = await fetch(url, { redirect: 'follow' });
+    const finalUrl = res.url;
+    
+    // Pattern 1: /@lat,lng
+    const match = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (match) {
+      return { lat: parseFloat(match[1]), lng: parseFloat(match[2]), finalUrl };
+    }
+    
+    // Pattern 2: ?ll=lat,lng
+    const llMatch = finalUrl.match(/[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (llMatch) {
+       return { lat: parseFloat(llMatch[1]), lng: parseFloat(llMatch[2]), finalUrl };
+    }
+    
+    // Pattern 3: /dir//lat,lng  or /place/lat,lng
+    const placeMatch = finalUrl.match(/\/(?:place|dir)\/(-?\d+\.\d+)[^0-9.-]+(-?\d+\.\d+)/);
+    if (placeMatch) {
+       return { lat: parseFloat(placeMatch[1]), lng: parseFloat(placeMatch[2]), finalUrl };
+    }
+    
+    // Pattern 4: /search/lat,+lng
+    const searchMatch = finalUrl.match(/\/search\/(-?\d+\.\d+)[^0-9.-]+(-?\d+\.\d+)/);
+    if (searchMatch) {
+       return { lat: parseFloat(searchMatch[1]), lng: parseFloat(searchMatch[2]), finalUrl };
+    }
+    
+    // Fallback: any two floats separated by common separators in the URL
+    const fallbackMatch = finalUrl.match(/(-?\d+\.\d+)(?:%2C|,|\+)+(-?\d+\.\d+)/);
+    if (fallbackMatch) {
+       return { lat: parseFloat(fallbackMatch[1]), lng: parseFloat(fallbackMatch[2]), finalUrl };
+    }
+
+    return { error: 'Titik koordinat tidak ditemukan dalam format link tersebut.' };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}

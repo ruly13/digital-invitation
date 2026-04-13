@@ -128,6 +128,16 @@ export const THEMES: ThemeConfig[] = [
 
   // --- LUXURY / MEGAH ---
   {
+    id: 'vogue',
+    name: 'Vogue Editorial',
+    color: 'bg-stone-100',
+    textColor: 'text-stone-900',
+    accentColor: 'text-stone-500',
+    fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
+    dividerColor: 'bg-black',
+    category: 'Luxury (Premium)',
+  },
+  {
     id: 'luxury',
     name: 'Royal Premiere',
     color: 'bg-stone-900 border-amber-900/50',
