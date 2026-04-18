@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     const now = Date.now();
     const record = rateLimitMap.get(ip);
     if (record && now - record.timestamp < 60000) {
-      if (record.count > 10) {
+      if (record.count > 100) { // Increased from 10 to 100 to avoid preview iframe breaking
         return new NextResponse('Too Many Requests', { status: 429 });
       }
       record.count += 1;

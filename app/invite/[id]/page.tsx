@@ -1,4 +1,4 @@
-// Server Component wrapper untuk OG metadata dinamis per undangan
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import InvitationClientPage from './InvitationClient';
@@ -71,7 +71,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+
 export default async function InvitationPage({ params }: Props) {
   const { id } = await params;
-  return <InvitationClientPage id={id} />;
+  return (
+    <Suspense fallback={<div className="w-full h-screen flex items-center justify-center bg-stone-50"><p className="text-stone-500 font-serif animate-pulse">Memuat undangan...</p></div>}>
+      <InvitationClientPage id={id} />
+    </Suspense>
+  );
 }

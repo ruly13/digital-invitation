@@ -250,13 +250,14 @@ export default function TemaPage() {
                 <div className="flex-1 bg-stone-100 overflow-hidden relative">
                   {/* We add a small key param to force full reload of iframe state per preview */}
                   <iframe 
+                    key={previewSeed}
                     src={`/invite/demo?theme=${previewSeed}`} 
                     className="w-full h-full border-none"
                     allowFullScreen
                   />
                 </div>
                 <div className="p-4 bg-white text-center border-t border-stone-100 flex justify-center">
-                  <Link href="/dashboard" className="w-full bg-rose-500 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-rose-600 transition-colors">
+                  <Link href={`/editor/new?theme=${previewSeed}`} className="w-full bg-rose-500 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-rose-600 transition-colors">
                     Gunakan Tema Ini
                   </Link>
                 </div>
