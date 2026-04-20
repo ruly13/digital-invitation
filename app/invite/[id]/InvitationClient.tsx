@@ -175,15 +175,15 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   };
 
   // Use fetched data if available, otherwise use default/mock data
-  const finalInviteData = dbInviteData?.details ? { 
+  const finalInviteData: typeof inviteData = dbInviteData?.details ? { 
     ...inviteData, 
     ...dbInviteData.details,
-    brideName: dbInviteData.bride_name || dbInviteData.details.brideName || finalInviteData.brideName,
-    groomName: dbInviteData.groom_name || dbInviteData.details.groomName || finalInviteData.groomName,
-    date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : (dbInviteData.details.date || finalInviteData.date),
-    venue: dbInviteData.venue_name || dbInviteData.details.venue || finalInviteData.venue,
-    address: dbInviteData.venue_address || dbInviteData.details.address || finalInviteData.address,
-  } : inviteData;
+    brideName: dbInviteData.bride_name || dbInviteData.details.brideName || inviteData.brideName,
+    groomName: dbInviteData.groom_name || dbInviteData.details.groomName || inviteData.groomName,
+    date: dbInviteData.event_date ? new Date(dbInviteData.event_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : (dbInviteData.details.date || inviteData.date),
+    venue: dbInviteData.venue_name || dbInviteData.details.venue || inviteData.venue,
+    address: dbInviteData.venue_address || dbInviteData.details.address || inviteData.address,
+  } as typeof inviteData : inviteData;
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);

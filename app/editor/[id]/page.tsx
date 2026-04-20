@@ -1227,7 +1227,7 @@ export default function Editor() {
                       <p className="text-sm font-medium text-rose-600 dark:text-rose-400 flex flex-col gap-1">
                         <span>✓ Form Konfirmasi Kehadiran (Hadir / Tidak Hadir)</span>
                         <span>✓ Pilihan Jumlah Orang yang Akan Dibawa (Maks. 5 orang)</span>
-                        <span>✓ Data akan terekam ke menu "Buku tamu" di Dashboard</span>
+                        <span>✓ Data akan terekam ke menu &quot;Buku tamu&quot; di Dashboard</span>
                       </p>
                     </div>
                   )}
