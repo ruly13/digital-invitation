@@ -11,7 +11,8 @@ import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { getInvitationBase, submitRsvpAction } from './actions';
 import { THEMES } from '@/lib/themes';
-import VogueTheme from '@/components/themes/VogueTheme';
+import VogueTheme from '@/components/themes/Vogue/VogueTheme';
+import JavaneseClassicTheme from '@/components/themes/JavaneseClassic/JavaneseClassicTheme';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -317,6 +318,30 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     return (
       <PageTransition>
         <VogueTheme 
+          data={finalInviteData} 
+          isOpen={isOpen} 
+          handleOpen={handleOpen}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          rsvpData={rsvpData}
+          setRsvpData={setRsvpData}
+          submitRsvp={submitRsvp}
+          rsvpStatus={rsvpStatus}
+          copiedBank={copiedBank}
+          copyToClipboard={copyToClipboard}
+        />
+        {finalInviteData.musicUrl && (
+          <audio ref={audioRef} src={finalInviteData.musicUrl} loop />
+        )}
+      </PageTransition>
+    );
+  }
+
+  // Javanese Classic Theme Override
+  if (finalInviteData.theme === 'javanese-classic') {
+    return (
+      <PageTransition>
+        <JavaneseClassicTheme 
           data={finalInviteData} 
           isOpen={isOpen} 
           handleOpen={handleOpen}

@@ -363,6 +363,7 @@ export default function Home() {
                   src="https://images.unsplash.com/photo-1606216794074-735e91aa2c92?q=80&w=600&auto=format&fit=crop" 
                   alt="RSVP Feature" 
                   fill 
+                  sizes="(max-width: 768px) 100vw, 320px"
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
                 />
@@ -515,6 +516,7 @@ export default function Home() {
                   src="https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?q=80&w=1000&auto=format&fit=crop" 
                   alt="Happy Couple" 
                   fill 
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                   referrerPolicy="no-referrer"
                 />

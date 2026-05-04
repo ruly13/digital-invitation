@@ -218,5 +218,16 @@ export const THEMES: ThemeConfig[] = [
     fontClass: 'font-[family:var(--font-cormorant)] text-3xl',
     dividerColor: 'bg-pink-200',
     category: 'Tematik',
+  },
+  // --- NUSANTARA ---
+  {
+    id: 'javanese-classic',
+    name: 'Javanese Classic',
+    color: 'bg-[#FDF6E3]',
+    textColor: 'text-[#2C1810]',
+    accentColor: 'text-[#D4A017]',
+    fontClass: 'font-[family:var(--font-cinzel)] text-2xl',
+    dividerColor: 'bg-[#D4A017]',
+    category: 'Nusantara',
   }
 ];
