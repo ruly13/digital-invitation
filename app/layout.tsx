@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
+  verification: {
+    google: 'mnmjgJVmWAVr2iMHh3urbo_ZuMThBxHH1HLvoxgt1qE',
+  },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
