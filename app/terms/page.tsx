@@ -1,16 +1,14 @@
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
+import Logo from '@/components/Logo';
 
 export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] font-sans">
       <header className="bg-white border-b border-stone-100 px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-serif font-bold">karsaloka</span>
+          <Link href="/" className="flex items-center">
+            <Logo className="text-xl" />
           </Link>
         </div>
       </header>

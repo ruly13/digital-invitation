@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import PageTransition from '@/components/PageTransition';
 import { THEMES } from '@/lib/themes';
+import Logo from '@/components/Logo';
 import AIChatWidget from '@/components/AIChatWidget';
 import WhatsAppButton from '@/components/WhatsAppButton';
 
@@ -116,11 +117,8 @@ export default function TemaPage() {
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-rose-100 transition-colors shrink-0">
                 <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 text-stone-600 group-hover:text-rose-500 transition-colors" />
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-rose-500 rounded-lg flex items-center justify-center ml-1 sm:ml-2 shrink-0">
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl font-serif font-bold tracking-tight">karsaloka</span>
+              <div className="flex items-center ml-1 sm:ml-2">
+                <Logo className="text-lg sm:text-xl" />
               </div>
             </Link>
             

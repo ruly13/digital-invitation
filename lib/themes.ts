@@ -229,5 +229,15 @@ export const THEMES: ThemeConfig[] = [
     fontClass: 'font-[family:var(--font-cinzel)] text-2xl',
     dividerColor: 'bg-[#D4A017]',
     category: 'Nusantara',
+  },
+  {
+    id: 'vintage-classic',
+    name: 'Vintage Classic',
+    color: 'bg-[#F9F4EC]',
+    textColor: 'text-[#2C1E0F]',
+    accentColor: 'text-[#C9A96E]',
+    fontClass: 'font-[family:var(--font-cormorant)] text-2xl',
+    dividerColor: 'bg-[#DDD0B8]',
+    category: 'Rustic',
   }
 ];

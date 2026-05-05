@@ -26,6 +26,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { THEMES } from '@/lib/themes';
+import Logo from '@/components/Logo';
 import { useState, useEffect } from 'react';
 import { WHATSAPP_URL } from '@/lib/constants';
 
@@ -115,11 +116,8 @@ export default function Home() {
         className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-100"
       >
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-rose-500 rounded-lg flex items-center justify-center shrink-0">
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
-            <span className="text-lg sm:text-xl font-serif font-bold tracking-tight">karsaloka</span>
+          <div className="flex items-center">
+            <Logo className="text-lg sm:text-xl" />
           </div>
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-stone-600">
             <Link href="#fitur" className="hover:text-rose-600 transition-colors">Fitur</Link>
@@ -658,11 +656,8 @@ export default function Home() {
       <footer className="bg-white border-t border-stone-100 pt-20 pb-10 px-6">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 mb-20">
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-serif font-bold tracking-tight">karsaloka</span>
+            <div className="flex items-center mb-6">
+              <Logo className="text-xl" />
             </div>
             <p className="text-stone-500 text-sm leading-relaxed">
               Platform undangan pernikahan digital terpercaya untuk momen paling berharga dalam hidup Anda.

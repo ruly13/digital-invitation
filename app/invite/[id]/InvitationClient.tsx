@@ -13,6 +13,8 @@ import { getInvitationBase, submitRsvpAction } from './actions';
 import { THEMES } from '@/lib/themes';
 import VogueTheme from '@/components/themes/Vogue/VogueTheme';
 import JavaneseClassicTheme from '@/components/themes/JavaneseClassic/JavaneseClassicTheme';
+import VintageClassicTheme from '@/components/vintage-classic/page';
+
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -357,6 +359,27 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
         {finalInviteData.musicUrl && (
           <audio ref={audioRef} src={finalInviteData.musicUrl} loop />
         )}
+      </PageTransition>
+    );
+  }
+
+  // Vintage Classic Theme Override
+  if (finalInviteData.theme === 'vintage-classic') {
+    return (
+      <PageTransition>
+        <VintageClassicTheme 
+          data={finalInviteData} 
+          isOpen={isOpen} 
+          handleOpen={handleOpen}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          rsvpData={rsvpData}
+          setRsvpData={setRsvpData}
+          submitRsvp={submitRsvp}
+          rsvpStatus={rsvpStatus}
+          copiedBank={copiedBank}
+          copyToClipboard={copyToClipboard}
+        />
       </PageTransition>
     );
   }

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Plus, Settings, Users, Eye, Edit, Trash2, Heart, Copy, Check, BarChart3, MessageSquare, BookHeart, LayoutDashboard } from 'lucide-react';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import Logo from '@/components/Logo';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { useEffect, useState } from 'react';
@@ -115,9 +116,8 @@ export default function Dashboard() {
       <div className="min-h-screen bg-stone-50 font-sans pb-20 md:pb-0">
         {/* Topbar */}
         <header className="bg-white border-b border-stone-200 px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
-            <Link href="/" className="text-xl font-bold tracking-tight text-stone-900 font-serif">Karsaloka</Link>
+          <div className="flex items-center">
+            <Link href="/" className="text-stone-900"><Logo className="text-xl" /></Link>
           </div>
           <div className="flex items-center gap-4">
             <button onClick={handleLogout} className="text-sm font-medium text-stone-500 hover:text-rose-500 transition-colors hidden sm:block">
