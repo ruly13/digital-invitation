@@ -45,7 +45,7 @@ const SectionTitle = ({ title }: { title: string }) => (
   </div>
 );
 
-export default function VintageClassicApp() {
+export default function VintageClassicApp(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [guestName, setGuestName] = useState('Tamu Undangan');

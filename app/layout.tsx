@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
+import { Analytics } from "@vercel/analytics/next";
 import './globals.css';
 
 const inter = Inter({
@@ -20,11 +21,11 @@ export const metadata: Metadata = {
   description: 'Buat undangan pernikahan digital elegan, unik, dan premium di Indonesia bersama karsaloka. Kelola RSVP, bagikan amplop digital dengan harga yang paling murah dan hemat.',
   keywords: ['undangan pernikahan digital', 'undangan nikah online indonesia', 'undangan digital murah', 'wedding invitation online', 'RSVP online', 'karsaloka'],
   authors: [{ name: 'karsaloka' }],
-  metadataBase: new URL('https://digital-invitation-rouge.vercel.app'),
+  metadataBase: new URL('https://karsaloka.site'),
   openGraph: {
     type: 'website',
     locale: 'id_ID',
-    url: 'https://digital-invitation-rouge.vercel.app',
+    url: 'https://karsaloka.site',
     siteName: 'karsaloka',
     title: 'karsaloka — Undangan Pernikahan Digital Elegan & Modern',
     description: 'Buat undangan pernikahan digital elegan, murah, dan modern di Indonesia bersama karsaloka.',
@@ -53,7 +54,10 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
-      <body suppressHydrationWarning className="font-sans">{children}</body>
+      <body suppressHydrationWarning className="font-sans">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
