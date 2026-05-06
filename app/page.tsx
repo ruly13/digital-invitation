@@ -56,7 +56,40 @@ export default function Home() {
       "highPrice": "299000",
       "priceCurrency": "IDR",
       "offerCount": "3"
-    }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "1050"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": "Sarah & Kevin"
+        },
+        "datePublished": "2025-08-15",
+        "reviewBody": "karsaloka membuat persiapan pernikahan kami jauh lebih ringan. Desainnya sangat berkelas!",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5"
+        }
+      },
+      {
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": "Rina & Budi"
+        },
+        "datePublished": "2025-09-10",
+        "reviewBody": "Fitur RSVP otomatisnya sangat membantu kami mengatur katering dengan presisi. Benar-benar menghemat waktu!",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5"
+        }
+      }
+    ]
   };
 
   const localBusinessData = {
