@@ -170,7 +170,7 @@ export default function Home() {
       </motion.nav>
 
       {/* Hero Section - Split Layout */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col">
             <motion.div
@@ -294,7 +294,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-stone-900 text-white relative overflow-hidden">
+      <section className="py-12 md:py-16 bg-stone-900 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-px h-full bg-white"></div>
           <div className="absolute top-0 left-2/4 w-px h-full bg-white"></div>
@@ -321,9 +321,9 @@ export default function Home() {
       </section>
 
       {/* How it Works Section - Brutalist/Creative */}
-      <section id="cara-kerja" className="py-32 bg-white px-6">
+      <section id="cara-kerja" className="py-16 md:py-32 bg-white px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 sm:mb-24 gap-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-24 gap-8">
             <div className="max-w-2xl">
               <h2 className="text-4xl sm:text-5xl md:text-7xl font-serif mb-8 leading-[0.9] tracking-tighter">
                 Wujudkan Undangan <br />
@@ -359,14 +359,14 @@ export default function Home() {
       </section>
 
       {/* Features Section - Bento Grid Style */}
-      <section id="fitur" className="py-32 bg-stone-50 px-6">
+      <section id="fitur" className="py-16 md:py-32 bg-stone-50 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center mb-24"
+            className="text-center mb-12 md:mb-24"
           >
             <h2 className="text-5xl md:text-6xl font-serif mb-8 tracking-tight">Fitur yang Memudahkan Segalanya</h2>
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Lebih dari sekadar undangan, karsaloka adalah asisten pribadi untuk manajemen tamu Anda.</p>
@@ -473,7 +473,7 @@ export default function Home() {
       </section>
 
       {/* Examples Section - Horizontal Scroll/Grid */}
-      <section id="contoh" className="py-32 bg-white px-6 overflow-hidden">
+      <section id="contoh" className="py-16 md:py-32 bg-white px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -531,7 +531,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-32 bg-[#FDFBF7] px-6 relative">
+      <section className="py-16 md:py-32 bg-[#FDFBF7] px-6 relative">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-stone-200 to-transparent"></div>
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -602,9 +602,9 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="harga" className="pt-32 pb-16 bg-white px-6">
+      <section id="harga" className="pt-16 md:pt-32 pb-12 md:pb-16 bg-white px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
+          <div className="text-center mb-12 md:mb-24">
             <h2 className="text-5xl md:text-6xl font-serif mb-8 tracking-tight">Investasi untuk Kenangan Indah</h2>
             <p className="text-stone-600 text-lg max-w-2xl mx-auto">Pilih paket yang paling sesuai dengan skala perayaan Anda. Tanpa biaya tersembunyi.</p>
           </div>
@@ -627,10 +627,10 @@ export default function Home() {
       </section>
 
       {/* Trust Badges + FAQ Section */}
-      <section className="pt-12 pb-20 bg-stone-50 px-6">
+      <section className="pt-8 md:pt-12 pb-12 md:pb-20 bg-stone-50 px-6">
         <div className="max-w-4xl mx-auto">
           {/* Trust Badges */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-20 pb-16 border-b border-stone-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-12 md:mb-20 pb-10 md:pb-16 border-b border-stone-200">
             {[
               { icon: <Lock className="w-5 h-5" />, label: 'SSL 256-bit', sub: 'Data terenkripsi penuh' },
               { icon: <ShieldCheck className="w-5 h-5" />, label: 'Aman & Terpercaya', sub: 'Dijaga Supabase Auth' },
@@ -659,7 +659,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-6">
+      <section className="py-12 md:py-32 px-6">
         <div className="max-w-7xl mx-auto bg-stone-900 rounded-[2.5rem] md:rounded-[4rem] p-8 sm:p-16 md:p-32 text-center relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div className="absolute top-10 left-10 w-96 h-96 border border-white rounded-full"></div>
