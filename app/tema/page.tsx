@@ -10,6 +10,7 @@ import { THEMES } from '@/lib/themes';
 import Logo from '@/components/Logo';
 import AIChatWidget from '@/components/AIChatWidget';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import MaintenancePage from "@/app/maintence/maintence";
 
   const themeVariants = [
     { g: "Adrian", b: "Clarissa", photoId: "1519225421980-715cb0215aed" },
@@ -96,7 +97,8 @@ function TemplateCard({
   );
 }
 
-export default function TemaPage() {
+// Komponen aslinya kita simpan dengan nama lain agar tidak hilang
+function TemaPageOriginal() {
   const [activeCategory, setActiveCategory] = useState<string>('Semua');
   const [previewSeed, setPreviewSeed] = useState<string | null>(null);
 
@@ -266,4 +268,24 @@ export default function TemaPage() {
       </div>
     </PageTransition>
   );
+}
+
+// Mengatur status halaman
+const isMaintenance = true; // Ganti jadi 'false' jika perbaikan sudah selesai
+
+export default function TemaPage() {
+  if (isMaintenance) {
+    return (
+      <MaintenancePage
+        statusItems={[
+          { label: "Backup data selesai", status: "done" },
+          { label: "Pembaruan sistem berjalan...", status: "active" },
+          { label: "Pengujian akhir", status: "pending" },
+        ]}
+      />
+    );
+  }
+
+  // Jika isMaintenance = false, halaman asli otomatis ditampilkan kembali
+  return <TemaPageOriginal />;
 }
