@@ -59,7 +59,7 @@ export default function AIChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-28 md:bottom-8 right-4 md:right-8 z-[70]">
+    <div className="fixed bottom-6 md:bottom-8 right-4 md:right-8 z-[70]">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -159,7 +159,7 @@ export default function AIChatWidget() {
           <div className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full animate-bounce" />
         )}
         {!isOpen && (
-          <div className="absolute -top-12 right-0 bg-white text-stone-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl border border-stone-100 whitespace-nowrap pointer-events-none animate-pulse flex flex-col items-end">
+          <div className="absolute -top-12 right-0 bg-white text-stone-900 px-4 py-2 rounded-xl text-xs font-bold shadow-xl border border-stone-100 whitespace-nowrap pointer-events-none animate-pulse hidden md:flex flex-col items-end">
             <div className="flex items-center">
               <Sparkles className="w-3 h-3 inline mr-1 text-rose-500" />
               Tanya AI karsaloka

@@ -602,7 +602,7 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="harga" className="py-32 bg-white px-6">
+      <section id="harga" className="pt-32 pb-16 bg-white px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="text-5xl md:text-6xl font-serif mb-8 tracking-tight">Investasi untuk Kenangan Indah</h2>
@@ -627,23 +627,23 @@ export default function Home() {
       </section>
 
       {/* Trust Badges + FAQ Section */}
-      <section className="py-20 bg-stone-50 px-6">
+      <section className="pt-12 pb-20 bg-stone-50 px-6">
         <div className="max-w-4xl mx-auto">
           {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center gap-8 mb-20 pb-16 border-b border-stone-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-20 pb-16 border-b border-stone-200">
             {[
               { icon: <Lock className="w-5 h-5" />, label: 'SSL 256-bit', sub: 'Data terenkripsi penuh' },
               { icon: <ShieldCheck className="w-5 h-5" />, label: 'Aman & Terpercaya', sub: 'Dijaga Supabase Auth' },
               { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Tanpa Biaya Tersembunyi', sub: 'Harga transparan' },
               { icon: <Heart className="w-5 h-5" />, label: '500+ Pasangan', sub: 'Sudah mempercayai kami' },
             ].map((badge, i) => (
-              <div key={i} className="flex items-center gap-3 text-stone-600">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-stone-100 text-rose-500">
+              <div key={i} className="flex items-center gap-4 text-stone-600 bg-white sm:bg-transparent p-4 sm:p-0 rounded-2xl sm:rounded-none shadow-sm sm:shadow-none border border-stone-100 sm:border-none">
+                <div className="w-12 h-12 sm:w-10 sm:h-10 shrink-0 bg-rose-50 sm:bg-white rounded-xl flex items-center justify-center sm:shadow-sm sm:border sm:border-stone-100 text-rose-500">
                   {badge.icon}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-stone-900">{badge.label}</p>
-                  <p className="text-xs text-stone-400">{badge.sub}</p>
+                  <p className="text-xs text-stone-500 mt-0.5">{badge.sub}</p>
                 </div>
               </div>
             ))}
@@ -757,14 +757,6 @@ export default function Home() {
           </p>
         </div>
       </footer>
-
-      {/* Sticky Bottom CTA for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-stone-100 md:hidden z-[60] transform transition-transform duration-300">
-        <Link href={WHATSAPP_URL()} target="_blank" className="flex items-center justify-center w-full bg-stone-900 text-white px-6 py-4 rounded-full text-lg font-bold shadow-2xl shadow-stone-900/20">
-          Pesan Undangan Via WA
-        </Link>
-      </div>
-
       <WhatsAppButton />
       <AIChatWidget />
     </div>
@@ -869,6 +861,7 @@ function TemplateCard({
 function PricingCard({ 
   title, 
   price, 
+  originalPrice,
   description, 
   features, 
   buttonText, 
@@ -877,6 +870,7 @@ function PricingCard({
 }: { 
   title: string, 
   price: string, 
+  originalPrice?: string,
   description: string, 
   features: string[], 
   buttonText: string, 
@@ -884,17 +878,22 @@ function PricingCard({
   isPopular?: boolean
 }) {
   return (
-    <div className={`relative p-8 md:p-10 rounded-[2.5rem] border ${isPopular ? 'border-rose-500 shadow-xl md:shadow-2xl bg-white md:scale-105 z-10' : 'border-stone-100 bg-stone-50'} flex flex-col h-full transition-all duration-300 hover:shadow-xl`}>
+    <div className={`relative p-8 md:p-10 rounded-[2.5rem] border ${isPopular ? 'border-rose-500 shadow-xl md:shadow-2xl bg-white z-10' : 'border-stone-100 bg-stone-50'} flex flex-col h-full transition-all duration-300 hover:shadow-xl`}>
       {isPopular && (
-        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-6 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-lg">
-          Paling Populer
+        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-6 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-lg whitespace-nowrap">
+          Penawaran Spesial
         </div>
       )}
-      <div className="mb-10">
+      <div className="mb-10 text-center">
         <h3 className="text-2xl font-bold text-stone-900 mb-4">{title}</h3>
-        <div className="flex items-baseline gap-1 mb-4">
-          <span className="text-5xl font-serif font-bold text-stone-900">{price}</span>
-          {price !== 'Gratis' && <span className="text-stone-500 font-medium">/acara</span>}
+        <div className="flex flex-col items-center mb-4">
+          {originalPrice && (
+            <span className="text-lg text-stone-400 line-through decoration-rose-500/60 decoration-2 mb-1">{originalPrice}</span>
+          )}
+          <div className="flex items-baseline gap-1">
+            <span className="text-5xl font-serif font-bold text-stone-900">{price}</span>
+            {price !== 'Gratis' && <span className="text-stone-500 font-medium">/acara</span>}
+          </div>
         </div>
         <p className="text-stone-600 leading-relaxed">{description}</p>
       </div>
@@ -960,110 +959,49 @@ function FAQSection() {
 
 const PRICING_PLANS = [
   {
-    id: 'essential',
-    title: 'Essential',
+    id: 'premium',
+    title: 'All-in-One Premium',
+    originalPrice: 'Rp 200k',
     price: 'Rp 149k',
-    description: 'Sempurna untuk perayaan intim dan sederhana.',
+    description: 'Satu paket lengkap untuk seluruh fitur tanpa batasan.',
     features: [
-      "Hingga 50 tamu undangan",
-      "3 Pilihan tema elegan",
-      "Manajemen RSVP standar",
-      "Tautan undangan standar",
-      "Masa aktif 2 bulan"
-    ],
-    buttonText: 'Mulai Sekarang',
-    buttonLink: '/dashboard',
-    isPopular: false
-  },
-  {
-    id: 'signature',
-    title: 'Signature',
-    price: 'Rp 249k',
-    description: 'Pilihan terpopuler untuk pernikahan yang berkesan.',
-    features: [
-      "Hingga 500 tamu undangan",
-      "Akses semua tema premium",
+      "Tamu undangan tanpa batas",
+      "Akses bebas semua tema eksklusif",
       "Manajemen RSVP & Buku Tamu",
-      "Galeri foto (20 foto)",
+      "Galeri s/d 20 Foto & Integrasi Video YouTube",
       "Musik latar kustom",
       "Tautan undangan kustom",
-      "Masa aktif 4 bulan"
+      "Masa aktif 6 Bulan (Cukup untuk persiapan & hari H)"
     ],
-    buttonText: 'Pilih Paket Ini',
+    buttonText: 'Pesan Sekarang',
     buttonLink: '/dashboard',
     isPopular: true
-  },
-  {
-    id: 'prestige',
-    title: 'Prestige',
-    price: 'Rp 499k',
-    description: 'Layanan eksklusif tanpa batas untuk kemewahan total.',
-    features: [
-      "Tamu undangan tak terbatas",
-      "Desain tema kustom eksklusif",
-      "Manajemen RSVP & QR Code",
-      "Galeri foto & video tak terbatas",
-      "Kirim via WhatsApp Otomatis",
-      "Dukungan prioritas 24/7",
-      "Masa aktif 1 tahun"
-    ],
-    buttonText: 'Pilih Prestige',
-    buttonLink: '/dashboard',
-    isPopular: false
   }
 ];
 
 function PricingSection() {
-  const [activeTab, setActiveTab] = useState('signature');
+  const plan = PRICING_PLANS[0];
   
   return (
-    <div className="max-w-6xl mx-auto w-full">
-      {/* Mobile Tab Triggers */}
-      <div className="flex md:hidden bg-stone-100 p-1.5 rounded-full mb-10 max-w-[360px] mx-auto shadow-inner relative justify-between gap-1">
-        {PRICING_PLANS.map((plan) => (
-          <button
-            key={plan.id}
-            onClick={() => setActiveTab(plan.id)}
-            className={`flex-1 py-3 px-2 text-[11px] sm:text-xs font-bold rounded-full transition-all duration-300 relative z-10 tracking-wider ${
-              activeTab === plan.id 
-                ? 'text-stone-900 shadow-sm' 
-                : 'text-stone-500 hover:text-stone-700'
-            }`}
-          >
-            {activeTab === plan.id && (
-              <motion.div 
-                layoutId="activeTabBadge"
-                className="absolute inset-0 bg-white rounded-full -z-10 shadow-sm border border-stone-200"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-            )}
-            {plan.title.toUpperCase()}
-          </button>
-        ))}
-      </div>
-
-      {/* Desktop Grid & Mobile Single display */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
-        {PRICING_PLANS.map((plan) => (
-          <motion.div 
-            key={plan.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-            className={`${activeTab === plan.id ? 'block' : 'hidden'} md:!block transition-opacity duration-300 h-full w-full`}
-          >
-            <PricingCard 
-              title={plan.title} 
-              price={plan.price} 
-              description={plan.description} 
-              features={plan.features} 
-              buttonText={plan.buttonText} 
-              buttonLink={plan.buttonLink} 
-              isPopular={plan.isPopular} 
-            />
-          </motion.div>
-        ))}
-      </div>
+    <div className="max-w-md mx-auto w-full">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="w-full h-full"
+      >
+        <PricingCard 
+          title={plan.title} 
+          price={plan.price} 
+          originalPrice={plan.originalPrice}
+          description={plan.description} 
+          features={plan.features} 
+          buttonText={plan.buttonText} 
+          buttonLink={plan.buttonLink} 
+          isPopular={plan.isPopular} 
+        />
+      </motion.div>
     </div>
   );
 }
