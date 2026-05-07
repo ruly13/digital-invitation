@@ -271,7 +271,7 @@ function TemaPageOriginal() {
 }
 
 // Mengatur status halaman
-const isMaintenance = true; // Ganti jadi 'false' jika perbaikan sudah selesai
+const isMaintenance = false; // Ganti jadi 'false' jika perbaikan sudah selesai
 
 export default function TemaPage() {
   if (isMaintenance) {

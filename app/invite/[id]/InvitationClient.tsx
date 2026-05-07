@@ -14,6 +14,7 @@ import { THEMES } from '@/lib/themes';
 import VogueTheme from '@/components/themes/Vogue/VogueTheme';
 import JavaneseClassicTheme from '@/components/themes/JavaneseClassic/JavaneseClassicTheme';
 import VintageClassicTheme from '@/components/vintage-classic/page';
+import SpesialFloral from '@/components/themes/floral/specialfloral';
 
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
@@ -50,15 +51,20 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch(err => {
-          console.warn("Audio play blocked/interrupted:", err);
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      // Some browsers block autoplay until user interacts; we already gated
+      // behind the "Buka Undangan" click so this should be allowed.
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Audio play was prevented:", err);
           setIsPlaying(false);
         });
-      } else {
-        audioRef.current.pause();
       }
+    } else {
+      audio.pause();
     }
   }, [isPlaying]);
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
@@ -146,7 +152,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     quranicVerse: "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berfikir. (QS. Ar-Rum: 21)",
     greeting: 'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir pada perayaan pernikahan kami.',
     videoUrl: 'https://www.youtube.com/embed/jfKfPfyJRdk',
-    musicUrl: 'https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Tchaikovsky/Romeo_and_Juliet/Tchaikovsky_-_Romeo_and_Juliet.mp3',
+    musicUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3',
     coverImage: mockCover,
     groomImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=800&auto=format&fit=crop',
     brideImage: 'https://images.unsplash.com/photo-1595986630530-969786ad1cb8?q=80&w=800&auto=format&fit=crop',
@@ -312,6 +318,33 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
           </form>
         </div>
       </div>
+    );
+  }
+
+  // Floral Theme Override
+  if (finalInviteData.theme === 'floral') {
+    return (
+      <PageTransition>
+        <SpesialFloral 
+          data={finalInviteData} 
+          isOpen={isOpen} 
+          handleOpen={handleOpen}
+          isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
+          rsvpData={rsvpData}
+          setRsvpData={setRsvpData}
+          submitRsvp={submitRsvp}
+          rsvpStatus={rsvpStatus}
+          copiedBank={copiedBank}
+          copyToClipboard={copyToClipboard}
+        />
+        <audio 
+          ref={audioRef} 
+          src={finalInviteData.musicUrl || 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3'} 
+          loop
+          preload="auto"
+        />
+      </PageTransition>
     );
   }
 

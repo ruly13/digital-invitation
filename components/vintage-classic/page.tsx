@@ -48,7 +48,13 @@ const SectionTitle = ({ title }: { title: string }) => (
 export default function VintageClassicApp(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [guestName, setGuestName] = useState('Tamu Undangan');
+  const [guestName, setGuestName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('to') || 'Tamu Undangan';
+    }
+    return 'Tamu Undangan';
+  });
   const [activeTab, setActiveTab] = useState<'akad' | 'resepsi'>('akad');
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   
@@ -66,13 +72,6 @@ export default function VintageClassicApp(props: any) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Parse URL for guest name
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const to = params.get('to');
-    if (to) setGuestName(to);
-  }, []);
 
   // Countdown logic
   useEffect(() => {
@@ -206,9 +205,9 @@ export default function VintageClassicApp(props: any) {
           
           <div className="max-w-md mx-auto mb-8">
             <p className={`${cormorant.className} text-[#2C1E0F] italic text-lg leading-relaxed mb-4`}>
-              "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu 
+              &quot;Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu 
               isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa 
-              tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."
+              tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang.&quot;
             </p>
             <p className="text-[10px] text-[#C9A96E] uppercase tracking-widest">(QS. Ar-Rum: 21)</p>
           </div>
@@ -616,7 +615,7 @@ export default function VintageClassicApp(props: any) {
                   </div>
                   <p className="text-[10px] text-[#8B6A3A] mb-2">1 Jam yang lalu</p>
                   <p className="text-sm text-[#8B6A3A] italic leading-relaxed">
-                    "Selamat menikah Adrian & Clarissa! Semoga cinta dan kebahagiaan selalu menyertai perjalanan keluarga baru kalian."
+                    &quot;Selamat menikah Adrian & Clarissa! Semoga cinta dan kebahagiaan selalu menyertai perjalanan keluarga baru kalian.&quot;
                   </p>
                 </div>
               </div>
@@ -635,7 +634,7 @@ export default function VintageClassicApp(props: any) {
                   </div>
                   <p className="text-[10px] text-[#8B6A3A] mb-2">3 Jam yang lalu</p>
                   <p className="text-sm text-[#8B6A3A] italic leading-relaxed">
-                    "Lancar sampai hari H ya, can't wait for the beautiful wedding."
+                    &quot;Lancar sampai hari H ya, can&apos;t wait for the beautiful wedding.&quot;
                   </p>
                 </div>
               </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import Image from "next/image";
 
 interface MaintenancePageProps {
@@ -61,15 +60,7 @@ export default function MaintenancePage({
 
   return (
     <>
-      <Head>
-        <title>Sedang dalam Perbaikan — karsaloka</title>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta httpEquiv="refresh" content="300" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
+      {/* Meta handled by layout.tsx in App Router */}
 
       <div className="maintenance-root">
         {/* Grid background */}
