@@ -1,6 +1,20 @@
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Syarat & Ketentuan | karsaloka',
+  description: 'Syarat dan Ketentuan penggunaan layanan pembuatan undangan pernikahan digital premium dari karsaloka.',
+  openGraph: {
+    title: 'Syarat & Ketentuan | karsaloka',
+    description: 'Syarat dan Ketentuan layanan karsaloka.',
+    url: 'https://karsaloka.com/terms',
+    siteName: 'karsaloka',
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
 
 export default function TermsOfService() {
   return (

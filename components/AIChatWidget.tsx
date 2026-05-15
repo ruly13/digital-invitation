@@ -3,19 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
-
-interface Message {
-  role: 'user' | 'model';
-  text: string;
-}
+import { useChat } from '@/hooks/useChat';
 
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Halo! Saya asisten AI karsaloka. Saya siap membantu Anda memilih tema yang cocok, menyusun kata-kata undangan (caption/quotes), atau menjawab pertanyaan seputar fitur dan harga kami. Ada yang bisa saya bantu?' }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { messages, isLoading, sendMessage } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -28,34 +21,9 @@ export default function AIChatWidget() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
     const userMessage = input.trim();
     setInput('');
-    const newMessages = [...messages, { role: 'user' as const, text: userMessage }];
-    setMessages(newMessages);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ messages: newMessages })
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch from API");
-      }
-
-      const data = await response.json();
-      setMessages(prev => [...prev, { role: 'model', text: data.text }]);
-    } catch (error) {
-      console.error("AI Chat Error:", error);
-      setMessages(prev => [...prev, { role: 'model', text: "Maaf, layanan AI sedang tidak tersedia saat ini. Silakan hubungi admin via WhatsApp." }]);
-    } finally {
-      setIsLoading(false);
-    }
+    await sendMessage(userMessage);
   };
 
   return (

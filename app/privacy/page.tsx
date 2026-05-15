@@ -1,6 +1,20 @@
 import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Kebijakan Privasi | karsaloka',
+  description: 'Kebijakan privasi karsaloka menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat menggunakan platform undangan pernikahan digital kami.',
+  openGraph: {
+    title: 'Kebijakan Privasi | karsaloka',
+    description: 'Pelajari kebijakan privasi dan perlindungan data kami.',
+    url: 'https://karsaloka.com/privacy',
+    siteName: 'karsaloka',
+    locale: 'id_ID',
+    type: 'website',
+  },
+};
 
 export default function PrivacyPolicy() {
   return (

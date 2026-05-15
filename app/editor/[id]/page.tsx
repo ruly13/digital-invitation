@@ -12,7 +12,8 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
 import { supabase } from '@/lib/supabase';
-import imageCompression from 'browser-image-compression';
+import { useEditorData } from '@/hooks/useEditorData';
+import { useMediaUpload } from '@/hooks/useMediaUpload';
 
 const LeafletMap = dynamic(() => import('@/components/LeafletMap'), { 
   ssr: false,
@@ -50,6 +51,11 @@ const MUSIC_LIBRARY = [
 const THEME_INFO: Record<string, string> = {
   elegant: "Inspirasi dari pernikahan kerajaan Eropa dengan palet warna krem dan font serif yang abadi.",
   floral: "Suasana taman bunga di musim semi, memberikan kesan segar, feminin, dan penuh kebahagiaan.",
+  'floral-lavender': "Keharuman lavender Prancis yang lembut dengan palet ungu pastel dan tipografi serif yang romantis, cocok untuk pernikahan berkelas.",
+  'floral-sage': "Botanikal hijau sage yang elegan dan natural, menghadirkan kesan earth-tone segar yang tenang dan mewah.",
+  vogue: "Gaya majalah mode kelas atas dengan tipografi yang berani, tata letak asimetris, dan estetika kontemporer yang sangat chic.",
+  'javanese-classic': "Kental dengan tradisi keraton, memadukan motif batik Kawung dan palet warna cokelat-emas yang melambangkan keanggunan budaya Jawa.",
+  'vintage-classic': "Nostalgia estetika klasik dengan sentuhan ornamen lawas, frame berukir, dan warna-warna sephia yang hangat dan tak lekang oleh waktu.",
   modern: "Fokus pada tipografi bersih dan ruang negatif, cocok untuk pasangan yang menyukai kesederhanaan urban.",
   rustic: "Sentuhan kayu, kertas kraft, dan elemen alam yang memberikan suasana hangat dan kekeluargaan.",
   luxury: "Kombinasi emas dan putih gading untuk kesan eksklusif, mewah, dan prestisius.",
@@ -76,342 +82,28 @@ export default function Editor() {
   const [musicTab, setMusicTab] = useState<'library' | 'upload' | 'external'>('library');
   const [musicSearchQuery, setMusicSearchQuery] = useState('');
   const [externalUrl, setExternalUrl] = useState('');
-  const [loadingInitial, setLoadingInitial] = useState(true);
   const [previewThemeId, setPreviewThemeId] = useState<string | null>(null);
   const [infoThemeId, setInfoThemeId] = useState<string | null>(null);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showSaveDateSuccess, setShowSaveDateSuccess] = useState(false);
-  const [showUploadSuccess, setShowUploadSuccess] = useState(false);
-  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: 'Pernikahan Rina & Budi',
-    customLink: 'rina-budi',
-    customFont: '',
-    groomName: 'Budi Santoso',
-    brideName: 'Rina Wijaya',
-    date: '2026-08-12',
-    time: '09:00',
-    venue: 'Gedung Serbaguna Senayan',
-    address: 'Jl. Pintu Satu Senayan, Jakarta Pusat',
-    mapCoordinates: null as { lat: number; lng: number } | null,
-    theme: 'elegant',
-    openingGreeting: 'The Wedding Of',
-    saveTheDateDate: '',
-    saveTheDateDescription: '',
-    customBgColor: '',
-    customAccentColor: '',
-    musicUrl: '',
-    musicVolume: 50,
-    greeting: 'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan resepsi pernikahan putra-putri kami.',
-    gallery: [] as string[],
-    instagram: '',
-    facebook: '',
-    twitter: '',
-    enableRSVP: true,
-    bankAccounts: [] as { bank: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
-    digitalWallets: [] as { ewallet: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
-    shippingAddress: '',
-    loveStories: [] as { year: string; title: string; story: string; imageUrl?: string }[],
-    enableGuestbook: true,
-    preventSpam: true,
-  });
 
-  const handleQRUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'bank' | 'wallet', index: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    // Simple mock upload simulation since we don't have a storage logic yet
-    // In real app, this would use supabase.storage
-    const imageUrl = URL.createObjectURL(file);
-    
-    if (type === 'bank') {
-      const newAccounts = [...formData.bankAccounts];
-      newAccounts[index].qrisUrl = imageUrl;
-      setFormData({...formData, bankAccounts: newAccounts});
-    } else {
-      const newWallets = [...formData.digitalWallets];
-      newWallets[index].qrisUrl = imageUrl;
-      setFormData({...formData, digitalWallets: newWallets});
-    }
-  };
-
-  useEffect(() => {
-    async function loadData() {
-      if (id === 'new') {
-        setLoadingInitial(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from('invitations')
-          .select('*')
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
-        
-        if (data && data.details) {
-          // Merge db columns with JSONB details
-          setFormData(prev => ({
-            ...prev,
-            ...data.details,
-            title: data.title || prev.title,
-            customLink: data.url_slug || prev.customLink,
-            brideName: data.bride_name || prev.brideName,
-            groomName: data.groom_name || prev.groomName,
-            date: data.event_date ? data.event_date.split('T')[0] : prev.date,
-            venue: data.venue_name || prev.venue,
-            address: data.venue_address || prev.address,
-            theme: data.theme_name || prev.theme,
-            musicUrl: data.music_url || prev.musicUrl,
-          }));
-        }
-      } catch (err) {
-        console.error("Gagal memuat data undangan:", err);
-      } finally {
-        setLoadingInitial(false);
-      }
-    }
-    loadData();
-  }, [id]);
-
-  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // Lebih dari 5MB
-        alert('File audio maksimal 5MB agar mudah dimuat!');
-        return;
-      }
-      setIsUploading(true);
-      try {
-        const fileExt = file.name.split('.').pop() || 'mp3';
-        const fileName = `audio_${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
-        const filePath = `uploads/${fileName}`;
-
-        const { error } = await supabase.storage
-          .from('gallery')
-          .upload(filePath, file);
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('gallery')
-          .getPublicUrl(filePath);
-
-        setFormData(prev => ({
-          ...prev,
-          musicUrl: publicUrl
-        }));
-        
-        setShowUploadSuccess(true);
-        setTimeout(() => setShowUploadSuccess(false), 3000);
-      } catch (err) {
-        console.error("Gagal mengunggah musik:", err);
-        alert("Gagal mengunggah musik");
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
+  const { formData, setFormData, loadingInitial, handleSave, showSaveSuccess } = useEditorData(id);
+  const {
+    isUploading,
+    showUploadSuccess,
+    handleQRUpload,
+    handleAudioUpload,
+    handleImageUpload,
+    handleStoryImageUpload,
+    removeImage,
+    moveImage
+  } = useMediaUpload(formData, setFormData);
 
   const handleShare = () => {
     const url = `${window.location.origin}/invite/${formData.customLink || id}`;
     navigator.clipboard.writeText(url);
     setShowShareSuccess(true);
     setTimeout(() => setShowShareSuccess(false), 2000);
-  };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    
-    setIsUploading(true);
-    const newImages: string[] = [];
-
-    try {
-      for (const file of Array.from(files)) {
-        // Trik: Kompres Gambar! Maks 0.2MB atau lebar maks 1280px untuk Lighthouse Score tinggi
-        const options = {
-          maxSizeMB: 0.2,
-          maxWidthOrHeight: 1280,
-          useWebWorker: true,
-          fileType: 'image/webp' // Gunakan WebP untuk kompresi maksimal
-        };
-        
-        let fileToUpload = file;
-        try {
-          // @ts-ignore
-          fileToUpload = await imageCompression(file, options);
-          // Ganti extension ke .webp karena kita convert
-          const blob = fileToUpload as Blob;
-          fileToUpload = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".webp", { type: 'image/webp' });
-        } catch (comprErr) {
-          console.error("Gagal kompresi, gunakan file asli", comprErr);
-        }
-        
-        const fileExt = 'webp';
-        const fileName = `${Math.random().toString(36).substring(2, 10)}_${Date.now()}.${fileExt}`;
-        const filePath = `uploads/${fileName}`;
-        
-        const { error } = await supabase.storage
-          .from('gallery')
-          .upload(filePath, fileToUpload);
-          
-        if (error) {
-          console.error('Error uploading image:', error);
-          alert('Gagal mengunggah foto. Coba lagi.');
-          continue;
-        }
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('gallery')
-          .getPublicUrl(filePath);
-          
-        newImages.push(publicUrl);
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        gallery: [...prev.gallery, ...newImages],
-      }));
-
-      setShowUploadSuccess(true);
-      setTimeout(() => setShowUploadSuccess(false), 3000);
-    } catch (error) {
-      console.error('Error saat kompresi/mengunggah:', error);
-      alert('Terjadi kesalahan unggahan!');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleStoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, storyIndex: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    try {
-      const options = {
-        maxSizeMB: 0.3,
-        maxWidthOrHeight: 1280,
-        useWebWorker: true,
-        fileType: 'image/webp' as const,
-      };
-
-      let fileToUpload: File = file;
-      try {
-        // @ts-ignore
-        const compressed = await imageCompression(file, options);
-        fileToUpload = new File([compressed], file.name.replace(/\.[^/.]+$/, '') + '.webp', { type: 'image/webp' });
-      } catch {
-        // fallback to original if compression fails
-      }
-
-      const fileName = `story_${Math.random().toString(36).substring(2, 10)}_${Date.now()}.webp`;
-      const filePath = `uploads/${fileName}`;
-
-      const { error } = await supabase.storage.from('gallery').upload(filePath, fileToUpload);
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(filePath);
-
-      const newStories = [...formData.loveStories];
-      newStories[storyIndex] = { ...newStories[storyIndex], imageUrl: publicUrl };
-      setFormData({ ...formData, loveStories: newStories });
-
-      setShowUploadSuccess(true);
-      setTimeout(() => setShowUploadSuccess(false), 3000);
-    } catch (err) {
-      console.error('Gagal upload foto kisah cinta:', err);
-      alert('Gagal mengunggah foto. Coba lagi.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    const imgUrl = formData.gallery[index];
-    // Hapus dari Storage Supabase agar rapi & tidak menghabiskan limit
-    if (imgUrl.includes('supabase.co/storage/v1/object/public/gallery/')) {
-        const filePath = imgUrl.split('public/gallery/')[1];
-        supabase.storage.from('gallery').remove([filePath]).catch(console.error);
-    }
-
-    setFormData(prev => ({
-      ...prev,
-      gallery: prev.gallery.filter((_, i) => i !== index)
-    }));
-  };
-
-  const moveImage = (index: number, direction: 'left' | 'right') => {
-    setFormData(prev => {
-      const newGallery = [...prev.gallery];
-      if (direction === 'left' && index > 0) {
-        [newGallery[index - 1], newGallery[index]] = [newGallery[index], newGallery[index - 1]];
-      } else if (direction === 'right' && index < newGallery.length - 1) {
-        [newGallery[index + 1], newGallery[index]] = [newGallery[index], newGallery[index + 1]];
-      }
-      return { ...prev, gallery: newGallery };
-    });
-  };
-
-  const handleSave = async () => {
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) {
-        alert("Sesi telah habis. Silakan login kembali.");
-        router.push('/login');
-        return;
-      }
-
-      // 1. Cek Keunikan Link (Slug)
-      if (formData.customLink) {
-        const { data: existingLink } = await supabase
-          .from('invitations')
-          .select('id')
-          .eq('url_slug', formData.customLink)
-          .neq('id', id) // Jangan cek diri sendiri jika sedang edit
-          .single();
-
-        if (existingLink) {
-          alert(`Maaf, link "/invite/${formData.customLink}" sudah digunakan oleh orang lain. Silakan pilih link lain.`);
-          return;
-        }
-      }
-
-      const payload = {
-        user_id: userData.user.id,
-        url_slug: formData.customLink || null,
-        bride_name: formData.brideName,
-        groom_name: formData.groomName,
-        event_date: formData.date ? new Date(formData.date).toISOString() : null,
-        venue_name: formData.venue,
-        venue_address: formData.address,
-        theme_name: formData.theme,
-        music_url: formData.musicUrl,
-        details: formData
-      };
-
-      if (id === 'new') {
-        const { error } = await supabase.from('invitations').insert([payload]);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('invitations').update(payload).eq('id', id);
-        if (error) throw error;
-      }
-
-      setShowSaveSuccess(true);
-      setTimeout(() => {
-        setShowSaveSuccess(false);
-        router.push('/dashboard');
-      }, 2000);
-      
-    } catch (error: any) {
-      console.error("Gagal menyimpan:", error);
-      alert(error.message || "Terjadi kesalahan saat menyimpan.");
-    }
   };
 
   if (loadingInitial && id !== 'new') {
@@ -507,7 +199,7 @@ export default function Editor() {
           >
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-          <Link href={`/invite/${id}`} target="_blank" className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-medium transition-colors ${isDarkMode ? 'border-stone-700 text-stone-300 hover:bg-stone-800' : 'border-stone-200 text-stone-700 hover:bg-stone-50'}`}>
+          <Link href={`/invite/${id === 'new' ? 'demo' : id}?theme=${formData.theme}`} target="_blank" className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-medium transition-colors ${isDarkMode ? 'border-stone-700 text-stone-300 hover:bg-stone-800' : 'border-stone-200 text-stone-700 hover:bg-stone-50'}`}>
             <Eye className="w-4 h-4" />
             <span className="hidden sm:inline">Pratinjau</span>
           </Link>
@@ -669,55 +361,81 @@ export default function Editor() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tanggal Acara</label>
-                      <input 
-                        type="date" 
-                        value={formData.date}
-                        onChange={(e) => setFormData({...formData, date: e.target.value})}
-                        className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
-                      />
-                    </div>
-                    <div>
-                      <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Waktu Acara</label>
-                      <input 
-                        type="time" 
-                        value={formData.time}
-                        onChange={(e) => setFormData({...formData, time: e.target.value})}
-                        className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
-                      />
+                  {/* === AKAD NIKAH === */}
+                  <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-rose-50/50 border-rose-100'}`}>
+                    <h3 className={`text-base font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>
+                      🕌 Akad Nikah
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tanggal Akad</label>
+                          <input type="date" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})}
+                            className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Waktu Akad</label>
+                          <input type="time" value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})}
+                            className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Nama Tempat/Gedung Akad</label>
+                        <input type="text" value={formData.venue} onChange={(e) => setFormData({...formData, venue: e.target.value})}
+                          className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          placeholder="Contoh: Masjid Al-Azhar"
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Alamat Lengkap Akad</label>
+                        <textarea rows={2} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})}
+                          className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all resize-none ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          placeholder="Contoh: Jl. Sisingamangaraja, Kebayoran Baru, Jakarta Selatan"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Nama Tempat/Gedung</label>
-                    <input 
-                      type="text" 
-                      value={formData.venue}
-                      onChange={(e) => setFormData({...formData, venue: e.target.value})}
-                      className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className={`block text-sm font-medium ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Alamat Lengkap</label>
-                      <button 
-                        onClick={() => setIsMapModalOpen(true)}
-                        className="text-[10px] font-bold text-rose-500 flex items-center gap-1 hover:text-rose-600 transition-colors uppercase tracking-widest"
-                      >
-                        <Search className="w-3 h-3" />
-                        Pilih dari Peta
-                      </button>
+                  {/* === RESEPSI === */}
+                  <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-stone-800/50 border-stone-700' : 'bg-amber-50/50 border-amber-100'}`}>
+                    <h3 className={`text-base font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>
+                      🎊 Resepsi Pernikahan
+                    </h3>
+                    <p className={`text-xs mb-4 ${isDarkMode ? 'text-stone-500' : 'text-stone-500'}`}>
+                      Kosongkan jika akad dan resepsi di tempat/waktu yang sama.
+                    </p>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tanggal Resepsi</label>
+                          <input type="date" value={formData.receptionDate} onChange={(e) => setFormData({...formData, receptionDate: e.target.value})}
+                            className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          />
+                        </div>
+                        <div>
+                          <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Waktu Resepsi</label>
+                          <input type="time" value={formData.receptionTime} onChange={(e) => setFormData({...formData, receptionTime: e.target.value})}
+                            className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Nama Tempat/Gedung Resepsi</label>
+                        <input type="text" value={formData.receptionVenue} onChange={(e) => setFormData({...formData, receptionVenue: e.target.value})}
+                          className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          placeholder="Contoh: Ballroom Hotel Mulia"
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Alamat Lengkap Resepsi</label>
+                        <textarea rows={2} value={formData.receptionAddress} onChange={(e) => setFormData({...formData, receptionAddress: e.target.value})}
+                          className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all resize-none ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
+                          placeholder="Contoh: Jl. Asia Afrika, Senayan, Jakarta Pusat"
+                        />
+                      </div>
                     </div>
-                    <textarea 
-                      rows={3}
-                      value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all resize-none ${isDarkMode ? 'bg-stone-800 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}
-                      placeholder="Contoh: Jl. Sudirman No. 1, Jakarta Pusat"
-                    />
                   </div>
 
                   {/* Interactive Map */}
@@ -848,6 +566,11 @@ export default function Editor() {
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <ThemeCard id="elegant" name="Elegan Klasik" color="bg-stone-100" active={formData.theme === 'elegant'} onClick={() => setFormData({...formData, theme: 'elegant'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('elegant'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('elegant'); }} isDarkMode={isDarkMode} />
                     <ThemeCard id="floral" name="Bunga Musim Semi" color="bg-rose-50" active={formData.theme === 'floral'} onClick={() => setFormData({...formData, theme: 'floral'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('floral'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('floral'); }} isDarkMode={isDarkMode} />
+                    <ThemeCard id="floral-lavender" name="Lavender Dream" color="bg-[#f4f0f8]" active={formData.theme === 'floral-lavender'} onClick={() => setFormData({...formData, theme: 'floral-lavender'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('floral-lavender'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('floral-lavender'); }} isDarkMode={isDarkMode} />
+                    <ThemeCard id="floral-sage" name="Sage Botanical" color="bg-[#f0f3eb]" active={formData.theme === 'floral-sage'} onClick={() => setFormData({...formData, theme: 'floral-sage'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('floral-sage'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('floral-sage'); }} isDarkMode={isDarkMode} />
+                    <ThemeCard id="vogue" name="Vogue Magazine" color="bg-stone-900" active={formData.theme === 'vogue'} onClick={() => setFormData({...formData, theme: 'vogue'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('vogue'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('vogue'); }} isDarkMode={isDarkMode} />
+                    <ThemeCard id="javanese-classic" name="Javanese Classic" color="bg-[#8b5a2b]" active={formData.theme === 'javanese-classic'} onClick={() => setFormData({...formData, theme: 'javanese-classic'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('javanese-classic'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('javanese-classic'); }} isDarkMode={isDarkMode} />
+                    <ThemeCard id="vintage-classic" name="Vintage Classic" color="bg-[#d2b48c]" active={formData.theme === 'vintage-classic'} onClick={() => setFormData({...formData, theme: 'vintage-classic'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('vintage-classic'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('vintage-classic'); }} isDarkMode={isDarkMode} />
                     <ThemeCard id="modern" name="Modern Minimalis" color="bg-slate-100" active={formData.theme === 'modern'} onClick={() => setFormData({...formData, theme: 'modern'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('modern'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('modern'); }} isDarkMode={isDarkMode} />
                     <ThemeCard id="rustic" name="Rustic Alam" color="bg-amber-50" active={formData.theme === 'rustic'} onClick={() => setFormData({...formData, theme: 'rustic'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('rustic'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('rustic'); }} isDarkMode={isDarkMode} />
                     <ThemeCard id="luxury" name="Mewah Emas" color="bg-yellow-50" active={formData.theme === 'luxury'} onClick={() => setFormData({...formData, theme: 'luxury'})} onPreview={(e) => { e.stopPropagation(); setPreviewThemeId('luxury'); }} onInfo={(e) => { e.stopPropagation(); setInfoThemeId('luxury'); }} isDarkMode={isDarkMode} />
@@ -1696,7 +1419,23 @@ function TabButton({ icon, label, active, onClick, isDarkMode }: { icon: React.R
   );
 }
 
+// Special themes that have their own full component (not the generic template)
+const SPECIAL_THEMES = ['floral', 'floral-lavender', 'floral-sage', 'vogue', 'javanese-classic', 'vintage-classic'];
+
 function ThemeCard({ id, name, color, active, onClick, onPreview, onInfo, isDarkMode }: { id: string, name: string, color: string, active: boolean, onClick: () => void, onPreview: (e: React.MouseEvent) => void, onInfo: (e: React.MouseEvent) => void, isDarkMode: boolean }) {
+  const isSpecial = SPECIAL_THEMES.includes(id);
+
+  const handlePreview = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isSpecial) {
+      // Open the actual theme component in a new tab for accurate preview
+      window.open(`/invite/demo?theme=${id}`, '_blank');
+    } else {
+      // Use the in-editor generic modal for standard themes
+      onPreview(e);
+    }
+  };
+
   return (
     <div className={`relative flex flex-col p-2 rounded-2xl border-2 transition-all ${
       active 
@@ -1710,6 +1449,15 @@ function ThemeCard({ id, name, color, active, onClick, onPreview, onInfo, isDark
         <div className={`w-full h-24 rounded-xl ${color} mb-2 border relative overflow-hidden ${isDarkMode ? 'border-stone-700' : 'border-stone-100'}`}>
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
           
+          {/* Special badge */}
+          {isSpecial && (
+            <div className="absolute top-2 right-2 z-10">
+              <span className="px-1.5 py-0.5 bg-rose-500 text-white text-[8px] font-bold rounded-full uppercase tracking-wider shadow-sm">
+                Special
+              </span>
+            </div>
+          )}
+
           {/* Info Icon */}
           <div className="absolute top-2 left-2 z-10">
             <button 
@@ -1723,11 +1471,16 @@ function ThemeCard({ id, name, color, active, onClick, onPreview, onInfo, isDark
         <span className={`block text-center text-xs font-bold mb-2 ${active ? 'text-rose-600' : (isDarkMode ? 'text-stone-300' : 'text-stone-700')}`}>{name}</span>
       </div>
       <button
-        onClick={onPreview}
-        className={`w-full py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${isDarkMode ? 'bg-stone-800 hover:bg-stone-700 text-stone-400' : 'bg-stone-100 hover:bg-stone-200 text-stone-600'}`}
+        onClick={handlePreview}
+        title={isSpecial ? 'Buka pratinjau tema khusus di tab baru' : 'Pratinjau tema'}
+        className={`w-full py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${
+          isSpecial
+            ? (isDarkMode ? 'bg-rose-900/30 hover:bg-rose-800/40 text-rose-400' : 'bg-rose-50 hover:bg-rose-100 text-rose-600')
+            : (isDarkMode ? 'bg-stone-800 hover:bg-stone-700 text-stone-400' : 'bg-stone-100 hover:bg-stone-200 text-stone-600')
+        }`}
       >
         <Maximize2 className="w-3.5 h-3.5" />
-        Pratinjau
+        {isSpecial ? 'Lihat Tema' : 'Pratinjau'}
       </button>
     </div>
   );
@@ -1765,6 +1518,11 @@ function ThemePreview({ theme, formData, isFull = false }: { theme: string, form
   const themeStyles: Record<string, { bg: string, text: string, accent: string, font: string, border: string }> = {
     elegant: { bg: 'bg-[#FDFBF7]', text: 'text-stone-800', accent: 'text-rose-400', font: 'font-serif', border: 'border-stone-200' },
     floral: { bg: 'bg-rose-50', text: 'text-rose-900', accent: 'text-rose-500', font: 'font-serif', border: 'border-rose-200' },
+    'floral-lavender': { bg: 'bg-[#f4f0f8]', text: 'text-[#4a3b52]', accent: 'text-[#9b7eac]', font: 'font-serif', border: 'border-[#e0d6e8]' },
+    'floral-sage': { bg: 'bg-[#f0f3eb]', text: 'text-[#2a3826]', accent: 'text-[#7e906b]', font: 'font-serif', border: 'border-[#d2dcc6]' },
+    vogue: { bg: 'bg-stone-950', text: 'text-stone-100', accent: 'text-stone-400', font: 'font-serif', border: 'border-stone-800' },
+    'javanese-classic': { bg: 'bg-[#faf4eb]', text: 'text-[#4a3525]', accent: 'text-[#b8860b]', font: 'font-serif', border: 'border-[#d8c3a5]' },
+    'vintage-classic': { bg: 'bg-[#fdfbf7]', text: 'text-[#5c4d42]', accent: 'text-[#8b7355]', font: 'font-serif', border: 'border-[#e6dfd3]' },
     modern: { bg: 'bg-slate-50', text: 'text-slate-900', accent: 'text-slate-500', font: 'font-sans', border: 'border-slate-200' },
     rustic: { bg: 'bg-amber-50', text: 'text-amber-900', accent: 'text-amber-700', font: 'font-serif', border: 'border-amber-200' },
     luxury: { bg: 'bg-yellow-50', text: 'text-yellow-900', accent: 'text-yellow-600', font: 'font-serif', border: 'border-yellow-200' },

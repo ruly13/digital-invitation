@@ -6,10 +6,10 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import Logo from '@/components/Logo';
 import AIChatWidget from '@/components/AIChatWidget';
 import PageTransition from '@/components/PageTransition';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter, usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
+import { useDashboardData } from '@/hooks/useDashboardData';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,75 +27,9 @@ const itemVariants = {
 } as const;
 
 export default function Dashboard() {
-  const router = useRouter();
   const pathname = usePathname();
-  const [invitations, setInvitations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<any>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          router.push('/login');
-          return;
-        }
-        
-        const [profileResponse, invsResponse] = await Promise.all([
-          supabase.from('profiles').select('*').eq('id', user.id).single(),
-          supabase.from('invitations').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
-        ]);
-        
-        setUserProfile(profileResponse.data || { full_name: user?.email || 'Pengguna' });
-
-        if (invsResponse.error) throw invsResponse.error;
-        
-        setInvitations(invsResponse.data || []);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, [router]);
-
-  const handleDelete = async (inv: any) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus undangan ini? Tindakan ini tidak dapat dibatalkan.')) return;
-    try {
-      if (inv.details?.gallery && Array.isArray(inv.details.gallery)) {
-        const filePaths = inv.details.gallery
-          .filter((url: string) => url.includes('supabase.co/storage/v1/object/public/gallery/'))
-          .map((url: string) => url.split('public/gallery/')[1]);
-        
-        if (filePaths.length > 0) {
-          await supabase.storage.from('gallery').remove(filePaths);
-        }
-      }
-
-      // Bersihkan juga file audio dari bucket
-      const musicUrl = inv.music_url || inv.details?.musicUrl;
-      if (musicUrl && musicUrl.includes('supabase.co/storage/v1/object/public/gallery/')) {
-        const audioPath = musicUrl.split('public/gallery/')[1];
-        await supabase.storage.from('gallery').remove([audioPath]);
-      }
-
-      await supabase.from('invitations').delete().eq('id', inv.id);
-      setInvitations(invitations.filter((i) => i.id !== inv.id));
-    } catch (error) {
-      console.error('Error deleting:', error);
-      alert('Gagal menghapus undangan.');
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
+  const { invitations, loading, userProfile, guestStats, handleDelete, handleLogout } = useDashboardData();
 
   const copyLink = (slug: string, id: string) => {
     const fullUrl = `${window.location.protocol}//${window.location.host}/invite/${slug}`;
@@ -107,9 +41,8 @@ export default function Dashboard() {
   // Kalkulasi Quick Stats
   const totalInvitations = invitations.length;
   const activeInvitations = invitations.filter(i => i.payment_status === 'active' || i.payment_status === 'paid').length;
-  // TODO: Hubungkan ke tabel 'guests' dan 'comments' di versi selanjutnya
-  const totalGuests = 0; 
-  const totalWishes = 0;
+  const totalGuests = guestStats.totalGuests; 
+  const totalWishes = guestStats.totalWishes;
 
   return (
     <PageTransition>
@@ -120,7 +53,7 @@ export default function Dashboard() {
             <Link href="/" className="text-stone-900"><Logo className="text-xl" /></Link>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={handleLogout} className="text-sm font-medium text-stone-500 hover:text-rose-500 transition-colors hidden sm:block">
+            <button onClick={handleLogout} aria-label="Keluar dari akun" className="text-sm font-medium text-stone-500 hover:text-rose-500 transition-colors hidden sm:block">
               Keluar
             </button>
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-orange-400 flex items-center justify-center text-sm font-bold text-white uppercase shadow-sm">
@@ -314,9 +247,10 @@ export default function Dashboard() {
                           </p>
                           {inv.url_slug && (
                             <button 
-                              onClick={() => copyLink(inv.url_slug, inv.id)}
+                              onClick={() => copyLink(inv.url_slug!, inv.id)}
                               className="flex items-center shadow-sm gap-1.5 px-2 py-1 bg-white hover:bg-stone-200 border border-stone-200 rounded-md transition-colors text-stone-500 hover:text-stone-900"
                               title="Salin Link"
+                              aria-label="Salin Link"
                             >
                               {copiedId === inv.id ? (
                                 <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -354,19 +288,14 @@ export default function Dashboard() {
                           <span className="hidden sm:inline">Tamu</span>
                         </Link>
 
-                        {inv.url_slug ? (
-                          <Link href={`/invite/${inv.url_slug}`} target="_blank" className="flex-1 flex items-center justify-center gap-2 px-2 py-2.5 border border-stone-200 hover:bg-stone-50 text-stone-600 rounded-xl text-sm transition-colors" title="Pratinjau">
-                            <Eye className="w-5 h-5" />
-                          </Link>
-                        ) : (
-                          <button disabled className="flex-1 flex items-center justify-center gap-2 px-2 py-2.5 border border-stone-100 bg-stone-50 text-stone-300 rounded-xl text-sm cursor-not-allowed">
-                            <Eye className="w-5 h-5" />
-                          </button>
-                        )}
+                        <Link href={`/invite/${inv.url_slug || inv.id}`} target="_blank" className="flex-1 flex items-center justify-center gap-2 px-2 py-2.5 border border-stone-200 hover:bg-stone-50 text-stone-600 rounded-xl text-sm transition-colors" title="Pratinjau">
+                          <Eye className="w-5 h-5" />
+                        </Link>
                         <button 
                           onClick={() => handleDelete(inv)}
                           className="flex-none p-2.5 text-stone-400 border border-transparent hover:border-rose-200 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                           title="Hapus"
+                          aria-label="Hapus Undangan"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>

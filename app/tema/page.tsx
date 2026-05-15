@@ -67,7 +67,7 @@ function TemplateCard({
       <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
         <Image 
           src={`https://images.unsplash.com/photo-${photoId}?q=80&w=400&h=600&auto=format&fit=crop`} 
-          alt={name} 
+          alt={`Tema Undangan Digital ${name}`} 
           fill 
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover opacity-20 group-hover:opacity-40 transition-opacity"

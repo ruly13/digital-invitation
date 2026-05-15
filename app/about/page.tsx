@@ -6,6 +6,14 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Tentang Kami - karsaloka',
   description: 'Mengenal lebih dekat tim dan visi di balik karsaloka, platform undangan pernikahan digital premium Indonesia.',
+  openGraph: {
+    title: 'Tentang Kami | karsaloka',
+    description: 'Mengenal lebih dekat tim dan visi di balik karsaloka.',
+    url: 'https://karsaloka.com/about',
+    siteName: 'karsaloka',
+    locale: 'id_ID',
+    type: 'website',
+  },
 };
 
 export default function AboutPage() {

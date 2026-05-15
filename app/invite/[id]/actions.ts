@@ -58,11 +58,11 @@ export async function submitRsvpAction(payload: { invitation_id: string; name: s
   }
 
   // 3. Database Insert
-  const { error } = await supabase.from('guests').insert({
+  const { error } = await supabase.from('guest_responses').insert({
     invitation_id: payload.invitation_id,
     name: payload.name,
-    status: payload.status,
-    count: payload.count,
+    attendance: payload.status,   // 'Hadir' atau 'Tidak Hadir'
+    guest_count: payload.count,
     message: payload.message
   });
 

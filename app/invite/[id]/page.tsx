@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         type: 'website',
       },
       twitter: { card: 'summary_large_image' },
+      robots: { index: false, follow: false },
     };
   }
 

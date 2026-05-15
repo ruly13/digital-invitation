@@ -73,14 +73,32 @@ export default function SpesialFloral({ data, isOpen, handleOpen, isPlaying, set
     groomName="Groom", brideName="Bride", groomFullName="Groom", brideFullName="Bride",
     groomParents="Bapak & Ibu Groom", brideParents="Bapak & Ibu Bride",
     groomImage, brideImage, coverImage, guestName="Tamu Undangan",
-    date="2026-08-16", time="08:00", venue="Gedung Pernikahan", address="Jl. Contoh No. 123",
+    date="", time="08:00", venue="Gedung Pernikahan", address="Jl. Contoh No. 123",
+    receptionDate="", receptionTime="", receptionVenue="", receptionAddress="",
+    saveTheDateDate="", saveTheDateDescription="",
     loveStories=[], gallery=[], bankAccounts=[], digitalWallets=[], shippingAddress,
     musicUrl, brandName="karsaloka", brideInstagram="", groomInstagram="",
   } = data;
 
+  const primaryDate = saveTheDateDate || date || "2026-08-16";
+
   const {msg,show,toast} = useToast();
   const [activeTab,setActiveTab] = useState<"akad"|"resepsi">("akad");
   const [lightbox,setLightbox] = useState<string|null>(null);
+
+  const getCoverDate = () => {
+    if (!primaryDate) return "TANGGAL BELUM DITENTUKAN";
+    const d = new Date(primaryDate);
+    if (isNaN(d.getTime())) return "TANGGAL BELUM DITENTUKAN";
+    return d.toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g," · ");
+  };
+
+  const getLongDate = (dString: string) => {
+    if (!dString) return "Tanggal Belum Ditentukan";
+    const d = new Date(dString);
+    if (isNaN(d.getTime())) return "Tanggal Belum Ditentukan";
+    return d.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  };
 
   const copyText = async (text:string, id:string) => { copyToClipboard(text,id); toast("✓ Nomor berhasil disalin!"); };
   const scrollTo = (id:string) => document.getElementById(id)?.scrollIntoView({behavior:"smooth"});
@@ -119,7 +137,7 @@ export default function SpesialFloral({ data, isOpen, handleOpen, isPlaying, set
             </motion.h1>
             <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:1,delay:1}}>
               <div className="sf-cover-ornament" style={{marginTop:"0.75rem"}}><span className="sf-orn-line"/><span className="sf-orn-diamond"/><span className="sf-orn-line"/></div>
-              <p className="sf-cover-date">{new Date(date).toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"}).replace(/\//g," · ")}</p>
+              <p className="sf-cover-date">{getCoverDate()}</p>
             </motion.div>
             <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration:1,delay:1.2}} style={{marginTop:"2rem"}}>
               <p className="sf-cover-to">Kepada Yth.</p>
@@ -175,9 +193,9 @@ export default function SpesialFloral({ data, isOpen, handleOpen, isPlaying, set
             <section className="sf-section sf-section-cream" id="savedate">
               <Reveal>
                 <SectionOrnament /><p className="sf-badge">Save The Date</p>
-                <h2 className="sf-section-title">{date}</h2>
-                <p className="sf-body-text" style={{marginBottom:"1rem"}}>Kami menanti kehadiran dan doa restu Anda.</p>
-                <CountdownDisplay targetDate={date} />
+                <h2 className="sf-section-title">{getLongDate(primaryDate)}</h2>
+                <p className="sf-body-text" style={{marginBottom:"1rem"}}>{saveTheDateDescription || "Kami menanti kehadiran dan doa restu Anda."}</p>
+                <CountdownDisplay targetDate={primaryDate} />
               </Reveal>
               <Reveal delay={0.15}>
                 <div className="sf-tabs">
@@ -186,11 +204,11 @@ export default function SpesialFloral({ data, isOpen, handleOpen, isPlaying, set
                 </div>
                 <div className="sf-event-card">
                   <p className="sf-event-type">{activeTab==="akad"?"Akad Nikah":"Resepsi Pernikahan"}</p>
-                  <p className="sf-event-date">{date}</p>
-                  <p className="sf-event-time">Pukul {time}</p>
-                  <p className="sf-event-venue">{venue}</p>
-                  <p className="sf-event-addr">{address}</p>
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue+" "+address)}`} target="_blank" rel="noreferrer" className="sf-map-btn">📍 Lihat Lokasi</a>
+                  <p className="sf-event-date">{activeTab==="akad" ? getLongDate(date || primaryDate) : getLongDate(receptionDate || date || primaryDate)}</p>
+                  <p className="sf-event-time">Pukul {activeTab==="akad" ? time : (receptionTime || time)}</p>
+                  <p className="sf-event-venue">{activeTab==="akad" ? venue : (receptionVenue || venue)}</p>
+                  <p className="sf-event-addr">{activeTab==="akad" ? address : (receptionAddress || address)}</p>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeTab==="akad"?`${venue} ${address}`:`${receptionVenue||venue} ${receptionAddress||address}`)}`} target="_blank" rel="noreferrer" className="sf-map-btn">📍 Lihat Lokasi</a>
                 </div>
               </Reveal>
             </section>

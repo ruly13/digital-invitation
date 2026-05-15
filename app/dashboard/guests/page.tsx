@@ -1,107 +1,30 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { supabase } from '@/lib/supabase';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Search, Plus, Download, MoreVertical, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { ArrowLeft, Search, Plus, Download, MoreVertical } from 'lucide-react';
+import { useGuestData } from '@/hooks/useGuestData';
+import { StatCard } from '@/components/admin/StatCard';
+import { StatusBadge } from '@/components/admin/StatusBadge';
 
 function GuestListContent() {
-  const [guests, setGuests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const searchParams = useSearchParams();
   const invitationId = searchParams.get('id');
-
-  useEffect(() => {
-    const fetchGuests = async () => {
-      try {
-        let query = supabase
-          .from('guests')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (invitationId) {
-          query = query.eq('invitation_id', invitationId);
-        }
-
-        const { data, error } = await query;
-        if (error) throw error;
-        
-        let guestsData = data || [];
-        
-        // Fetch invitations separately to bypass PostgREST foreign key relationship errors
-        const invIds = Array.from(new Set(guestsData.map(g => g.invitation_id).filter(Boolean)));
-        if (invIds.length > 0) {
-          const { data: invs } = await supabase
-            .from('invitations')
-            .select('id, bride_name, groom_name')
-            .in('id', invIds);
-            
-          if (invs) {
-            guestsData = guestsData.map(g => ({
-              ...g,
-              invitations: invs.find(i => i.id === g.invitation_id) || null
-            }));
-          }
-        }
-        
-        setGuests(guestsData);
-      } catch (error: any) {
-        console.error('Error fetching guests:', error?.message || JSON.stringify(error) || error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGuests();
-  }, [invitationId]);
-
-  const filteredGuests = guests.filter(g => 
-    g.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const downloadCSV = () => {
-    const headers = ['Nama', 'Status RSVP', 'Jumlah Tamu', 'Pesan', 'Undangan'];
-    const rows = filteredGuests.map(guest => [
-      guest.name,
-      guest.status,
-      guest.count,
-      guest.message,
-      guest.invitations ? `${guest.invitations.bride_name} & ${guest.invitations.groom_name}` : '-'
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell || ''}"`).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `daftar_tamu_${invitationId || 'global'}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const stats = {
-    total: guests.length,
-    hadir: guests.filter(g => g.status === 'Hadir').length,
-    absen: guests.filter(g => g.status === 'Tidak Hadir').length,
-    menunggu: guests.filter(g => g.status === 'Menunggu').length,
-  };
-
-  const inviteName = invitationId && guests.length > 0 && guests[0].invitations 
-    ? `Pernikahan ${guests[0].invitations.bride_name} & ${guests[0].invitations.groom_name}`
-    : 'Semua Undangan';
+  const {
+    loading,
+    searchQuery,
+    setSearchQuery,
+    filteredGuests,
+    stats,
+    inviteName,
+    downloadCSV
+  } = useGuestData(invitationId);
 
   return (
     <div className="min-h-screen bg-stone-50 font-sans">
       <header className="bg-white border-b border-stone-200 px-6 py-4 flex items-center gap-4 sticky top-0 z-10">
-        <Link href="/dashboard" className="p-2 hover:bg-stone-100 rounded-full transition-colors text-stone-600">
+        <Link href="/dashboard" aria-label="Kembali ke Dashboard" className="p-2 hover:bg-stone-100 rounded-full transition-colors text-stone-600">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
@@ -166,12 +89,12 @@ function GuestListContent() {
                     <tr key={guest.id} className="hover:bg-stone-50 transition-colors">
                       <td className="px-6 py-4 font-medium text-stone-900">{guest.name}</td>
                       <td className="px-6 py-4">
-                        <StatusBadge status={guest.status} />
+                        <StatusBadge status={guest.status || 'Menunggu'} />
                       </td>
-                      <td className="px-6 py-4 text-stone-600">{guest.count > 0 ? `${guest.count} Orang` : '-'}</td>
+                      <td className="px-6 py-4 text-stone-600">{(guest.count ?? 0) > 0 ? `${guest.count} Orang` : '-'}</td>
                       <td className="px-6 py-4 text-stone-600 text-sm italic">{guest.message || '-'}</td>
                       <td className="px-6 py-4 text-right">
-                        <button className="p-2 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors">
+                        <button aria-label="Opsi Lainnya" className="p-2 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors">
                           <MoreVertical className="w-5 h-5" />
                         </button>
                       </td>
@@ -195,37 +118,4 @@ export default function GuestList() {
   );
 }
 
-function StatCard({ title, value, subtitle }: { title: string, value: string, subtitle: string }) {
-  return (
-    <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
-      <p className="text-sm font-medium text-stone-500 mb-2">{title}</p>
-      <p className="text-3xl font-semibold text-stone-900 mb-1">{value}</p>
-      <p className="text-xs text-stone-400">{subtitle}</p>
-    </div>
-  );
-}
 
-function StatusBadge({ status }: { status: string }) {
-  if (status === 'Hadir') {
-    return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
-        <CheckCircle2 className="w-3.5 h-3.5" />
-        Hadir
-      </span>
-    );
-  }
-  if (status === 'Tidak Hadir') {
-    return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-medium border border-rose-100">
-        <XCircle className="w-3.5 h-3.5" />
-        Tidak Hadir
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-100">
-      <Clock className="w-3.5 h-3.5" />
-      Menunggu
-    </span>
-  );
-}

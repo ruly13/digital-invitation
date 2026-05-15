@@ -26,9 +26,11 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   const params = useParams();
   const id = propId || (params.id as string);
   const searchParams = useSearchParams();
-  const themeQuery = searchParams.get('theme') || 'elegant';
+  const themeQuery = searchParams.get('theme') || null;
 
-  const selectedTheme = THEMES.find(t => t.id === themeQuery) || THEMES[0];
+  // effectiveTheme: URL ?theme= takes priority (for editor preview), falls back to DB value
+  // This is resolved AFTER dbInviteData loads, so we use a derived value in render
+  const selectedTheme = THEMES.find(t => t.id === (themeQuery || 'elegant')) || THEMES[0];
   let mockBgClass = selectedTheme.color;
   let mockFontClass = selectedTheme.fontClass;
   let mockTextClass = selectedTheme.textColor || 'text-stone-800';
@@ -36,13 +38,14 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   let mockCover = 'https://images.unsplash.com/photo-1542042161784-26ab9e041e89?q=80&w=1200&auto=format&fit=crop';
 
   // Specific cover images for test themes
-  if (themeQuery === 'floral') {
+  const previewTheme = themeQuery || '';
+  if (previewTheme.startsWith('floral')) {
     mockCover = 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop';
-  } else if (themeQuery === 'modern') {
+  } else if (previewTheme === 'modern') {
     mockCover = 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop';
-  } else if (themeQuery === 'rustic') {
+  } else if (previewTheme === 'rustic') {
     mockCover = 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?q=80&w=1200&auto=format&fit=crop';
-  } else if (themeQuery === 'army') {
+  } else if (previewTheme === 'army') {
     mockCover = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop';
   }
 
@@ -194,6 +197,10 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     address: dbInviteData.venue_address || dbInviteData.details.address || inviteData.address,
   } as typeof inviteData : inviteData;
 
+  // effectiveTheme: URL ?theme= param takes priority (editor preview mode),
+  // otherwise use the theme saved in the database
+  const effectiveTheme = themeQuery || finalInviteData.theme || 'elegant';
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -321,12 +328,17 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     );
   }
 
-  // Floral Theme Override
-  if (finalInviteData.theme === 'floral') {
+  // ===== SPECIAL THEME OVERRIDES =====
+  // Uses effectiveTheme (URL param takes priority for editor preview, else DB value)
+
+  // Floral Theme Family (floral, floral-lavender, floral-sage)
+  if (effectiveTheme === 'floral' || effectiveTheme === 'floral-lavender' || effectiveTheme === 'floral-sage') {
+    // Merge the effective theme into data so SpesialFloral can read it if needed
+    const floralData = { ...finalInviteData, theme: effectiveTheme };
     return (
       <PageTransition>
         <SpesialFloral 
-          data={finalInviteData} 
+          data={floralData} 
           isOpen={isOpen} 
           handleOpen={handleOpen}
           isPlaying={isPlaying}
@@ -349,7 +361,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   }
 
   // Vogue Theme Override
-  if (finalInviteData.theme === 'vogue') {
+  if (effectiveTheme === 'vogue') {
     return (
       <PageTransition>
         <VogueTheme 
@@ -373,7 +385,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   }
 
   // Javanese Classic Theme Override
-  if (finalInviteData.theme === 'javanese-classic') {
+  if (effectiveTheme === 'javanese-classic') {
     return (
       <PageTransition>
         <JavaneseClassicTheme 
@@ -397,7 +409,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
   }
 
   // Vintage Classic Theme Override
-  if (finalInviteData.theme === 'vintage-classic') {
+  if (effectiveTheme === 'vintage-classic') {
     return (
       <PageTransition>
         <VintageClassicTheme 
