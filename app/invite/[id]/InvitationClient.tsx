@@ -175,9 +175,9 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
     ],
     shippingAddress: 'The Haven Residence, Tower A Unit 1205, Jakarta Selatan 12345 (Penerima: Adrian / 081234567890)',
     loveStories: [
-      { year: 'September 2021', title: 'Awal Bertemu', story: 'Semesta mempertemukan kami di sebuah proyek kolaborasi di Bali. Obrolan singkat membuahkan pertemanan yang hangat dan kesamaan visi.', imageUrl: '' },
-      { year: 'Februari 2024', title: 'Lamaran', story: 'Di bawah langit malam Tokyo, disaksikan rintik salju yang turun pelan, ia berlutut dan menautkan janji untuk melangkah bersama selamanya.', imageUrl: '' },
-      { year: 'Agustus 2025', title: 'Sebuah Komitmen', story: 'Dihadapan kedua belah pihak keluarga besar, kami mengikat janji pertunangan untuk secara resmi melangkah ke pelaminan.', imageUrl: '' }
+      { date: 'September 2021', title: 'Awal Bertemu', description: 'Semesta mempertemukan kami di sebuah proyek kolaborasi di Bali. Obrolan singkat membuahkan pertemanan yang hangat dan kesamaan visi.', imageUrl: '' },
+      { date: 'Februari 2024', title: 'Lamaran', description: 'Di bawah langit malam Tokyo, disaksikan rintik salju yang turun pelan, ia berlutut dan menautkan janji untuk melangkah bersama selamanya.', imageUrl: '' },
+      { date: 'Agustus 2025', title: 'Sebuah Komitmen', description: 'Dihadapan kedua belah pihak keluarga besar, kami mengikat janji pertunangan untuk secara resmi melangkah ke pelaminan.', imageUrl: '' }
     ],
     enableGuestbook: true,
     guestbookEntries: [
@@ -690,7 +690,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                 {/* Content Card with Hover Lift */}
                 <div className="flex-1 md:flex-none md:w-[calc(50%-2.5rem)] bg-white p-5 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-stone-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-2 group-hover:border-rose-200 overflow-hidden">
                   <span className={`inline-block px-4 py-1.5 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase mb-4 shadow-sm ${idx % 2 === 0 ? 'bg-rose-500 text-white' : 'bg-stone-900 text-white'}`}>
-                    {story.year}
+                    {story.date}
                   </span>
 
                   {story.imageUrl && (
@@ -708,7 +708,7 @@ export default function InvitationClientPage({ id: propId }: { id?: string } = {
                   <h3 className="text-2xl font-serif text-stone-900 mb-3 group-hover:text-rose-600 transition-colors">{story.title}</h3>
                   <div className="w-12 h-0.5 bg-rose-200 mb-4 transition-all duration-500 group-hover:w-24 group-hover:bg-rose-500"></div>
                   <p className="text-stone-600 leading-relaxed text-sm italic font-serif opacity-80 group-hover:opacity-100 transition-opacity">
-                    &quot;{story.story}&quot;
+                    &quot;{story.description}&quot;
                   </p>
                 </div>
               </motion.div>

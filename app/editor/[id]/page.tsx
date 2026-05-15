@@ -1093,7 +1093,7 @@ export default function Editor() {
                 <div className="flex justify-between items-center mb-6">
                   <h2 className={`text-2xl font-serif font-semibold ${isDarkMode ? 'text-white' : 'text-stone-900'}`}>Kisah Cinta (Love Story)</h2>
                   <button 
-                    onClick={() => setFormData({...formData, loveStories: [...formData.loveStories, { year: '', title: '', story: '', imageUrl: '' }]})}
+                    onClick={() => setFormData({...formData, loveStories: [...formData.loveStories, { date: '', title: '', description: '', imageUrl: '' }]})}
                     className="flex items-center gap-2 px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-xl hover:bg-rose-600 transition-colors shadow-sm"
                   >
                     <Plus className="w-4 h-4"/> Tambah Cerita
@@ -1115,9 +1115,9 @@ export default function Editor() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Tahun / Waktu</label>
-                          <input type="text" value={story.year} onChange={(e) => {
+                          <input type="text" value={story.date} onChange={(e) => {
                             const newStories = [...formData.loveStories];
-                            newStories[index].year = e.target.value;
+                            newStories[index].date = e.target.value;
                             setFormData({...formData, loveStories: newStories});
                           }} placeholder="Misal: Januari 2020" className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`} />
                         </div>
@@ -1164,9 +1164,9 @@ export default function Editor() {
 
                       <div>
                         <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-stone-400' : 'text-stone-700'}`}>Deskripsi / Cerita</label>
-                        <textarea rows={3} value={story.story} onChange={(e) => {
+                        <textarea rows={3} value={story.description} onChange={(e) => {
                           const newStories = [...formData.loveStories];
-                          newStories[index].story = e.target.value;
+                          newStories[index].description = e.target.value;
                           setFormData({...formData, loveStories: newStories});
                         }} className={`w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 outline-none resize-none ${isDarkMode ? 'bg-stone-900 border-stone-700 text-white' : 'bg-white border-stone-300 text-stone-900'}`}></textarea>
                       </div>

@@ -35,7 +35,7 @@ export const INITIAL_FORM_DATA = {
   bankAccounts: [] as { bank: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
   digitalWallets: [] as { ewallet: string; accountName: string; accountNumber: string; qrisUrl?: string }[],
   shippingAddress: '',
-  loveStories: [] as { year: string; title: string; story: string; imageUrl?: string }[],
+  loveStories: [] as { date: string; title: string; description: string; imageUrl?: string }[],
   enableGuestbook: true,
   preventSpam: true,
 };
