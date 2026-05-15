@@ -6,7 +6,7 @@ import { Heart, ArrowLeft, Eye, X, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import PageTransition from '@/components/PageTransition';
-import { THEMES } from '@/lib/themes';
+import { THEMES, ThemeConfig, resolveThemeThumbnail } from '@/lib/themes';
 import Logo from '@/components/Logo';
 import AIChatWidget from '@/components/AIChatWidget';
 import WhatsAppButton from '@/components/WhatsAppButton';
@@ -36,46 +36,51 @@ import MaintenancePage from "@/app/maintence/maintence";
   ];
 
 function TemplateCard({ 
-  name, 
-  color, 
-  seed, 
-  fontClass = "font-serif text-3xl",
-  textColor = "text-stone-900",
-  accentColor = "text-rose-500",
-  dividerColor = "bg-stone-300",
+  theme,
   groomName = "Romeo",
   brideName = "Juliet",
   photoId = "1511285560929-80b456fea0bc",
   priority = false,
   onPreview
 }: { 
-  name: string, 
-  color: string, 
-  seed: string,
-  fontClass?: string,
-  textColor?: string,
-  accentColor?: string,
-  dividerColor?: string,
+  theme: ThemeConfig,
   groomName?: string,
   brideName?: string,
   photoId?: string,
   priority?: boolean,
   onPreview: () => void
 }) {
+  // ── AUTO ENGINE: hitung thumbnail sesuai warna tema ──────────────
+  const { thumbnailBg, imageOpacity, overlay } = resolveThemeThumbnail(theme);
+  const { name, color, fontClass = 'font-serif text-3xl' } = theme;
+  const textColor  = theme.textColor  ?? 'text-stone-900';
+  const accentColor = theme.accentColor ?? 'text-rose-500';
+  const dividerColor = theme.dividerColor ?? 'bg-stone-300';
+
+  const cardStyle = thumbnailBg ? { background: thumbnailBg } : undefined;
+  const cardBgClass = thumbnailBg ? '' : color;
+
   return (
     <div onClick={onPreview} className="group cursor-pointer block h-full">
-      <div className={`aspect-[3/4] rounded-[2rem] ${color} border border-stone-200 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-rose-200/50`}>
+      <div
+        className={`aspect-[3/4] rounded-[2rem] ${cardBgClass} border border-stone-200/30 mb-6 overflow-hidden relative transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-2xl group-hover:shadow-black/30`}
+        style={cardStyle}
+      >
         <Image 
           src={`https://images.unsplash.com/photo-${photoId}?q=80&w=400&h=600&auto=format&fit=crop`} 
           alt={`Tema Undangan Digital ${name}`} 
           fill 
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover opacity-20 group-hover:opacity-40 transition-opacity"
+          className="object-cover transition-opacity"
+          style={{ opacity: imageOpacity / 100 }}
           referrerPolicy="no-referrer"
           unoptimized
           priority={priority}
           loading={priority ? undefined : "lazy"}
         />
+        {overlay && (
+          <div className="absolute inset-0" style={{ background: overlay }} />
+        )}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center drop-shadow-xl z-10">
           <div className={`w-12 h-[1px] ${dividerColor} shadow-sm mb-6`}></div>
           <p className={`text-[10px] uppercase tracking-[0.3em] font-sans ${textColor} opacity-80 mb-4 drop-shadow-sm`}>The Wedding Of</p>
@@ -85,8 +90,7 @@ function TemplateCard({
           <p className={`text-[10px] font-bold tracking-[0.2em] font-sans uppercase ${textColor} opacity-80 drop-shadow-sm`}>12 . 08 . 2026</p>
           <div className={`w-12 h-[1px] ${dividerColor} shadow-sm mt-6`}></div>
         </div>
-        
-        <div className="absolute inset-0 bg-stone-900/5 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-8">
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-end pb-8 z-20">
           <button className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 bg-white text-stone-900 px-6 py-2 rounded-full font-bold text-sm shadow-xl flex items-center gap-2">
             <Eye className="w-4 h-4" /> Preview
           </button>
@@ -184,13 +188,7 @@ function TemaPageOriginal() {
                     transition={{ duration: 0.8, delay: 0.1 * ((index % 4) + 1), ease: "easeOut" }}
                   >
                     <TemplateCard 
-                      name={theme.name}
-                      color={theme.color}
-                      seed={theme.id}
-                      fontClass={theme.fontClass}
-                      textColor={theme.textColor}
-                      accentColor={theme.accentColor}
-                      dividerColor={theme.dividerColor}
+                      theme={theme}
                       groomName={themeVariants[variantIndex].g}
                       brideName={themeVariants[variantIndex].b}
                       photoId={themeVariants[variantIndex].photoId}
