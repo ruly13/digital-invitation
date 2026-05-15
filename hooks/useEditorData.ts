@@ -25,6 +25,8 @@ export const INITIAL_FORM_DATA = {
   customAccentColor: '',
   musicUrl: '',
   musicVolume: 50,
+  backgroundMusic: '',
+  musicFileName: '',
   greeting: 'Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan resepsi pernikahan putra-putri kami.',
   gallery: [] as string[],
   youtubeId: '',
