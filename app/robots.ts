@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard/', '/editor/', '/api/'],
       },
     ],
-    sitemap: 'https://digital-invitation-rouge.vercel.app/sitemap.xml',
+    sitemap: 'https://karsaloka.site/sitemap.xml',
   };
 }

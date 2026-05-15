@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
+  alternates: {
+    canonical: 'https://karsaloka.site',
+  },
   verification: {
     google: 'mnmjgJVmWAVr2iMHh3urbo_ZuMThBxHH1HLvoxgt1qE',
   },

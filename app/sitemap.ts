@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://digital-invitation-rouge.vercel.app';
+  const baseUrl = 'https://karsaloka.site';
   
   return [
     {
